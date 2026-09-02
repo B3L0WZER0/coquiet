@@ -41,6 +41,12 @@ jobs:
         run: npm run build
         env:
           NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          # Cross-device presence. Both are public values — the anon key is
+          # meant to be shipped to browsers — so they are repository variables
+          # rather than secrets. Unset, the build still succeeds and the room
+          # falls back to presence across tabs of one browser.
+          NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

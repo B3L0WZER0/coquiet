@@ -3,9 +3,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import type { ChannelId } from '@/lib/channels';
+import { hasSupabase } from '@/lib/presence/config';
 import { LocalPresenceAdapter } from '@/lib/presence/local-adapter';
 import { SimulatedPresenceAdapter } from '@/lib/presence/simulated-adapter';
 import { simulatedRoomSize } from '@/lib/presence/simulation';
+import { SupabasePresenceAdapter } from '@/lib/presence/supabase-adapter';
 import type {
   Activity,
   Drink,
@@ -20,13 +22,22 @@ const EMPTY: PresenceSnapshot = { sessions: [], joined: false, available: false 
 /**
  * The room's presence provider.
  *
- * Swapping in a cross-device backend later means changing this one line to
- * construct a different implementation of `PresenceProvider`. Nothing below,
- * and nothing in any component, needs to know which one it got.
+ * Three implementations of one interface, chosen here and nowhere else —
+ * nothing below, and nothing in any component, knows which one it got.
+ *
+ * The order matters. The simulated room wins when it is asked for, and it can
+ * only be asked for outside production. Otherwise a configured backend gives
+ * presence across devices, and without one the local adapter gives presence
+ * across tabs of a single browser.
+ *
+ * Falling back is not a degradation to hide. Both real adapters count only
+ * sessions actually heard from, so an unconfigured site is honest — it reports
+ * a smaller room, never an invented one.
  */
 function createProvider(): PresenceProvider {
   const simulated = simulatedRoomSize();
   if (simulated !== null) return new SimulatedPresenceAdapter(simulated);
+  if (hasSupabase()) return new SupabasePresenceAdapter();
   return new LocalPresenceAdapter();
 }
 

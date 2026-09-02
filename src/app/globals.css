@@ -235,13 +235,18 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 3rem;
-  padding: 0 2.75rem;
+  /* Grows with the window past the last breakpoint, like the type above it.
+     Height and padding are in the same clamp family as the label on purpose:
+     scaling the text alone leaves a small word rattling around inside a pill
+     that stayed laptop-sized. Each floor is the value this has always had, so
+     nothing below 640px moves. */
+  min-height: clamp(3rem, calc(2.25rem + 1.1vw), 4.5rem);
+  padding: 0 clamp(2.75rem, calc(1.875rem + 1.4vw), 5rem);
   border: 1px solid transparent;
   border-radius: 999px;
   background-color: var(--color-stone);
   color: var(--color-ink);
-  font-size: 0.9375rem;
+  font-size: clamp(0.9375rem, calc(0.625rem + 0.45vw), 1.3125rem);
   font-weight: 500;
   letter-spacing: 0.01em;
   cursor: pointer;

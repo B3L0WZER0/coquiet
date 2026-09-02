@@ -8,13 +8,24 @@
  * gives the hero presence makes a small corner mark shout.
  *
  * Tracking is shared, so it still reads as one mark at two sizes.
+ *
+ * The hero size keeps growing after the last breakpoint. Held at one value it
+ * was set for a laptop, and on a large display the mark sat in the middle of
+ * all that room looking like it had been shrunk — the window got bigger and
+ * the composition did not. Above the breakpoint it now tracks the width, with
+ * the clamp's floor holding the 86px it has always been there and a ceiling
+ * stopping it near 136px, because past a point a bigger screen is just further
+ * away and the mark should stop chasing it.
+ *
+ * The corner mark is deliberately left fixed. Its job is to name the place
+ * quietly from the edge of the room, and that reads the same at any width.
  */
 export function Wordmark({ size = 'sm' }: { size?: 'sm' | 'lg' }) {
   return (
     <span
       className={
         size === 'lg'
-          ? 'block text-[3.5rem] leading-none font-medium tracking-[0.065em] sm:text-[5.375rem]'
+          ? 'block text-[3.5rem] leading-none font-medium tracking-[0.065em] sm:text-[clamp(5.375rem,calc(3.5rem_+_4vw),8.5rem)]'
           : 'block text-[1.875rem] leading-none font-light tracking-[0.08em]'
       }
       style={{ color: 'var(--text-primary)', textShadow: 'var(--shadow-legible)' }}

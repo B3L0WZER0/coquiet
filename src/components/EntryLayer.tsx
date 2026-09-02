@@ -89,7 +89,7 @@ export function EntryLayer({
           and the line that explains it.
         */}
         <h1
-          className="mt-5 text-[1.125rem] leading-snug font-normal sm:mt-[1.625rem] sm:text-[1.375rem]"
+          className="mt-5 text-[1.125rem] leading-snug font-normal sm:mt-[1.625rem] sm:text-[clamp(1.375rem,calc(0.875rem_+_0.9vw),2.25rem)]"
           style={{ color: 'var(--text-primary)', textShadow: 'var(--shadow-legible)' }}
         >
           Focus quietly, together
@@ -99,7 +99,7 @@ export function EntryLayer({
           // `text-balance` evens the lines out. At its natural measure the last
           // line held two words on its own, which read as the sentence having
           // been cut off rather than as a paragraph ending.
-          className="mt-4 max-w-[32ch] text-[0.9375rem] leading-relaxed text-balance sm:mt-[1.125rem] sm:max-w-[46ch] sm:text-[1rem]"
+          className="mt-4 max-w-[32ch] text-[0.9375rem] leading-relaxed text-balance sm:mt-[1.125rem] sm:max-w-[46ch] sm:text-[clamp(1rem,calc(0.5rem_+_0.8vw),1.4375rem)]"
           style={{ color: 'var(--text-secondary)', textShadow: 'var(--shadow-legible)' }}
         >
           Step into a shared room and work alongside other people. No chat, no cameras — just
@@ -115,7 +115,7 @@ export function EntryLayer({
         */}
         <div className="flex min-h-9 items-center" style={{ marginTop: 'var(--entry-gap)' }}>
           <p
-            className="control-surface flex min-h-9 items-center gap-2 rounded-full px-3.5 py-1.5 text-[0.8125rem] transition-opacity duration-[600ms] ease-[var(--ease-quiet)]"
+            className="control-surface flex min-h-9 items-center gap-2 rounded-full px-3.5 py-1.5 text-[0.8125rem] transition-opacity duration-[600ms] ease-[var(--ease-quiet)] sm:text-[clamp(0.8125rem,calc(0.5rem_+_0.45vw),1.125rem)]"
             style={{ color: 'var(--text-secondary)', opacity: presenceLine ? 1 : 0 }}
             // The count can change while the entry screen is open; announce it
             // quietly rather than interrupting.
@@ -137,7 +137,7 @@ export function EntryLayer({
             affordance — so it is the one small line that does not get to be
             the quietest colour. */}
         <p
-          className="mt-[1.1875rem] text-[0.8125rem]"
+          className="mt-[1.1875rem] text-[0.8125rem] sm:text-[clamp(0.8125rem,calc(0.5rem_+_0.45vw),1.125rem)]"
           style={{ color: 'var(--text-secondary)', textShadow: 'var(--shadow-legible)' }}
         >
           Ambient sound fades in · mute anytime.
@@ -151,7 +151,7 @@ export function EntryLayer({
           href={SUPPORT_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="coquiet-support absolute flex items-center gap-2 text-[0.8125rem]"
+          className="coquiet-support absolute flex items-center gap-2 text-[0.8125rem] sm:text-[clamp(0.8125rem,calc(0.5rem_+_0.45vw),1.125rem)]"
           style={{
             bottom: 'calc(var(--inset-b) + 1.5rem)',
             right: 'calc(var(--inset-r) + 1.75rem)',

@@ -7,14 +7,17 @@
  * room. If each visitor saw a different picture, "focusing together" would
  * quietly stop being true.
  *
- * The choice is made once, on the server, and passed down. Nothing recomputes
- * it on the client, so the room cannot change under someone who is working —
- * background movement during focus is the thing this whole interface avoids.
+ * The choice is made once, when the page is first mounted, and never revisited.
+ * Nothing recomputes it while the page is open, so the room cannot change under
+ * someone who is working — background movement during focus is the thing this
+ * whole interface avoids. Because the hour is the only input, no coordination
+ * is needed for every visitor to reach the same answer.
  *
  * The images themselves come from `background-manifest.ts`, which
  * `npm run assets:images` writes by reading /design-reference.
  */
 
+import { assetPath } from '@/lib/asset-path';
 import { BACKGROUND_MANIFEST, type ManifestRoom } from '@/lib/background-manifest';
 
 export type Room = ManifestRoom;
@@ -50,12 +53,14 @@ export const BACKGROUND_SIZES = '(orientation: portrait) 178vh, 100vw';
 
 /** `srcset` string for one room in one format. */
 export function srcSet(room: Room, format: 'avif' | 'webp'): string {
-  return room.widths.map((w) => `/images/${room.id}-${w}.${format} ${w}w`).join(', ');
+  return room.widths
+    .map((w) => `${assetPath(`/images/${room.id}-${w}.${format}`)} ${w}w`)
+    .join(', ');
 }
 
 /** Largest generated file for a room, in a given format. */
 export function largestSrc(room: Room, format: 'avif' | 'webp'): string {
-  return `/images/${room.id}-${room.widths[room.widths.length - 1]}.${format}`;
+  return assetPath(`/images/${room.id}-${room.widths[room.widths.length - 1]}.${format}`);
 }
 
 /** Used as the `<img src>` fallback for browsers without srcset support. */

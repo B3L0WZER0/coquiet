@@ -1,29 +1,20 @@
 import { Background } from '@/components/Background';
 import { Room } from '@/components/Room';
-import { roomById } from '@/lib/background';
+import { roomForHour } from '@/lib/background';
 
 /**
- * Rendered per request so the room can follow the clock.
+ * Prerendered.
  *
- * Prerendered at build time it would freeze on whichever hour the build ran in
- * and never turn over. The page has no data to fetch, so rendering it per
- * request costs almost nothing — and it guarantees that everyone arriving in
- * the same hour is given the same room, which is the point.
+ * The room follows the clock, so this page used to render per request. A
+ * static export has no request to render on — so the hour is read in the
+ * browser instead, and what is baked in here is only the room of the hour the
+ * build ran in. `Background` corrects it on mount if the visitor arrives in a
+ * later one. See the note there.
  */
-export const dynamic = 'force-dynamic';
-
-export default async function Page({
-  searchParams,
-}: {
-  searchParams: Promise<{ room?: string }>;
-}) {
-  // `?room=<id>` picks one deliberately, and only in development — see roomById.
-  const { room: requested } = await searchParams;
-  const room = roomById(requested);
-
+export default function Page() {
   return (
     <>
-      <Background room={room} />
+      <Background buildRoom={roomForHour()} />
       <Room />
     </>
   );

@@ -1,7 +1,13 @@
+'use client';
+
+import { useEffect, useState } from 'react';
+
 import {
   BACKGROUND_SIZES,
   fallbackSrc,
   largestSrc,
+  roomById,
+  roomForHour,
   srcSet,
   type Room,
 } from '@/lib/background';
@@ -21,7 +27,24 @@ import {
  * light changing rather than as anything moving. It is disabled entirely under
  * prefers-reduced-motion.
  */
-export function Background({ room }: { room: Room }) {
+export function Background({ buildRoom }: { buildRoom: Room }) {
+  // The prerendered HTML can only carry the room of the hour the build ran in.
+  // Starting from it — rather than from nothing — keeps the placeholder in the
+  // first paint, which is what stops the room arriving as a flash of empty.
+  const [room, setRoom] = useState(buildRoom);
+
+  // Corrected once, on mount, and never again: the hour that matters is the one
+  // the visitor arrived in, and re-reading the clock later would change the
+  // room under someone who is working. Every visitor runs the same arithmetic
+  // on the same hour, so they all land in the same room without a server
+  // telling them which — which is the property worth keeping.
+  useEffect(() => {
+    // `?room=<id>` still picks one deliberately, and still only in development.
+    const requested = new URLSearchParams(window.location.search).get('room') ?? undefined;
+    const current = requested ? roomById(requested) : roomForHour();
+    if (current.id !== buildRoom.id) setRoom(current);
+  }, [buildRoom]);
+
   return (
     <>
       {/* Only this room is preloaded. The others are never fetched. */}

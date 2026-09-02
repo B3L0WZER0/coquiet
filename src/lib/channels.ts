@@ -11,6 +11,7 @@
  * that script. Nothing else needs touching.
  */
 
+import { assetPath } from '@/lib/asset-path';
 import { AUDIO_MANIFEST, type ManifestTrack } from '@/lib/audio-manifest';
 
 export type ChannelId = 'still' | 'flow' | 'momentum';
@@ -43,10 +44,12 @@ function build(
   description: string,
   epochMs: number = BASE_EPOCH,
 ): Channel {
-  const tracks = AUDIO_MANIFEST[id] ?? [];
-  if (tracks.length === 0) {
+  const manifest = AUDIO_MANIFEST[id] ?? [];
+  if (manifest.length === 0) {
     throw new Error(`No audio for the ${label} channel. Run: npm run assets:audio`);
   }
+  // The manifest is generated against the domain root; the site may not be there.
+  const tracks = manifest.map((t) => ({ ...t, src: assetPath(t.src) }));
   return {
     id,
     label,

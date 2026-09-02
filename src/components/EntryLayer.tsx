@@ -55,9 +55,16 @@ export function EntryLayer({
         }}
       />
 
-      {/* Lifted off the optical centre: the footer below pulls the eye down,
-          and centring the block on the viewport left it sitting low. */}
-      <div className="relative flex -translate-y-7 flex-col items-center">
+      {/*
+        Lifted off the optical centre: the footer below pulls the eye down, and
+        centring the block on the viewport left it sitting low.
+
+        The offset is smaller than the lift it produces. The gap above the
+        action group grew by 32px, and a centred block spends half of any added
+        height upwards — so the offset gives back 16px to keep the wordmark and
+        the paragraph exactly where they were, and let only the group below move.
+      */}
+      <div className="relative flex -translate-y-3 flex-col items-center">
         <Wordmark size="lg" />
 
         {/*
@@ -90,7 +97,7 @@ export function EntryLayer({
           that HTML before any of this runs, so a badge that simply appeared
           would push the whole composition down a frame after it was drawn.
         */}
-        <div className="mt-6 flex min-h-9 items-center">
+        <div className="mt-10 flex min-h-9 items-center sm:mt-14">
           <p
             className="control-surface flex min-h-9 items-center gap-2 rounded-full px-3.5 py-1.5 text-[0.8125rem] transition-opacity duration-[600ms] ease-[var(--ease-quiet)]"
             style={{ color: 'var(--text-secondary)', opacity: presenceLine ? 1 : 0 }}

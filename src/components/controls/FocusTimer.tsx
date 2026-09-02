@@ -1,0 +1,270 @@
+'use client';
+
+import { useState } from 'react';
+
+import { Popover } from '@/components/ui/Popover';
+import {
+  CUSTOM_LIMITS,
+  CUSTOM_PRESET_ID,
+  PRESETS,
+  clampMinutes,
+  formatRemaining,
+  isPaused,
+  isRunning,
+  phaseLabel,
+  type TimerSession,
+} from '@/lib/timer';
+
+/**
+ * The compact timer, upper right, and the popover behind it.
+ *
+ * Secondary to the room by design: a quiet readout, and everything else tucked
+ * behind one press.
+ */
+export function FocusTimer({
+  session,
+  remainingMs,
+  onStart,
+  onPause,
+  onResume,
+  onReset,
+  onPreset,
+  onCustom,
+}: {
+  session: TimerSession;
+  remainingMs: number;
+  onStart: () => void;
+  onPause: () => void;
+  onResume: () => void;
+  onReset: () => void;
+  onPreset: (id: string) => void;
+  onCustom: (focusMinutes: number, breakMinutes: number) => void;
+}) {
+  const display = formatRemaining(remainingMs);
+  const hint = phaseLabel(session);
+  const running = isRunning(session);
+  const paused = isPaused(session);
+  const idle = !running && !paused;
+
+  return (
+    <Popover
+      // "Start, 50:00 remaining" would be nonsense read aloud — nothing is
+      // counting down yet.
+      label={
+        idle
+          ? `Focus timer, ${display}, not started`
+          : `Focus timer, ${hint}, ${display} remaining`
+      }
+      // A timer is not something to open by brushing past, or by tabbing past.
+      revealOnHoverAndFocus={false}
+      align="end"
+      panelClassName="w-[16rem]"
+      triggerClassName="control-surface flex min-h-11 items-center gap-2.5 rounded-full px-4 py-2 transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]"
+      panel={
+        <TimerPanel
+          session={session}
+          running={running}
+          paused={paused}
+          onStart={onStart}
+          onPause={onPause}
+          onResume={onResume}
+          onReset={onReset}
+          onPreset={onPreset}
+          onCustom={onCustom}
+        />
+      }
+    >
+      <span className="label-quiet" style={{ textShadow: 'var(--shadow-legible)' }}>
+        {hint}
+      </span>
+      <span
+        className="text-[0.9375rem]"
+        style={{
+          color: 'var(--text-primary)',
+          fontVariantNumeric: 'tabular-nums',
+          textShadow: 'var(--shadow-legible)',
+        }}
+      >
+        {display}
+      </span>
+    </Popover>
+  );
+}
+
+function TimerPanel({
+  session,
+  running,
+  paused,
+  onStart,
+  onPause,
+  onResume,
+  onReset,
+  onPreset,
+  onCustom,
+}: {
+  session: TimerSession;
+  running: boolean;
+  paused: boolean;
+  onStart: () => void;
+  onPause: () => void;
+  onResume: () => void;
+  onReset: () => void;
+  onPreset: (id: string) => void;
+  onCustom: (focusMinutes: number, breakMinutes: number) => void;
+}) {
+  const custom = session.presetId === CUSTOM_PRESET_ID;
+  const [focusMinutes, setFocusMinutes] = useState(() => Math.round(session.focusMs / 60_000));
+  const [breakMinutes, setBreakMinutes] = useState(() => Math.round(session.breakMs / 60_000));
+
+  const idle = session.phase === 'idle' || session.phase === 'break-ended';
+
+  return (
+    <div className="space-y-3">
+      <div role="radiogroup" aria-label="Session length" className="flex flex-wrap gap-1">
+        {PRESETS.map((preset) => (
+          <PresetChip
+            key={preset.id}
+            label={preset.label}
+            active={session.presetId === preset.id}
+            onClick={() => onPreset(preset.id)}
+          />
+        ))}
+        <PresetChip
+          label="Custom"
+          active={custom}
+          onClick={() => onCustom(focusMinutes, breakMinutes)}
+        />
+      </div>
+
+      {custom && (
+        <div className="flex items-end gap-2">
+          <MinutesField
+            label="Focus"
+            value={focusMinutes}
+            min={CUSTOM_LIMITS.focus.min}
+            max={CUSTOM_LIMITS.focus.max}
+            onChange={(v) => {
+              setFocusMinutes(v);
+              onCustom(v, breakMinutes);
+            }}
+          />
+          <MinutesField
+            label="Break"
+            value={breakMinutes}
+            min={CUSTOM_LIMITS.break.min}
+            max={CUSTOM_LIMITS.break.max}
+            onChange={(v) => {
+              setBreakMinutes(v);
+              onCustom(focusMinutes, v);
+            }}
+          />
+        </div>
+      )}
+
+      <div className="flex gap-1.5 pt-0.5">
+        {idle && <PanelButton primary label="Start" onClick={onStart} />}
+        {running && <PanelButton primary label="Pause" onClick={onPause} />}
+        {paused && <PanelButton primary label="Resume" onClick={onResume} />}
+        {!idle && <PanelButton label="Reset" onClick={onReset} />}
+      </div>
+    </div>
+  );
+}
+
+function PresetChip({
+  label,
+  active,
+  onClick,
+}: {
+  label: string;
+  active: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      role="radio"
+      aria-checked={active}
+      onClick={onClick}
+      className="min-h-9 rounded-full px-3 py-1.5 text-[0.75rem] tracking-[0.02em] transition-all duration-[var(--duration-control)]"
+      style={{
+        backgroundColor: active ? 'var(--surface-active)' : 'transparent',
+        border: `1px solid ${active ? 'var(--hairline-strong)' : 'var(--hairline)'}`,
+        color: active ? 'var(--text-primary)' : 'var(--text-muted)',
+      }}
+    >
+      {label}
+    </button>
+  );
+}
+
+function MinutesField({
+  label,
+  value,
+  min,
+  max,
+  onChange,
+}: {
+  label: string;
+  value: number;
+  min: number;
+  max: number;
+  onChange: (v: number) => void;
+}) {
+  return (
+    <label className="flex-1">
+      <span className="label-quiet mb-1 block">{label}</span>
+      <input
+        type="number"
+        inputMode="numeric"
+        min={min}
+        max={max}
+        value={value}
+        onChange={(e) => {
+          const v = Number.parseInt(e.target.value, 10);
+          if (Number.isFinite(v)) onChange(v);
+        }}
+        // Correct out-of-range entries when the field is done with, not while
+        // someone is still typing. Snapping mid-keystroke fights the typist,
+        // and leaving it uncorrected lets the field disagree with the timer —
+        // the field showing what was typed while the session holds the clamped
+        // value.
+        onBlur={() => {
+          const clamped = clampMinutes(value, { min, max });
+          if (clamped !== value) onChange(clamped);
+        }}
+        className="w-full min-h-9 rounded-lg px-2 py-1.5 text-[0.8125rem]"
+        style={{
+          backgroundColor: 'color-mix(in oklab, var(--color-ink) 40%, transparent)',
+          border: '1px solid var(--hairline)',
+          color: 'var(--text-primary)',
+        }}
+      />
+    </label>
+  );
+}
+
+function PanelButton({
+  label,
+  onClick,
+  primary = false,
+}: {
+  label: string;
+  onClick: () => void;
+  primary?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="min-h-9 flex-1 rounded-full px-3 py-2 text-[0.8125rem] tracking-[0.03em] transition-colors duration-[var(--duration-control)]"
+      style={{
+        backgroundColor: primary ? 'var(--surface-active)' : 'transparent',
+        border: `1px solid ${primary ? 'var(--hairline-strong)' : 'var(--hairline)'}`,
+        color: primary ? 'var(--text-primary)' : 'var(--text-secondary)',
+      }}
+    >
+      {label}
+    </button>
+  );
+}

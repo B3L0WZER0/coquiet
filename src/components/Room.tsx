@@ -1,0 +1,192 @@
+'use client';
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+
+import { BreakLayer } from '@/components/BreakLayer';
+import { EntryLayer } from '@/components/EntryLayer';
+import { FocusNote } from '@/components/FocusNote';
+import { Wordmark } from '@/components/Wordmark';
+import { ChannelInfo } from '@/components/controls/ChannelInfo';
+import { FocusTimer } from '@/components/controls/FocusTimer';
+import { MusicSelector } from '@/components/controls/MusicSelector';
+import { PersonalPresence } from '@/components/controls/PersonalPresence';
+import { PlaybackBar } from '@/components/controls/PlaybackBar';
+import { PresenceLine } from '@/components/controls/PresenceLine';
+import { VolumeControl } from '@/components/controls/VolumeControl';
+import { useAudio } from '@/hooks/useAudio';
+import { usePresence } from '@/hooks/usePresence';
+import { useFocusNote } from '@/hooks/useFocusNote';
+import { useIdleDim } from '@/hooks/useIdleDim';
+import { useTimer } from '@/hooks/useTimer';
+import { primeChime } from '@/lib/chime';
+import { breakSuggestion } from '@/lib/notes';
+import { entryPresenceLine } from '@/lib/presence/copy';
+
+/** How long the entry layer takes to dissolve, matching its CSS transition. */
+const DISSOLVE_MS = 900;
+
+/** How far the music drops during a break — lowered, never stopped. */
+const BREAK_DUCK = 0.35;
+
+export function Room() {
+  const [entered, setEntered] = useState(false);
+  const [dissolving, setDissolving] = useState(false);
+
+  const audio = useAudio();
+  const note = useFocusNote(entered);
+  const dimmed = useIdleDim(entered);
+  const playButtonRef = useRef<HTMLDivElement>(null);
+
+  const presence = usePresence(entered, audio.state.channel);
+
+  const timer = useTimer();
+
+  const handleEnter = useCallback(() => {
+    // Start the audio inside the click handler itself, so the browser sees an
+    // unbroken user gesture. This is the first moment sound is allowed at all.
+    void audio.enter();
+    // Unlock the chime here too. Pressing Start also primes it, but a session
+    // restored after a refresh is already running and never passes through
+    // Start again — and entering the room is the one gesture every visitor
+    // makes before any chime can be due.
+    void primeChime();
+    setDissolving(true);
+    window.setTimeout(() => {
+      setEntered(true);
+      setDissolving(false);
+    }, DISSOLVE_MS);
+  }, [audio]);
+
+  // Keyboard visitors should land inside the room rather than back at the top
+  // of the document. This has to wait for the render that clears `inert` —
+  // focusing an inert subtree silently does nothing.
+  useEffect(() => {
+    if (!entered) return;
+    playButtonRef.current?.querySelector('button')?.focus();
+    note.show();
+    // `note.show` is stable and re-running this on every note change would
+    // re-show it constantly.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entered]);
+
+  /** Starting a focus session shows a new note; the music comes back up below. */
+  const beginFocus = useCallback(() => {
+    timer.start();
+    note.show();
+  }, [timer, note]);
+
+  const playing = audio.state.status === 'playing';
+  const onBreak = timer.session.phase === 'break' || timer.session.phase === 'break-ended';
+
+  // The music is lowered for the whole of a break and comes back up when the
+  // next session begins. Driving this from the phase rather than from the
+  // transition event means a break restored after a refresh is also quiet —
+  // and that pressing pause and play during a break cannot undo it.
+  useEffect(() => {
+    void audio.setDuck(onBreak ? BREAK_DUCK : 1);
+  }, [onBreak, audio]);
+
+  const suggestion = useMemo(
+    () => breakSuggestion(timer.session.breakCount),
+    [timer.session.breakCount],
+  );
+
+  return (
+    <main className="fixed inset-0 h-[100dvh] w-full">
+      <div
+        className="room-grid transition-opacity duration-[1200ms] ease-[var(--ease-quiet)]"
+        style={{ opacity: entered ? 1 : 0 }}
+        inert={entered ? undefined : true}
+      >
+        <div className="area-wordmark" data-dim={dimmed || undefined}>
+          <Wordmark />
+        </div>
+
+        <div className="area-music" data-dim={dimmed || undefined}>
+          <MusicSelector
+            value={audio.state.channel}
+            onChange={(id) => void audio.setChannel(id)}
+            info={<ChannelInfo />}
+          />
+        </div>
+
+        <div className="area-timer" data-dim={dimmed || undefined}>
+          <FocusTimer
+            session={timer.session}
+            remainingMs={timer.remainingMs}
+            onStart={beginFocus}
+            onPause={timer.pause}
+            onResume={timer.resume}
+            onReset={timer.reset}
+            onPreset={timer.setPreset}
+            onCustom={timer.setCustom}
+          />
+        </div>
+
+        <div className="area-note">
+          {onBreak ? (
+            <BreakLayer
+              phase={timer.session.phase === 'break' ? 'break' : 'break-ended'}
+              remainingMs={timer.remainingMs}
+              suggestion={suggestion}
+              onBeginAgain={beginFocus}
+            />
+          ) : (
+            <FocusNote text={note.text} visible={note.visible} />
+          )}
+        </div>
+
+        <div className="area-presence" data-dim={dimmed || undefined}>
+          <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} />
+        </div>
+
+        <div className="controls-cluster">
+          <div className="area-playback" ref={playButtonRef} data-dim={dimmed || undefined}>
+            <PlaybackBar
+              playing={playing}
+              onTogglePlay={() => void audio.toggle()}
+              volumeControl={
+                <VolumeControl
+                  volume={audio.state.volume}
+                  muted={audio.state.muted}
+                  onChange={audio.setVolume}
+                  onToggleMuted={audio.toggleMuted}
+                />
+              }
+            />
+          </div>
+          <div className="area-personal" data-dim={dimmed || undefined}>
+            <PersonalPresence
+              activity={presence.own.activity}
+              drink={presence.own.drink}
+              onChange={presence.setPresence}
+              onClear={presence.clearPresence}
+            />
+          </div>
+        </div>
+      </div>
+
+      {presence.simulated !== null && (
+        // Visible whenever the room is full of invented people, so no
+        // screenshot of a busy room can be mistaken for a real one.
+        <p
+          className="pointer-events-none fixed top-0 left-1/2 z-40 -translate-x-1/2 rounded-b-md px-3 py-1 text-[0.6875rem] tracking-[0.08em] uppercase"
+          style={{
+            backgroundColor: 'var(--color-clay)',
+            color: 'var(--color-cream)',
+          }}
+        >
+          Simulated room · {presence.simulated} invented people
+        </p>
+      )}
+
+      {!entered && (
+        <EntryLayer
+          presenceLine={entryPresenceLine(presence.status)}
+          leaving={dissolving}
+          onEnter={handleEnter}
+        />
+      )}
+    </main>
+  );
+}

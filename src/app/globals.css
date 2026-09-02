@@ -1,0 +1,600 @@
+@import 'tailwindcss';
+
+/* ---------------------------------------------------------------------------
+   coquiet — design tokens
+
+   One warm, quiet palette drawn from the reference world: limestone, oat,
+   travertine, tobacco, soft charcoal. Nothing saturated, nothing bright.
+   --------------------------------------------------------------------------- */
+
+@theme {
+  --color-cream: #f6f1e7;
+  --color-oat: #e9e0cf;
+  --color-beige: #d8ccb5;
+  --color-sand: #c4b59a;
+  --color-taupe: #a3927a;
+  --color-tobacco: #7b6247;
+  --color-clay: #8c6a52;
+
+  /* The one solid surface in the product: the entry call to action. */
+  --color-stone: #d8c5a7;
+  --color-charcoal: #2c2823;
+  --color-ink: #1a1713;
+
+  --font-sans:
+    ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Inter,
+    system-ui, sans-serif;
+
+  /* Motion. Every duration here is zeroed under prefers-reduced-motion. */
+  --ease-quiet: cubic-bezier(0.32, 0.08, 0.24, 1);
+  --duration-control: 240ms;
+  --duration-veil: 900ms;
+
+  /*
+   * The room's only movement: the light changing, not the room shifting.
+   *
+   * This was a positional drift — the photograph translating about 18px over
+   * two minutes. The trouble is that a CSS animation restarts on every page
+   * load, so where the image sat depended on how long the tab had been open,
+   * and a refresh visibly snapped it back. Anchoring the animation to the wall
+   * clock needs JavaScript, and applying that after hydration just moves the
+   * jump to a worse place.
+   *
+   * `SPEC.md` allows either "extremely slow drift or light change". A light
+   * change has no reference point, so restarting it is invisible — and being
+   * an opacity animation on a small overlay, it composites rather than
+   * repainting the photograph.
+   */
+  --animate-light: light 100s ease-in-out infinite alternate;
+}
+
+@keyframes light {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+:root {
+  /* Translucent control surfaces. Warm-tinted, never neutral grey. */
+  /*
+   * Translucent, but not so translucent that the room shows through it.
+   *
+   * At 52% the same pill was measurably a different control in each corner:
+   * fill 52 over the lit floor against 30 over the dark side, which left its
+   * hairline standing out by 35 in one place and 57 in the other — one pill
+   * looked bordered and the other did not. At 80% the two fills land within
+   * nine of each other, close enough that they read as the same thing, while
+   * the blur behind still gives the depth.
+   */
+  --surface: color-mix(in oklab, var(--color-ink) 80%, transparent);
+  --surface-strong: color-mix(in oklab, var(--color-ink) 88%, transparent);
+
+  /*
+   * The active state of a segmented control.
+   *
+   * Deliberately *darker* than its neighbours rather than lighter. A pale tint
+   * reads as "selected" on a white page, but here it sits on sun-lit stone: it
+   * lightened the ground under cream text and dropped the active channel to
+   * 1.9:1. Going deeper instead makes the selected pill a well rather than a
+   * highlight — still translucent, no colour fill, and the brighter border,
+   * full-contrast text and indicator underneath do the work of showing which
+   * one is chosen.
+   */
+  --surface-active: color-mix(in oklab, var(--color-ink) 72%, transparent);
+
+  /*
+   * Panels hold text to be read, not a word or two to be glanced at, and they
+   * can open anywhere over the image — including the blown-out sky in the
+   * arch. They get their own near-opaque surface rather than the control tint.
+   */
+  --surface-panel: color-mix(in oklab, var(--color-ink) 90%, transparent);
+  /*
+   * Opaque, not translucent.
+   *
+   * A see-through hairline takes most of its colour from whatever is behind
+   * it, so the same control looked different in each corner of the room —
+   * measurably so: the same declared border rendered rgb(101,97,92) over the
+   * lit floor and rgb(81,74,65) over the dark side. The fill stays translucent,
+   * which is where the depth comes from; the edge stays put.
+   */
+  --hairline: color-mix(in oklab, var(--color-cream) 44%, var(--color-charcoal));
+  --hairline-strong: color-mix(in oklab, var(--color-cream) 62%, var(--color-charcoal));
+
+  --text-primary: var(--color-cream);
+  --text-secondary: color-mix(in oklab, var(--color-cream) 86%, transparent);
+  --text-muted: color-mix(in oklab, var(--color-cream) 72%, transparent);
+
+  --blur-control: 14px;
+
+  /*
+   * The height of a pill control.
+   *
+   * The wordmark, the music switch and the timer are three different shapes —
+   * bare text, a two-row stack, a single pill — and they have to read as one
+   * line across the top of the room. They are all given this height and centre
+   * their contents in it, so what lines up is the controls themselves rather
+   * than whatever happens to be stacked beneath them.
+   */
+  --control-height: 2.875rem;
+
+  /* The playback row, whose round button is taller than a pill. */
+  --control-height-lg: 3.5rem;
+
+  /* A soft dark halo that keeps small type legible over any crop of the
+     background without needing a heavier veil over the whole room. */
+  --shadow-legible: 0 1px 12px color-mix(in oklab, var(--color-ink) 82%, transparent);
+
+  /* Safe areas, so mobile controls never sit under a notch or home bar. */
+  --inset-t: env(safe-area-inset-top, 0px);
+  --inset-r: env(safe-area-inset-right, 0px);
+  --inset-b: env(safe-area-inset-bottom, 0px);
+  --inset-l: env(safe-area-inset-left, 0px);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-ink);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* One immersive room, never a scrolling page. */
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+/* ---------------------------------------------------------------------------
+   Focus states
+
+   Always visible, never removed. Warm cream ring reads clearly over every
+   crop of the background image.
+   --------------------------------------------------------------------------- */
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-cream);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------------------------------------------------------------------------
+   Reduced motion
+
+   SPEC: any background movement is nearly imperceptible and disabled here;
+   no unnecessary movement anywhere. Transitions that only communicate state
+   (opacity of a control) collapse to instant rather than disappearing.
+   --------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The room image
+
+   Landscape shows the composition as photographed. Portrait can only show a
+   narrow vertical slice of a 16:9 frame, and the middle of this one is blank
+   wall — so the slice is shifted onto the arch, which then frames whatever
+   sits over it instead of competing with it.
+   --------------------------------------------------------------------------- */
+
+/*
+ * One focal point, used by both the photograph and its placeholder. Declaring
+ * it twice is how they came to be framed differently in portrait.
+ *
+ * Landscape shows the composition as photographed. Portrait can only show a
+ * narrow vertical slice of a 16:9 frame, so it shifts to the part of the room
+ * worth seeing — a value chosen per image and set on the element by
+ * `Background`, since the right slice differs for every photograph.
+ */
+.room-image {
+  object-position: 50% 50%;
+}
+
+.room-image-lqip {
+  background-position: 50% 50%;
+}
+
+@media (orientation: portrait) {
+  .room-image {
+    object-position: var(--room-focal-x, 50%) 50%;
+  }
+
+  .room-image-lqip {
+    background-position: var(--room-focal-x, 50%) 50%;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   The entry call to action
+
+   Everything else in the room is translucent; this is deliberately not. It is
+   the single thing a first-time visitor has to find, and a solid warm stone
+   against the dark interior is what makes it unmissable without shouting.
+   --------------------------------------------------------------------------- */
+
+.coquiet-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 3rem;
+  padding: 0 2.75rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background-color: var(--color-stone);
+  color: var(--color-ink);
+  font-size: 0.9375rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-control) var(--ease-quiet),
+    transform var(--duration-control) var(--ease-quiet),
+    box-shadow var(--duration-control) var(--ease-quiet);
+  box-shadow: 0 1px 24px color-mix(in oklab, var(--color-ink) 45%, transparent);
+}
+
+.coquiet-cta:hover {
+  background-color: color-mix(in oklab, var(--color-stone) 84%, white);
+  box-shadow: 0 4px 30px color-mix(in oklab, var(--color-ink) 55%, transparent);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .coquiet-cta:hover {
+    transform: translateY(-1px);
+  }
+}
+
+.coquiet-cta:active {
+  background-color: color-mix(in oklab, var(--color-stone) 90%, var(--color-tobacco));
+  transform: none;
+}
+
+/* The button is light and sits on a dark scrim, so the ring goes outside it
+   where there is something for cream to contrast against. */
+.coquiet-cta:focus-visible {
+  outline: 2px solid var(--color-cream);
+  outline-offset: 4px;
+}
+
+/* ---------------------------------------------------------------------------
+   The support link
+
+   A footer on the way in, and nowhere else. Quiet at rest, with an underline
+   that only appears on hover or focus, so at a glance it reads as a note rather
+   than as a second thing to press.
+   --------------------------------------------------------------------------- */
+
+.coquiet-support {
+  color: var(--text-muted);
+  text-decoration: none;
+  text-underline-offset: 0.28em;
+  text-decoration-thickness: 1px;
+  text-shadow: var(--shadow-legible);
+  transition: color var(--duration-control) var(--ease-quiet);
+}
+
+.coquiet-support:hover {
+  color: var(--text-primary);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--color-cream) 45%, transparent);
+}
+
+.coquiet-support:focus-visible {
+  color: var(--text-primary);
+  outline: 2px solid var(--color-cream);
+  outline-offset: 4px;
+  border-radius: 3px;
+}
+
+@utility control-surface {
+  background-color: var(--surface);
+  border: 1px solid var(--hairline);
+  backdrop-filter: blur(var(--blur-control)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-control)) saturate(120%);
+}
+
+/* Small-caps label used for MUSIC, TIMER and similar quiet headings. */
+@utility label-quiet {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+/* ---------------------------------------------------------------------------
+   Room layout
+
+   One immersive viewport. Desktop uses the composition from SPEC — wordmark,
+   music and timer across the top; presence, playback and personal presence
+   across the bottom; the focus note in the middle. Mobile reflows to a single
+   column with the playback cluster centred at the bottom.
+   --------------------------------------------------------------------------- */
+
+.room-grid {
+  display: grid;
+  height: 100%;
+  gap: 0.75rem;
+  padding: calc(var(--inset-t) + 1rem) calc(var(--inset-r) + 1rem)
+    calc(var(--inset-b) + 1rem) calc(var(--inset-l) + 1rem);
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto 1fr auto auto;
+  grid-template-areas:
+    'wordmark timer'
+    'music    music'
+    'note     note'
+    'presence presence'
+    'controls controls';
+  justify-items: center;
+}
+
+.room-grid > .area-wordmark {
+  grid-area: wordmark;
+  justify-self: start;
+}
+
+.room-grid > .area-wordmark,
+.room-grid > .area-timer {
+  display: flex;
+  align-items: center;
+  min-height: var(--control-height);
+}
+.room-grid > .area-music {
+  grid-area: music;
+}
+.room-grid > .area-timer {
+  grid-area: timer;
+  justify-self: end;
+}
+.room-grid > .area-note {
+  grid-area: note;
+  align-self: center;
+}
+.room-grid > .area-presence {
+  grid-area: presence;
+}
+
+/* Wraps playback + personal presence. On mobile they share one row with the
+   play button in the true centre of the viewport; on desktop the wrapper
+   dissolves and each child takes its own grid area. */
+.controls-cluster {
+  grid-area: controls;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.controls-cluster > .area-playback {
+  grid-column: 2;
+  justify-self: center;
+}
+
+.controls-cluster > .area-personal {
+  grid-column: 3;
+  justify-self: end;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .room-grid {
+    gap: 1rem;
+    padding: calc(var(--inset-t) + 1.75rem) calc(var(--inset-r) + 2rem)
+      calc(var(--inset-b) + 1.75rem) calc(var(--inset-l) + 2rem);
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      'wordmark music    timer'
+      'note     note     note'
+      'presence playback personal';
+    align-items: start;
+  }
+
+  /* All three hang from the top of the row; the shared control height is what
+     brings them onto one line. */
+  .room-grid > .area-wordmark,
+  .room-grid > .area-music,
+  .room-grid > .area-timer {
+    align-self: start;
+  }
+  .room-grid > .area-note {
+    justify-self: center;
+  }
+  .room-grid > .area-presence {
+    justify-self: start;
+  }
+
+  .controls-cluster {
+    display: contents;
+  }
+  /* The bottom three sit on one centreline. Aligning their bottoms instead
+     left the round play button, which is taller than the pills either side of
+     it, riding six pixels high.
+
+     `.area-playback` and `.area-personal` are written without a combinator on
+     purpose: they are DOM children of `.controls-cluster`, which only becomes
+     transparent to *layout* here, not to selectors. */
+  .room-grid > .area-presence,
+  .area-playback,
+  .area-personal {
+    display: flex;
+    align-items: center;
+    min-height: var(--control-height-lg);
+    align-self: end;
+  }
+
+  .area-playback {
+    grid-area: playback;
+    justify-self: center;
+  }
+  .area-personal {
+    grid-area: personal;
+    justify-self: end;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Volume slider
+
+   A real <input type="range">, restyled. Keeping the native element means
+   arrow keys, Home/End, touch dragging and screen-reader value announcements
+   all work without any custom key handling.
+   --------------------------------------------------------------------------- */
+
+.coquiet-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity var(--duration-control) var(--ease-quiet);
+}
+
+.coquiet-range::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--color-cream) 26%, transparent);
+}
+
+.coquiet-range::-moz-range-track {
+  height: 2px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--color-cream) 26%, transparent);
+}
+
+.coquiet-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: var(--color-cream);
+  border: none;
+}
+
+.coquiet-range::-moz-range-thumb {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--color-cream);
+  border: none;
+}
+
+.coquiet-range:focus-visible {
+  outline: 2px solid var(--color-cream);
+  outline-offset: 6px;
+}
+
+/* Muted: the track and thumb recede, so silence is visible at a glance and not
+   only inferable from the speaker mark. */
+.coquiet-range[data-muted]::-webkit-slider-runnable-track {
+  background: color-mix(in oklab, var(--color-cream) 12%, transparent);
+}
+.coquiet-range[data-muted]::-moz-range-track {
+  background: color-mix(in oklab, var(--color-cream) 12%, transparent);
+}
+.coquiet-range[data-muted]::-webkit-slider-thumb {
+  background: var(--color-taupe);
+}
+.coquiet-range[data-muted]::-moz-range-thumb {
+  background: var(--color-taupe);
+}
+
+/* ---------------------------------------------------------------------------
+   Personal presence panel
+
+   A bottom sheet on narrow screens — clear of the thumb, inside the safe area,
+   and never overlapping the playback controls. A popover anchored to its
+   trigger from tablet up.
+   --------------------------------------------------------------------------- */
+
+.presence-sheet {
+  position: fixed;
+  z-index: 30;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 1.25rem 1.25rem 0 0;
+  border: 1px solid var(--hairline);
+  border-bottom: 0;
+  padding: 1.25rem 1.25rem calc(1.25rem + var(--inset-b));
+  /* Opaque, unlike every other surface in the room. The sheet covers the
+     playback controls and the focus note, and letting those ghost through
+     reads as a rendering fault rather than as depth. A warm near-black keeps
+     it in the same world as the translucent controls. */
+  background-color: color-mix(in oklab, var(--color-ink) 86%, var(--color-charcoal));
+}
+
+/* Dims the room behind the sheet. Only needed where the sheet covers other
+   controls, so it disappears once the panel becomes an anchored popover. */
+.presence-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background-color: color-mix(in oklab, var(--color-ink) 58%, transparent);
+}
+
+@media (min-width: 768px) {
+  .presence-scrim {
+    display: none;
+  }
+
+  .presence-sheet {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: auto;
+    width: 19rem;
+    margin-bottom: 0.625rem;
+    border-radius: 1rem;
+    border-bottom: 1px solid var(--hairline);
+    padding: 1rem;
+    background-color: var(--surface-panel);
+    backdrop-filter: blur(var(--blur-control)) saturate(120%);
+    -webkit-backdrop-filter: blur(var(--blur-control)) saturate(120%);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Idle dimming
+
+   The controls recede after a stretch of inactivity and return instantly on
+   any input. Only their opacity changes — nothing moves, nothing reflows, and
+   they stay fully interactive throughout, so a click that lands during the
+   fade still does what it was aimed at.
+   --------------------------------------------------------------------------- */
+
+[data-dim] {
+  opacity: 0.34;
+}
+
+.room-grid > *,
+.controls-cluster > * {
+  transition: opacity 1200ms var(--ease-quiet);
+}
+
+/* Coming back is immediate; only the fade away is slow. */
+.room-grid > *:not([data-dim]),
+.controls-cluster > *:not([data-dim]) {
+  transition-duration: 180ms;
+}

@@ -288,13 +288,36 @@ body {
    than as a second thing to press.
    --------------------------------------------------------------------------- */
 
+/*
+ * Centred along the bottom edge, because everything else on the entry screen
+ * sits on the centre line and a corner link was the one thing off it — it read
+ * as stuck on afterwards rather than as part of the composition.
+ *
+ * It goes back to the corner when the window is too short to hold both. The
+ * composition is already taller than a landscape phone, so on those screens a
+ * centred footer lands on top of the button — the same centre line that makes
+ * it belong on a normal window makes it collide on a short one. Off to the
+ * side it simply passes the composition by.
+ */
 .coquiet-support {
+  position: absolute;
+  bottom: calc(var(--inset-b) + 1.5rem);
+  left: 50%;
+  transform: translateX(-50%);
   color: var(--text-muted);
   text-decoration: none;
   text-underline-offset: 0.28em;
   text-decoration-thickness: 1px;
   text-shadow: var(--shadow-legible);
   transition: color var(--duration-control) var(--ease-quiet);
+}
+
+@media (max-height: 560px) {
+  .coquiet-support {
+    left: auto;
+    right: calc(var(--inset-r) + 1.75rem);
+    transform: none;
+  }
 }
 
 .coquiet-support:hover {

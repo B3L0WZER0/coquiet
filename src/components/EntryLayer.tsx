@@ -151,11 +151,7 @@ export function EntryLayer({
           href={SUPPORT_URL}
           target="_blank"
           rel="noopener noreferrer"
-          className="coquiet-support absolute flex items-center gap-2 text-[0.8125rem] sm:text-[clamp(0.8125rem,calc(0.5rem_+_0.45vw),1.125rem)]"
-          style={{
-            bottom: 'calc(var(--inset-b) + 1.5rem)',
-            right: 'calc(var(--inset-r) + 1.75rem)',
-          }}
+          className="coquiet-support flex items-center gap-2 text-[0.8125rem] sm:text-[clamp(0.8125rem,calc(0.5rem_+_0.45vw),1.125rem)]"
         >
           <CoffeeMarkInline />
           {SUPPORT_LABEL}

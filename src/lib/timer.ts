@@ -1,13 +1,4 @@
-/**
- * Focus timer logic.
- *
- * Pure functions over a serialisable session, with no timers of their own. The
- * only clock input is a `now` argument, which is what makes the whole thing
- * testable and what makes it survive backgrounding, sleep and refresh: the
- * session stores the timestamp a phase *ends at*, never a countdown that has to
- * be decremented on schedule. A tab that was asleep for an hour works out where
- * it is by looking at the clock once.
- */
+/** Focus timer logic. */
 
 export type TimerPhase =
   /** Nothing running. */
@@ -26,7 +17,7 @@ export interface TimerPreset {
   breakMinutes: number;
 }
 
-/** Shortest first. The default is still 50/10; only the order changed. */
+/** Shortest first. */
 export const PRESETS: readonly TimerPreset[] = [
   { id: '25-5', label: '25 / 5', focusMinutes: 25, breakMinutes: 5 },
   { id: '50-10', label: '50 / 10', focusMinutes: 50, breakMinutes: 10 },
@@ -36,19 +27,13 @@ export const PRESETS: readonly TimerPreset[] = [
 export const DEFAULT_PRESET_ID = '50-10';
 export const CUSTOM_PRESET_ID = 'custom';
 
-/**
- * Bounds for the custom preset, in minutes.
- *
- * A one-minute focus stretch is a legitimate thing to want — a single small
- * task, or checking that the chime works — so the floor is one, not an opinion
- * about how long people ought to concentrate for.
- */
+/** Bounds for the custom preset, in minutes. */
 export const CUSTOM_LIMITS = {
   focus: { min: 1, max: 180 },
   break: { min: 1, max: 60 },
 } as const;
 
-/** Snap a typed number of minutes into range. Exported so the input agrees. */
+/** Snap a typed number of minutes into range. */
 export function clampMinutes(value: number, bounds: { min: number; max: number }): number {
   return clamp(value, bounds.min, bounds.max);
 }
@@ -58,9 +43,9 @@ export interface TimerSession {
   presetId: string;
   focusMs: number;
   breakMs: number;
-  /** When the current phase ends. Null while paused or idle. */
+  /** When the current phase ends. */
   endsAt: number | null;
-  /** What is left when paused. Null while running. */
+  /** What is left when paused. */
   pausedRemainingMs: number | null;
   /** How many breaks have started, used to rotate the break suggestion. */
   breakCount: number;
@@ -89,7 +74,7 @@ export function createSession(presetId: string = DEFAULT_PRESET_ID): TimerSessio
   };
 }
 
-/** Switch durations. Doing this always returns the timer to a clean idle state. */
+/** Switch durations. */
 export function withPreset(session: TimerSession, presetId: string): TimerSession {
   const preset = presetById(presetId);
   if (!preset) return session;
@@ -177,14 +162,7 @@ export function remainingMs(session: TimerSession, now: number = Date.now()): nu
   return Math.max(0, session.endsAt - now);
 }
 
-/**
- * Move the session forward to wherever the clock says it should be.
- *
- * Runs in a loop, because an arbitrary amount of time may have passed — a
- * laptop asleep through a whole focus stretch and its break should come back to
- * the right place, not one phase behind. The returned events are what the room
- * reacts to: the chime, ducking the music, the break copy.
- */
+/** Move the session forward to wherever the clock says it should be. */
 export function tick(
   session: TimerSession,
   now: number = Date.now(),
@@ -222,7 +200,7 @@ export function tick(
   return { session: next, events };
 }
 
-/** "50:00". Rounds up, so a timer never shows 00:00 while still running. */
+/** "50:00". */
 export function formatRemaining(ms: number): string {
   const total = Math.max(0, Math.ceil(ms / 1000));
   const minutes = Math.floor(total / 60);
@@ -234,12 +212,7 @@ export function formatRemaining(ms: number): string {
   return `${minutes}:${String(seconds).padStart(2, '0')}`;
 }
 
-/**
- * The word beside the readout.
- *
- * When nothing is running it says what the control will do rather than what
- * state it is in — "Start 50:00" invites, where "Ready 50:00" only reports.
- */
+/** The word beside the readout. */
 export function phaseLabel(session: TimerSession): string {
   switch (session.phase) {
     case 'focus':

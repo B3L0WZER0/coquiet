@@ -1,12 +1,4 @@
-/**
- * The switch that fills the room with invented people.
- *
- * Off unless asked for, and impossible to ask for in a production build. It
- * exists so the presence line, the Room pulse and the entry badge can be looked
- * at with a room's worth of people in them, which three browser tabs cannot do.
- *
- * `?simulate=300` in development. Anything else, anywhere else, is off.
- */
+/** The switch that fills the room with invented people. */
 
 /** Above this the breakdown stops being a design question and starts being a stress test. */
 const MAX = 5000;

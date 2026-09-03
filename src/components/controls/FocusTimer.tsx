@@ -15,12 +15,7 @@ import {
   type TimerSession,
 } from '@/lib/timer';
 
-/**
- * The compact timer, upper right, and the popover behind it.
- *
- * Secondary to the room by design: a quiet readout, and everything else tucked
- * behind one press.
- */
+/** The compact timer, upper right, and the popover behind it. */
 export function FocusTimer({
   session,
   remainingMs,

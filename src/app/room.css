@@ -1,0 +1,242 @@
+/* Room layout, volume slider, personal presence panel, idle dimming. */
+
+/* Desktop: wordmark/music/timer across the top, presence/playback/personal
+   across the bottom, focus note in the middle. Mobile reflows to one column
+   with the playback cluster centred at the bottom. */
+.room-grid {
+  display: grid;
+  height: 100%;
+  gap: 0.75rem;
+  padding: calc(var(--inset-t) + 1rem) calc(var(--inset-r) + 1rem)
+    calc(var(--inset-b) + 1rem) calc(var(--inset-l) + 1rem);
+  grid-template-columns: 1fr auto;
+  grid-template-rows: auto auto 1fr auto auto;
+  grid-template-areas:
+    'wordmark timer'
+    'music    music'
+    'note     note'
+    'presence presence'
+    'controls controls';
+  justify-items: center;
+}
+
+.room-grid > .area-wordmark {
+  grid-area: wordmark;
+  justify-self: start;
+}
+
+.room-grid > .area-wordmark,
+.room-grid > .area-timer {
+  display: flex;
+  align-items: center;
+  min-height: var(--control-height);
+}
+.room-grid > .area-music {
+  grid-area: music;
+}
+.room-grid > .area-timer {
+  grid-area: timer;
+  justify-self: end;
+}
+.room-grid > .area-note {
+  grid-area: note;
+  align-self: center;
+}
+.room-grid > .area-presence {
+  grid-area: presence;
+}
+
+/* Wraps playback + personal presence. Mobile: one row, play button centred.
+   Desktop: dissolves via `display: contents`, each child takes its own area. */
+.controls-cluster {
+  grid-area: controls;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.controls-cluster > .area-playback {
+  grid-column: 2;
+  justify-self: center;
+}
+
+.controls-cluster > .area-personal {
+  grid-column: 3;
+  justify-self: end;
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .room-grid {
+    gap: 1rem;
+    padding: calc(var(--inset-t) + 1.75rem) calc(var(--inset-r) + 2rem)
+      calc(var(--inset-b) + 1.75rem) calc(var(--inset-l) + 2rem);
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      'wordmark music    timer'
+      'note     note     note'
+      'presence playback personal';
+    align-items: start;
+  }
+
+  .room-grid > .area-wordmark,
+  .room-grid > .area-music,
+  .room-grid > .area-timer {
+    align-self: start;
+  }
+  .room-grid > .area-note {
+    justify-self: center;
+  }
+  .room-grid > .area-presence {
+    justify-self: start;
+  }
+
+  .controls-cluster {
+    display: contents;
+  }
+  /* Aligned by top, not bottom — the round play button is taller than its
+     neighbouring pills and rode 6px high when bottom-aligned. `.area-playback`
+     and `.area-personal` need no combinator: `display: contents` above only
+     affects layout, not selector matching. */
+  .room-grid > .area-presence,
+  .area-playback,
+  .area-personal {
+    display: flex;
+    align-items: center;
+    min-height: var(--control-height-lg);
+    align-self: end;
+  }
+
+  .area-playback {
+    grid-area: playback;
+    justify-self: center;
+  }
+  .area-personal {
+    grid-area: personal;
+    justify-self: end;
+  }
+}
+
+/* Volume slider: a real <input type="range">, restyled — keeps arrow keys,
+   Home/End, touch dragging and screen-reader announcements for free. */
+.coquiet-range {
+  -webkit-appearance: none;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  transition: opacity var(--duration-control) var(--ease-quiet);
+}
+
+.coquiet-range::-webkit-slider-runnable-track {
+  height: 2px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--color-cream) 26%, transparent);
+}
+
+.coquiet-range::-moz-range-track {
+  height: 2px;
+  border-radius: 2px;
+  background: color-mix(in oklab, var(--color-cream) 26%, transparent);
+}
+
+.coquiet-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 11px;
+  height: 11px;
+  margin-top: -4.5px;
+  border-radius: 50%;
+  background: var(--color-cream);
+  border: none;
+}
+
+.coquiet-range::-moz-range-thumb {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--color-cream);
+  border: none;
+}
+
+.coquiet-range:focus-visible {
+  outline: 2px solid var(--color-cream);
+  outline-offset: 6px;
+}
+
+/* Muted: track and thumb recede so silence is visible, not just inferable. */
+.coquiet-range[data-muted]::-webkit-slider-runnable-track {
+  background: color-mix(in oklab, var(--color-cream) 12%, transparent);
+}
+.coquiet-range[data-muted]::-moz-range-track {
+  background: color-mix(in oklab, var(--color-cream) 12%, transparent);
+}
+.coquiet-range[data-muted]::-webkit-slider-thumb {
+  background: var(--color-taupe);
+}
+.coquiet-range[data-muted]::-moz-range-thumb {
+  background: var(--color-taupe);
+}
+
+/* Personal presence: a bottom sheet on narrow screens, a popover from tablet up. */
+.presence-sheet {
+  position: fixed;
+  z-index: 30;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: 1.25rem 1.25rem 0 0;
+  border: 1px solid var(--hairline);
+  border-bottom: 0;
+  padding: 1.25rem 1.25rem calc(1.25rem + var(--inset-b));
+  /* Opaque, unlike other surfaces — it covers playback and the focus note,
+     and letting those ghost through would read as a rendering fault. */
+  background-color: color-mix(in oklab, var(--color-ink) 86%, var(--color-charcoal));
+}
+
+/* Dims the room behind the sheet; gone once the panel becomes a popover. */
+.presence-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background-color: color-mix(in oklab, var(--color-ink) 58%, transparent);
+}
+
+@media (min-width: 768px) {
+  .presence-scrim {
+    display: none;
+  }
+
+  .presence-sheet {
+    position: absolute;
+    right: 0;
+    bottom: 100%;
+    left: auto;
+    width: 19rem;
+    margin-bottom: 0.625rem;
+    border-radius: 1rem;
+    border-bottom: 1px solid var(--hairline);
+    padding: 1rem;
+    background-color: var(--surface-panel);
+    backdrop-filter: blur(var(--blur-control)) saturate(120%);
+    -webkit-backdrop-filter: blur(var(--blur-control)) saturate(120%);
+  }
+}
+
+/* Idle dimming: controls recede after inactivity, return instantly on input.
+   Opacity only — nothing reflows, so a click mid-fade still lands. */
+[data-dim] {
+  opacity: 0.34;
+}
+
+.room-grid > *,
+.controls-cluster > * {
+  transition: opacity 1200ms var(--ease-quiet);
+}
+
+.room-grid > *:not([data-dim]),
+.controls-cluster > *:not([data-dim]) {
+  transition-duration: 180ms; /* coming back is immediate; only fading away is slow */
+}

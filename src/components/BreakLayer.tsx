@@ -2,13 +2,7 @@
 
 import { formatRemaining } from '@/lib/timer';
 
-/**
- * The break, and the moment after it.
- *
- * Sits in the middle of the room where the focus note goes, over a soft pool of
- * shade. The music is lowered rather than stopped, so the room never goes
- * quiet — you are still in it, just not working.
- */
+/** The break, and the moment after it. */
 export function BreakLayer({
   phase,
   remainingMs,

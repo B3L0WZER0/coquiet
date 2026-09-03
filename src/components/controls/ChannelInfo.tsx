@@ -3,12 +3,7 @@
 import { Popover } from '@/components/ui/Popover';
 import { CHANNELS } from '@/lib/channels';
 
-/**
- * The ⓘ beside MUSIC, explaining what the three channels are.
- *
- * Content comes from the channel config, so a channel's description lives in
- * exactly one place.
- */
+/** The ⓘ beside MUSIC, explaining what the three channels are. */
 export function ChannelInfo() {
   return (
     <Popover
@@ -47,15 +42,7 @@ export function ChannelInfo() {
   );
 }
 
-/**
- * The circle and the mark inside it are one drawing.
- *
- * As a text glyph the "i" sat high in its circle: a lowercase letter is centred
- * by its line box, which reserves room for a descender the letter does not use.
- * Worse, the interface uses a system font stack, so the exact offset would
- * differ between a Mac and a Windows machine. Drawn here, the ink is centred on
- * the circle by construction and looks the same everywhere.
- */
+/** The circle and the mark inside it are one drawing. */
 function InfoMark() {
   return (
     <svg

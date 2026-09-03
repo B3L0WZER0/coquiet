@@ -2,18 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-/**
- * Discreet volume, beside play/pause.
- *
- * Collapsed it is just a small speaker mark. It expands on hover and on focus,
- * so the slider is reachable by pointer and keyboard alike. On touch there is
- * no hover, so pressing the mark both mutes and reveals the slider — muting is
- * the thing people reach for in a hurry, it is undone by pressing again, and
- * the slider is right there once the row has opened.
- *
- * Muting is a flag rather than a volume of zero, so the level chosen here is
- * still there to come back to.
- */
+/** Discreet volume, beside play/pause. */
 export function VolumeControl({
   volume,
   muted,
@@ -115,16 +104,7 @@ function SpeakerGlyph({ muted }: { muted: boolean }) {
       aria-hidden="true"
       fill="none"
     >
-      {/*
-        The drawing is not centred in its own box: the waves reach further right
-        than the cone reaches left, which left the mark sitting right of centre
-        in the circle even though the <svg> itself was centred exactly.
-
-        One constant nudge rather than a different one per state — the muted and
-        unmuted marks have slightly different widths, and correcting each would
-        make the cone jump sideways every time the button is pressed. This lands
-        both within a tenth of a pixel of centre.
-      */}
+      {/* The drawing is not centred in its own box: the waves reach further right than the cone reaches left, which left the mark sitting right of... */}
       <g transform="translate(-0.6 0.2)">
         <path
           d="M3 6h2.2L8.4 3.3a.5.5 0 0 1 .85.36v8.68a.5.5 0 0 1-.85.36L5.2 10H3a.6.6 0 0 1-.6-.6V6.6A.6.6 0 0 1 3 6z"

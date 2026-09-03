@@ -5,14 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 /** How long the room waits before the controls recede. */
 const IDLE_MS = 8_000;
 
-/**
- * Dim the controls after a stretch of inactivity.
- *
- * They return instantly on any pointer movement, touch, key press or scroll —
- * there is no fade-in delay to wait through. Anything that takes focus also
- * brings them back and holds them there, so a keyboard visitor tabbing slowly
- * through the room never has the control they are on fade out from under them.
- */
+/** Dim the controls after a stretch of inactivity. */
 export function useIdleDim(enabled: boolean): boolean {
   const [dimmed, setDimmed] = useState(false);
   const timer = useRef<number | null>(null);
@@ -61,14 +54,7 @@ export function useIdleDim(enabled: boolean): boolean {
   return dimmed;
 }
 
-/**
- * True when the focused element is drawing a visible focus ring.
- *
- * Deliberately narrower than "something has focus": clicking a control leaves
- * it focused, so treating any focus as activity would mean the room never dims
- * again after the first click. `:focus-visible` is precisely the distinction
- * the browser already makes between keyboard and pointer focus.
- */
+/** True when the focused element is drawing a visible focus ring. */
 function showingFocusRing(): boolean {
   const active = document.activeElement;
   if (!active || active === document.body || active === document.documentElement) return false;

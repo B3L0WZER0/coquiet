@@ -12,21 +12,7 @@ import {
   type Room,
 } from '@/lib/background';
 
-/**
- * The full-screen room.
- *
- * Fixed and object-fit: cover, so it fills every viewport shape without ever
- * contributing to layout — no shift when it decodes, no scrollbars.
- *
- * Placeholder and photograph share one wrapper and one focal point. Held apart
- * they were framed differently — the placeholder centred, the photograph
- * transformed and, in portrait, cropped to a different part of the frame — so
- * the room visibly jumped the instant the photograph arrived.
- *
- * Its only movement is the warm layer breathing very slowly, which reads as the
- * light changing rather than as anything moving. It is disabled entirely under
- * prefers-reduced-motion.
- */
+/** The full-screen room. */
 export function Background({ buildRoom }: { buildRoom: Room }) {
   // The prerendered HTML can only carry the room of the hour the build ran in.
   // Starting from it — rather than from nothing — keeps the placeholder in the
@@ -47,7 +33,7 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
 
   return (
     <>
-      {/* Only this room is preloaded. The others are never fetched. */}
+      {/* Only this room is preloaded. */}
       <link
         rel="preload"
         as="image"
@@ -83,14 +69,7 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
           </picture>
         </div>
 
-        {/* Warm contrast veil. Three shallow layers rather than one flat scrim,
-            so the stone keeps its depth while controls stay legible.
-
-            Kept as light as the contrast audit allows. The controls that sit over
-            the brightest parts of the image — the focus note, the entry
-            composition, the panels — carry their own local shade, which is what
-            lets this stay a veil over the room rather than a lid on it. Run
-            `npm run contrast` after touching any of these numbers. */}
+        {/* Warm contrast veil. */}
         <div
           className="absolute inset-0"
           style={{

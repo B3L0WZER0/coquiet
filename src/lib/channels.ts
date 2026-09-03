@@ -1,15 +1,4 @@
-/**
- * The three music channels.
- *
- * A channel is a *programme*, not a track: an ordered list that plays through
- * and then repeats. Flow currently holds two pieces, Still and Momentum one
- * each, and any of them can grow without anything here changing — the list
- * comes from `audio-manifest.ts`, which `npm run assets:audio` builds by
- * reading `/public/audio`.
- *
- * To add music: drop a file named "<Channel> <n>.mp3" into that folder and run
- * that script. Nothing else needs touching.
- */
+/** The three music channels. */
 
 import { assetPath } from '@/lib/asset-path';
 import { AUDIO_MANIFEST, type ManifestTrack } from '@/lib/audio-manifest';
@@ -23,15 +12,11 @@ export interface Channel {
   label: string;
   /** Shown in the info popover beside the switch. */
   description: string;
-  /** The programme, in order. Never empty. */
+  /** The programme, in order. */
   tracks: readonly Track[];
   /** Total length of one pass through the programme, in seconds. */
   durationSeconds: number;
-  /**
-   * Fixed reference point for the station clock. Position is derived from the
-   * visitor's own clock against this constant, so every listener on a channel
-   * is at roughly the same place without any server involved.
-   */
+  /** Fixed reference point for the station clock. */
   epochMs: number;
 }
 
@@ -86,13 +71,7 @@ export interface StationPosition {
   offsetSeconds: number;
 }
 
-/**
- * Where this channel's continuous programme is right now.
- *
- * Derived purely from the visitor's clock, so it needs no backend and no
- * coordination — every device within a second or two of real time lands in the
- * same place, in the same piece.
- */
+/** Where this channel's continuous programme is right now. */
 export function stationPosition(channel: Channel, now: number = Date.now()): StationPosition {
   const cycleMs = channel.durationSeconds * 1000;
   if (cycleMs <= 0) {

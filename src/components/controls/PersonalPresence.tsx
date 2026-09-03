@@ -12,16 +12,7 @@ import {
   type Drink,
 } from '@/lib/presence/types';
 
-/**
- * The optional personal presence control, bottom right.
- *
- * Never blocks entry and never needs to be touched — the room is complete
- * without it. Once something is chosen the trigger collapses to a summary like
- * "Working · Coffee", and it can be changed or cleared at any time.
- *
- * On a narrow screen the picker is a bottom sheet rather than a popover, which
- * keeps it clear of the thumb and away from the safe areas.
- */
+/** The optional personal presence control, bottom right. */
 export function PersonalPresence({
   activity,
   drink,
@@ -83,8 +74,7 @@ export function PersonalPresence({
           color: summary ? 'var(--text-primary)' : 'var(--text-secondary)',
         }}
       >
-        {/* The full phrase has room on desktop; at 320px it would push the play
-            button off centre, so the trigger shortens instead of wrapping. */}
+        {/* The full phrase has room on desktop; at 320px it would push the play button off centre, so the trigger shortens instead of wrapping. */}
         <span className="hidden whitespace-nowrap md:inline">
           {summary ?? 'Set your presence'}
         </span>
@@ -95,9 +85,7 @@ export function PersonalPresence({
 
       {open && (
         <>
-          {/* On a narrow screen the sheet covers the playback controls, so the
-              room behind it recedes rather than showing through. Tapping the
-              scrim dismisses, the same as tapping outside a popover. */}
+          {/* On a narrow screen the sheet covers the playback controls, so the room behind it recedes rather than showing through. */}
           <div
             aria-hidden="true"
             onPointerDown={() => setOpen(false)}

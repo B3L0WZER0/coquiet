@@ -1,9 +1,4 @@
-/**
- * The mark beside a presence line.
- *
- * A lit dot inside a soft halo. It only ever appears when the room is genuinely
- * being listened to, so it means "this is live" rather than being decoration.
- */
+/** The mark beside a presence line. */
 export function LiveDot() {
   return (
     <span aria-hidden="true" className="relative flex h-2 w-2 shrink-0 items-center justify-center">

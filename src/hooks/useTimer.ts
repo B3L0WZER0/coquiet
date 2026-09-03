@@ -19,13 +19,7 @@ import {
   start as startSession,
 } from '@/lib/timer';
 
-/**
- * How often the room re-reads the clock.
- *
- * This only controls how promptly the readout updates — correctness comes from
- * comparing `Date.now()` against a stored end timestamp, so a throttled or
- * suspended tab catches up in a single tick rather than losing time.
- */
+/** How often the room re-reads the clock. */
 const TICK_MS = 500;
 
 export interface TimerCallbacks {

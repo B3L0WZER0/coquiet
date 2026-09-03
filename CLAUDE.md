@@ -42,6 +42,15 @@ Build presence behind a `PresenceProvider` interface with exactly one implementa
 
 Build and verify one milestone from `PLAN.md` at a time. Don't start the next milestone until the current one's relevant acceptance criteria (listed in `SPEC.md`) are actually met — show me what changed and how to check it before moving on.
 
+## Context budget
+
+Every session pays a fixed token cost for tool schemas plus whatever it reads. Keep both down:
+
+- Don't `cat` a whole file to find a few lines — `grep -n` first, then `Read` with `offset`/`limit` on the range you need.
+- Prefer `Edit` over Bash/`sed` rewrites of files you've already read — a Bash-made edit forces the harness to re-paste the whole changed file back into context; an `Edit` doesn't.
+- Screenshot at `scale: 0.5` unless you need to read fine text or judge pixel-level detail.
+- Comments in this repo should be short — say *why*, not an essay. Don't reintroduce long rationale blocks.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # This is NOT the Next.js you know

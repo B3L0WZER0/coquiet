@@ -7,14 +7,7 @@ import { globalHour, noteForHour } from '@/lib/notes';
 /** How long a note stays before it fades away again. */
 const VISIBLE_MS = 10_000;
 
-/**
- * The transient focus note.
- *
- * Shown on entering the room, at the start of each new focus session, and when
- * a new global hour begins — then it fades. It is never permanently visible,
- * and the text always comes from the hour, so everyone in the room is reading
- * the same line at the same time.
- */
+/** The transient focus note. */
 export function useFocusNote(active: boolean) {
   const [text, setText] = useState<string | null>(null);
   const [visible, setVisible] = useState(false);

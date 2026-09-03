@@ -7,13 +7,7 @@ import {
   type RoomPulse as Pulse,
 } from '@/lib/presence/aggregate';
 
-/**
- * The Room pulse panel.
- *
- * Aggregate counts only — no identities, no flags, no map, no ranking. With
- * fewer than a handful of people the breakdown is withheld entirely, because at
- * that size "1 reading · 1 tea" describes a person rather than a room.
- */
+/** The Room pulse panel. */
 export function RoomPulse({ pulse }: { pulse: Pulse }) {
   if (!pulse.showBreakdown) {
     return (
@@ -32,9 +26,7 @@ export function RoomPulse({ pulse }: { pulse: Pulse }) {
 
   return (
     <div>
-      {/* Two columns rather than wrapping. Counts vary from one digit to four,
-          so a wrapping row left items landing wherever the widths happened to
-          fall. */}
+      {/* Two columns rather than wrapping. */}
       {pulse.activities.length > 0 && (
         <ul className="grid grid-cols-2 gap-x-3 gap-y-1.5">
           {pulse.activities.map((entry) => {

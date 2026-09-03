@@ -1,21 +1,4 @@
-/**
- * A simulated room, for looking at the interface at a size it has never been.
- *
- * You cannot design a presence line or a Room pulse panel for three hundred
- * people by opening three tabs. This fills the room with invented sessions so
- * the layout, the counts and the breakdown can actually be judged.
- *
- * Everything in here is fake, and that is the point — which is also why it is
- * fenced off:
- *
- *  - it is only ever constructed in development, never in a production build;
- *  - it has to be asked for explicitly, with `?simulate=300`;
- *  - while it is running the room says so on screen, so a screenshot of a busy
- *    room can never be mistaken for a real one.
- *
- * It implements the same `PresenceProvider` interface as the real adapter, so
- * every component sees exactly what it would see with real people in the room.
- */
+/** A simulated room, for looking at the interface at a size it has never been. */
 
 import { DEFAULT_CHANNEL, type ChannelId } from '@/lib/channels';
 import {
@@ -30,21 +13,10 @@ import {
 /** How often the population changes. */
 const TICK_MS = 4_000;
 
-/**
- * Roughly how many people arrive per minute once the room is seeded.
- *
- * Set well above the rate people leave, so the count visibly climbs while you
- * watch it rather than hovering around where it started.
- */
+/** Roughly how many people arrive per minute once the room is seeded. */
 const ARRIVALS_PER_MINUTE = 24;
 
-/**
- * How the invented room is made up.
- *
- * Not uniform, because a uniform split is exactly what a real room never looks
- * like and would flatter the layout. Some people share nothing at all, which is
- * the case most likely to be forgotten.
- */
+/** How the invented room is made up. */
 const ACTIVITY_WEIGHTS: Record<Activity | 'unset', number> = {
   working: 40,
   studying: 22,
@@ -135,13 +107,7 @@ export class SimulatedPresenceAdapter implements PresenceProvider {
     this.timer = window.setInterval(() => this.drift(), TICK_MS);
   }
 
-  /**
-   * The room grows, and a few people leave.
-   *
-   * Net upward, so a count watched for a while goes up — but not monotonically,
-   * because a number that only ever increases reads as a counter rather than as
-   * a room.
-   */
+  /** The room grows, and a few people leave. */
   private drift(): void {
     const perTick = (ARRIVALS_PER_MINUTE * TICK_MS) / 60_000;
     const arrivals = Math.floor(perTick + (this.random() < perTick % 1 ? 1 : 0));

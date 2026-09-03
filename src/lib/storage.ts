@@ -1,10 +1,4 @@
-/**
- * Small typed wrapper around localStorage.
- *
- * Every read is defensive: storage can be unavailable (private mode, blocked
- * cookies, SSR) and its contents can be stale or hand-edited. A bad value must
- * never stop the room from opening, so everything falls back to a default.
- */
+/** Small typed wrapper around localStorage. */
 
 const PREFIX = 'coquiet:';
 

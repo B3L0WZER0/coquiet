@@ -1,17 +1,4 @@
-/**
- * The local presence adapter.
- *
- * Real presence, scoped to one browser: every tab announces itself on a
- * BroadcastChannel, listens for the others, and forgets anyone who stops
- * heartbeating. Open two tabs and the count and pulse are genuinely live.
- *
- * The numbers here are only ever counts of sessions actually heard from. There
- * is no seeding, no minimum, and no fallback figure — if nothing is heard, the
- * snapshot is empty and the room says so.
- *
- * A cross-device backend would replace this file and nothing else: same
- * interface, same expiry window, same shape of snapshot.
- */
+/** The local presence adapter. */
 
 import { DEFAULT_CHANNEL, isChannelId } from '@/lib/channels';
 import { EXPIRY_MS, HEARTBEAT_MS, live } from '@/lib/presence/aggregate';
@@ -38,14 +25,7 @@ type Message =
   /** "I am leaving." */
   | { kind: 'gone'; id: string };
 
-/**
- * A per-tab anonymous id.
- *
- * Kept in sessionStorage rather than localStorage on purpose: localStorage is
- * shared between tabs, so every tab would claim the same identity and the room
- * would always contain exactly one person. sessionStorage is per tab and
- * survives a refresh, which is exactly the lifetime of a session.
- */
+/** A per-tab anonymous id. */
 function sessionId(): string {
   try {
     const existing = window.sessionStorage.getItem(SESSION_ID_KEY);
@@ -92,13 +72,7 @@ export class LocalPresenceAdapter implements PresenceProvider {
     return typeof window !== 'undefined' && typeof BroadcastChannel !== 'undefined';
   }
 
-  /**
-   * Open the channel and start listening, without announcing anything.
-   *
-   * Everyone already here answers the roll-call, so the count is live straight
-   * away — but nothing is posted about this visitor, so nobody else's room
-   * gains a person who is still reading the front door.
-   */
+  /** Open the channel and start listening, without announcing anything. */
   observe(): void {
     if (this.observing || this.joined) return;
     if (!this.supported) return;
@@ -262,12 +236,7 @@ export class LocalPresenceAdapter implements PresenceProvider {
   }
 }
 
-/**
- * Compare on the fields the room actually renders.
- *
- * `lastSeen` moves on every heartbeat and changes nothing anyone can see, so
- * comparing it would push a re-render every fifteen seconds for no reason.
- */
+/** Compare on the fields the room actually renders. */
 function sameSessions(a: readonly PresenceSession[], b: readonly PresenceSession[]): boolean {
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i++) {
@@ -283,13 +252,7 @@ function sameSessions(a: readonly PresenceSession[], b: readonly PresenceSession
   return true;
 }
 
-/**
- * Validate anything arriving over the channel.
- *
- * Same-origin only, but it still comes from outside this tab, so it is checked
- * rather than trusted — a malformed message must not be able to corrupt the
- * count or crash the room.
- */
+/** Validate anything arriving over the channel. */
 function parse(data: unknown): Message | null {
   if (typeof data !== 'object' || data === null) return null;
   const m = data as Record<string, unknown>;

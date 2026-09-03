@@ -1,9 +1,4 @@
-/**
- * Line marks for the three drinks.
- *
- * Drawn as single-weight strokes in the room's own palette — the same
- * restraint as the wordmark. No emoji, no fills, no cartoon.
- */
+/** Line marks for the three drinks. */
 
 const stroke = {
   fill: 'none',
@@ -60,15 +55,7 @@ export const DRINK_MARKS = {
   water: WaterMark,
 } as const;
 
-/**
- * A compact cup for setting inline with text.
- *
- * The full `CoffeeMark` is drawn for a 20px slot beside a chip label: it stands
- * on a saucer, which pulls its ink low in its own box and leaves it sitting
- * below the line when it is set against running text. This one has no saucer,
- * is drawn to fill a smaller box, and is centred on its ink rather than on its
- * frame — so `align-items: center` actually lands it on the line.
- */
+/** A compact cup for setting inline with text. */
 export function CoffeeMarkInline() {
   return (
     <svg

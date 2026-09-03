@@ -19,21 +19,7 @@ import type { PresenceStatus } from '@/lib/presence/copy';
 
 const EMPTY: PresenceSnapshot = { sessions: [], joined: false, available: false };
 
-/**
- * The room's presence provider.
- *
- * Three implementations of one interface, chosen here and nowhere else —
- * nothing below, and nothing in any component, knows which one it got.
- *
- * The order matters. The simulated room wins when it is asked for, and it can
- * only be asked for outside production. Otherwise a configured backend gives
- * presence across devices, and without one the local adapter gives presence
- * across tabs of a single browser.
- *
- * Falling back is not a degradation to hide. Both real adapters count only
- * sessions actually heard from, so an unconfigured site is honest — it reports
- * a smaller room, never an invented one.
- */
+/** The room's presence provider. */
 function createProvider(): PresenceProvider {
   const simulated = simulatedRoomSize();
   if (simulated !== null) return new SimulatedPresenceAdapter(simulated);
@@ -46,22 +32,10 @@ interface OwnState {
   drink: Drink | null;
 }
 
-/**
- * What this visitor is doing, as far as the room is concerned.
- *
- * Deliberately not remembered between visits. "Working · Coffee" is a statement
- * about right now, not a preference — carrying it over means the room announces
- * you as drinking a coffee you finished yesterday. It lasts as long as the page
- * does, and every arrival starts blank.
- */
+/** What this visitor is doing, as far as the room is concerned. */
 const NOTHING_SET: OwnState = { activity: null, drink: null };
 
-/**
- * Join the room and watch who else is in it.
- *
- * Nothing is announced until `entered` is true — a visitor still looking at the
- * entry screen has not joined anything yet.
- */
+/** Join the room and watch who else is in it. */
 export function usePresence(entered: boolean, channel: ChannelId) {
   const providerRef = useRef<PresenceProvider | null>(null);
   const [snapshot, setSnapshot] = useState<PresenceSnapshot>(EMPTY);

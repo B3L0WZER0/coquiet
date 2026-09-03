@@ -5,19 +5,7 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react';
 type Placement = 'top' | 'bottom';
 type Align = 'start' | 'center' | 'end';
 
-/**
- * A small translucent panel anchored to a trigger.
- *
- * Reachable three ways, because SPEC requires every tooltip to work by hover,
- * keyboard and touch:
- *
- *  - hover      opens while the pointer is over the trigger or the panel
- *  - focus      opens, and stays open while focus is anywhere inside
- *  - click/tap  pins it open until clicked again, Escape, or a click outside
- *
- * The panel is never focus-trapped: Tab moves through it and then out of it,
- * which is what a non-modal disclosure should do.
- */
+/** A small translucent panel anchored to a trigger. */
 export function Popover({
   label,
   children,
@@ -26,13 +14,7 @@ export function Popover({
   align = 'center',
   className,
   panelClassName,
-  /**
-   * Tooltip semantics: the panel reveals on hover and on focus as well as on
-   * press. Turn this off for a disclosure — a panel that someone opens
-   * deliberately — so that merely tabbing past the trigger does not pop it
-   * open. Such a panel is still fully keyboard operable: Enter or Space opens
-   * it, and Tab then moves into it.
-   */
+  /** Tooltip semantics: the panel reveals on hover and on focus as well as on press. */
   revealOnHoverAndFocus = true,
   offset = 8,
   triggerClassName,
@@ -48,18 +30,11 @@ export function Popover({
   className?: string;
   panelClassName?: string;
   revealOnHoverAndFocus?: boolean;
-  /**
-   * Gap between trigger and panel, in pixels. Larger values let a panel clear
-   * sibling controls that sit between its trigger and where it should appear.
-   */
+  /** Gap between trigger and panel, in pixels. */
   offset?: number;
   /** Styling for the trigger itself, when it is more than a bare glyph. */
   triggerClassName?: string;
-  /**
-   * Position the panel against the nearest positioned ancestor instead of
-   * against the trigger. Use it when the trigger is a small mark beside
-   * something larger and the panel should line up with that larger thing.
-   */
+  /** Position the panel against the nearest positioned ancestor instead of against the trigger. */
   anchorToAncestor?: boolean;
 }) {
   const [hovering, setHovering] = useState(false);

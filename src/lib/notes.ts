@@ -1,19 +1,4 @@
-/**
- * Focus notes and break suggestions.
- *
- * Original lines, deliberately plain. No quotations, no attributions, nothing
- * borrowed from anyone — a misattributed quote is worse than no quote, and a
- * famous one would make the room sound like somebody else's.
- *
- * The voice is a note left on a desk rather than a motivational poster: quiet,
- * unhurried, occasionally permissive. Nothing exhorts, nothing congratulates,
- * nothing uses an exclamation mark. Several of them give permission to stop,
- * which a room for concentration should be able to do without irony.
- *
- * Both lists can be replaced wholesale; nothing else needs to change. Keep
- * notes under `MAX_NOTE_LENGTH` so they stay within two lines at the size the
- * room shows them.
- */
+/** Focus notes and break suggestions. */
 
 /** Longer than this and the note wraps to a third line in the room. */
 export const MAX_NOTE_LENGTH = 58;
@@ -147,28 +132,18 @@ export const BREAK_SUGGESTIONS: readonly string[] = [
 
 const HOUR_MS = 60 * 60 * 1000;
 
-/** Which global hour we are in. The same integer everywhere on earth. */
+/** Which global hour we are in. */
 export function globalHour(now: number = Date.now()): number {
   return Math.floor(now / HOUR_MS);
 }
 
-/**
- * The note for the current hour.
- *
- * Chosen from the hour number alone, so every visitor sees the same note during
- * the same hour without any coordination — and it changes on the hour boundary
- * without a reload. With this many notes the collection takes several days to
- * come round again, so nobody meets the same line twice in a sitting.
- */
+/** The note for the current hour. */
 export function noteForHour(now: number = Date.now()): string {
   const index = ((globalHour(now) % FOCUS_NOTES.length) + FOCUS_NOTES.length) % FOCUS_NOTES.length;
   return FOCUS_NOTES[index];
 }
 
-/**
- * A break suggestion. Rotates with each break rather than being random, so a
- * visitor taking several breaks does not see the same line twice in a row.
- */
+/** A break suggestion. */
 export function breakSuggestion(breakCount: number, now: number = Date.now()): string {
   const offset = globalHour(now) + breakCount;
   const index =

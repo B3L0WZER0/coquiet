@@ -1,9 +1,4 @@
-/**
- * Turning raw sessions into what the room shows.
- *
- * Pure functions, so the counting, the expiry rule and the privacy threshold
- * can all be tested without a browser or a timer.
- */
+/** Turning raw sessions into what the room shows. */
 
 import {
   ACTIVITIES,
@@ -16,22 +11,10 @@ import {
 /** How often a session announces itself. */
 export const HEARTBEAT_MS = 15_000;
 
-/**
- * How long a session survives without a heartbeat.
- *
- * Comfortably more than four missed beats, so a briefly throttled background
- * tab is not mistaken for someone who left — but still inside the 60–90s
- * window, so a closed tab disappears while it still feels live.
- */
+/** How long a session survives without a heartbeat. */
 export const EXPIRY_MS = 75_000;
 
-/**
- * Below this many people, the detailed breakdown is withheld.
- *
- * With one or two others in the room, "1 studying · 1 tea" is not an aggregate
- * — it is a description of a specific person. Three is the smallest group where
- * a count stops pointing at an individual.
- */
+/** Below this many people, the detailed breakdown is withheld. */
 export const MIN_GROUP_FOR_BREAKDOWN = 3;
 
 /** Drop everyone we have not heard from inside the expiry window. */
@@ -45,22 +28,13 @@ export function live(
 export interface RoomPulse {
   /** Total live sessions. */
   count: number;
-  /**
-   * True when the room is big enough for a breakdown to be an aggregate rather
-   * than a description of someone in particular.
-   */
+  /** True when the room is big enough for a breakdown to be an aggregate rather than a description of someone in particular. */
   showBreakdown: boolean;
   activities: { key: Activity; count: number }[];
   drinks: { key: Exclude<Drink, 'nothing'>; count: number }[];
 }
 
-/**
- * Counts for the Room pulse panel.
- *
- * Only what people chose to share is counted — someone who never set their
- * presence contributes to the total and to nothing else. "Nothing" is a real
- * answer to what you are drinking, but there is no point listing it.
- */
+/** Counts for the Room pulse panel. */
 export function pulse(sessions: readonly PresenceSession[]): RoomPulse {
   const count = sessions.length;
 

@@ -1,22 +1,4 @@
-/**
- * The cross-device presence adapter.
- *
- * The same contract as the local one, over Supabase Realtime instead of a
- * BroadcastChannel, so the room can hold people on different machines rather
- * than tabs of one browser. Nothing in the UI knows which of the two is
- * running.
- *
- * The numbers here are still only ever sessions actually heard from. Supabase
- * reports who is subscribed and tracking; there is no seeding, no minimum, and
- * no fallback figure. If the connection never comes up, the snapshot stays
- * unavailable and the room says it does not know — which is the one thing it
- * must never paper over with a zero, or with anything else.
- *
- * What leaves the browser is exactly what the local adapter puts on the
- * channel: an anonymous per-tab id, an activity, a drink, a channel choice.
- * No name, no address, no history, and nothing is stored — presence lives in
- * the Realtime connection and vanishes with it.
- */
+/** The cross-device presence adapter. */
 
 import {
   createClient,
@@ -36,17 +18,12 @@ import {
   type PresenceSnapshot,
 } from '@/lib/presence/types';
 
-/** One room, one channel. There is only ever the one room. */
+/** One room, one channel. */
 const ROOM = 'coquiet:room';
 
 const SESSION_ID_KEY = 'coquiet:session-id';
 
-/**
- * A per-tab anonymous id — the same reasoning as the local adapter.
- *
- * sessionStorage rather than localStorage, so two tabs are two people rather
- * than one identity claimed twice, and so a refresh keeps the same session.
- */
+/** A per-tab anonymous id — the same reasoning as the local adapter. */
 function sessionId(): string {
   try {
     const existing = window.sessionStorage.getItem(SESSION_ID_KEY);
@@ -64,7 +41,7 @@ function newId(): string {
   return `s-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`;
 }
 
-/** What one person publishes about themselves. Deliberately this and no more. */
+/** What one person publishes about themselves. */
 interface Payload {
   id: string;
   activity: string | null;
@@ -73,13 +50,7 @@ interface Payload {
   at: number;
 }
 
-/**
- * Read someone else's payload defensively.
- *
- * It arrived over the network from another browser, so nothing about its shape
- * is guaranteed. Anything unrecognised becomes null rather than being trusted
- * into the UI.
- */
+/** Read someone else's payload defensively. */
 function toSession(raw: unknown): PresenceSession | null {
   if (typeof raw !== 'object' || raw === null) return null;
   const p = raw as Partial<Payload>;
@@ -117,14 +88,7 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     };
   }
 
-  /**
-   * Subscribe without tracking.
-   *
-   * Supabase separates the two, which is exactly the distinction the entry
-   * screen needs: this connection receives everyone else's presence, and
-   * publishes none of its own. Standing in the doorway is not being in the
-   * room.
-   */
+  /** Subscribe without tracking. */
   observe(): void {
     if (this.observing || this.joined) return;
     if (typeof window === 'undefined') return;
@@ -157,13 +121,7 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     this.publish();
   }
 
-  /**
-   * Replace what we know with what the server currently reports.
-   *
-   * Presence state is the whole room every time, not a diff, so rebuilding the
-   * map is both simpler and self-correcting — anyone who dropped is absent
-   * from the next sync and disappears without needing to be expired.
-   */
+  /** Replace what we know with what the server currently reports. */
   private readState(): void {
     if (!this.channel) return;
     const state = this.channel.presenceState();

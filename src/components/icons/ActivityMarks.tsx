@@ -1,11 +1,4 @@
-/**
- * Line marks for the four activities.
- *
- * Same treatment as the drink marks: single-weight strokes, no fills, drawn in
- * a 20px box. Kept to four clearly different silhouettes — a screen, an upright
- * sheet, a wide open book, a downward point — so they are told apart at a
- * glance rather than read.
- */
+/** Line marks for the four activities. */
 
 const stroke = {
   fill: 'none',

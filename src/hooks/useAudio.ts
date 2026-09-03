@@ -33,18 +33,7 @@ const SERVER_STATE: AudioState = {
   switching: false,
 };
 
-/**
- * The page's one audio engine.
- *
- * There is a single room, so there is a single engine, and it belongs to the
- * page rather than to any component that happens to render. Tying its lifetime
- * to a component would mean React's development double-mount tears it down
- * between the two mounts, leaving a disposed engine behind — and in production
- * it would still be destroyed and rebuilt by any remount, cutting the music.
- *
- * It is created lazily on first use and makes no sound and fetches nothing
- * until `enter()` is called from the visitor's own gesture.
- */
+/** The page's one audio engine. */
 let engine: AudioEngine | null = null;
 
 function getEngine(): AudioEngine | null {

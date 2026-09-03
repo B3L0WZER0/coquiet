@@ -2,17 +2,7 @@
 
 import { CHANNELS, type ChannelId } from '@/lib/channels';
 
-/**
- * Still · Flow · Momentum, with an info mark alongside.
- *
- * All three buttons stay translucent. The active one is a stronger warm tint
- * with a brighter border, full-contrast text and a fine indicator underneath —
- * never a solid fill or a glow.
- *
- * There is no "MUSIC" heading. Three channel names sitting above a play button
- * do not need to be told they are music, and the second row it required was the
- * only thing keeping this control from reading as one clean line.
- */
+/** Still · Flow · Momentum, with an info mark alongside. */
 export function MusicSelector({
   value,
   onChange,
@@ -25,12 +15,7 @@ export function MusicSelector({
 }) {
   return (
     <div className="relative flex items-center gap-2">
-      {/*
-        An empty twin of the info mark on the left. The mark would otherwise
-        push the switch off the centre of the room by half its width, and the
-        switch is what should look centred, not the switch-plus-mark. Mirroring
-        it keeps the row symmetrical whatever size the mark ends up.
-      */}
+      {/* An empty twin of the info mark on the left. */}
       <span aria-hidden="true" className="h-5 w-5 shrink-0" />
 
       <div

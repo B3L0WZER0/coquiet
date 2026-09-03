@@ -1,0 +1,135 @@
+/* coquiet — design tokens: one warm, quiet palette. Nothing saturated, nothing bright. */
+
+@theme {
+  --color-cream: #f6f1e7;
+  --color-oat: #e9e0cf;
+  --color-beige: #d8ccb5;
+  --color-sand: #c4b59a;
+  --color-taupe: #a3927a;
+  --color-tobacco: #7b6247;
+  --color-clay: #8c6a52;
+
+  --color-stone: #d8c5a7; /* the one solid surface: the entry CTA */
+  --color-charcoal: #2c2823;
+  --color-ink: #1a1713;
+
+  --font-sans:
+    ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Inter,
+    system-ui, sans-serif;
+
+  /* Zeroed under prefers-reduced-motion (see globals.css). */
+  --ease-quiet: cubic-bezier(0.32, 0.08, 0.24, 1);
+  --duration-control: 240ms;
+  --duration-veil: 900ms;
+
+  /* The room's only movement: light changing, not the room shifting. An
+     opacity animation restarts invisibly on reload; a positional one would
+     visibly snap back. See SPEC.md's "extremely slow drift or light change". */
+  --animate-light: light 100s ease-in-out infinite alternate;
+}
+
+@keyframes light {
+  from {
+    opacity: 0.55;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+:root {
+  /* Translucent control surfaces, warm-tinted. 80% opacity keeps the fill
+     reading the same over both the lit floor and the dark side of the room —
+     lower values diverged enough to look like two different controls. */
+  --surface: color-mix(in oklab, var(--color-ink) 80%, transparent);
+  --surface-strong: color-mix(in oklab, var(--color-ink) 88%, transparent);
+
+  /* Selected state: darker than its neighbours (a well, not a highlight) —
+     a paler tint dropped contrast on sun-lit stone. */
+  --surface-active: color-mix(in oklab, var(--color-ink) 72%, transparent);
+
+  /* Near-opaque: panels hold text to be read over any crop of the image. */
+  --surface-panel: color-mix(in oklab, var(--color-ink) 90%, transparent);
+
+  /* Opaque, unlike the fills above — a translucent hairline picks up
+     whatever's behind it and reads as a different border in each corner. */
+  --hairline: color-mix(in oklab, var(--color-cream) 44%, var(--color-charcoal));
+  --hairline-strong: color-mix(in oklab, var(--color-cream) 62%, var(--color-charcoal));
+
+  --text-primary: var(--color-cream);
+  --text-secondary: color-mix(in oklab, var(--color-cream) 86%, transparent);
+  --text-muted: color-mix(in oklab, var(--color-cream) 72%, transparent);
+
+  --blur-control: 14px;
+
+  /* Shared height so the wordmark, music switch and timer — three different
+     shapes — line up across the top of the room. */
+  --control-height: 2.875rem;
+  --control-height-lg: 3.5rem; /* the playback row's round button */
+
+  /* Dark halo keeping small type legible over any crop of the background. */
+  --shadow-legible: 0 1px 12px color-mix(in oklab, var(--color-ink) 82%, transparent);
+
+  /* Safe areas, so mobile controls never sit under a notch or home bar. */
+  --inset-t: env(safe-area-inset-top, 0px);
+  --inset-r: env(safe-area-inset-right, 0px);
+  --inset-b: env(safe-area-inset-bottom, 0px);
+  --inset-l: env(safe-area-inset-left, 0px);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-ink);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow: hidden; /* one immersive room, never a scrolling page */
+  overscroll-behavior: none;
+}
+
+/* Focus states: always visible, never removed. */
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-cream);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* SPEC: no unnecessary movement anywhere. State-only transitions collapse to
+   instant rather than disappearing. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+@utility control-surface {
+  background-color: var(--surface);
+  border: 1px solid var(--hairline);
+  backdrop-filter: blur(var(--blur-control)) saturate(120%);
+  -webkit-backdrop-filter: blur(var(--blur-control)) saturate(120%);
+}
+
+/* Small-caps label used for MUSIC, TIMER and similar quiet headings. */
+@utility label-quiet {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}

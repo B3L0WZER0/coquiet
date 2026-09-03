@@ -1,25 +1,4 @@
-/**
- * The audio engine.
- *
- * Two managed <audio> elements ("decks") that swap roles on every channel
- * change. Only one is ever the active deck; the other is silent and usually has
- * no source loaded at all, so nothing is fetched or buffered until it is needed.
- *
- * The two elements are created once and reused for the lifetime of the page —
- * switching channels never creates a new element, so nothing leaks.
- *
- * Volume is composed from three independent factors, and the element's actual
- * volume is always their product:
- *
- *   base   — the visitor's chosen level. Only they change this.
- *   fade   — 0..1, driven by entry / play / pause / crossfade ramps.
- *   duck   — 0..1, lowered during a break and restored after.
- *   muted  — a flag, not a level. Muting must not overwrite the chosen volume,
- *            or unmuting would have nothing to go back to.
- *
- * Keeping them separate is what stops a crossfade from stamping on the
- * visitor's chosen level, or a break from being undone by pressing pause.
- */
+/** The audio engine. */
 
 import { getChannel, stationPosition, type Channel, type ChannelId } from '@/lib/channels';
 
@@ -28,22 +7,10 @@ export const FADE = {
   entry: 4000,
   /** Play and pause. */
   playPause: 1000,
-  /**
-   * Moving between channels, as a handover rather than a blend.
-   *
-   * The old piece leaves quickly, and the new one is only let in once it is
-   * almost gone. Blending them was right while every channel played the same
-   * file — there was nothing to muddle. With three genuinely different pieces,
-   * two seconds of both at once is just two pieces of music fighting.
-   */
+  /** Moving between channels, as a handover rather than a blend. */
   channelOut: 800,
   channelIn: 1600,
-  /**
-   * How much of the outgoing tail the incoming piece shares.
-   *
-   * Enough that the room never actually falls silent, little enough that what
-   * it overlaps with is already near-inaudible.
-   */
+  /** How much of the outgoing tail the incoming piece shares. */
   channelOverlap: 350,
   /** Lowering and restoring music around a break. */
   duck: 1500,
@@ -66,10 +33,7 @@ interface Deck {
   fade: number;
   /** Cancels the ramp currently running on this deck, if any. */
   cancel: (() => void) | null;
-  /**
-   * Which piece this deck currently holds. A channel is a programme of several
-   * tracks, so knowing the channel is not enough to know what is loaded.
-   */
+  /** Which piece this deck currently holds. */
   loaded: { channel: ChannelId; trackIndex: number } | null;
 }
 
@@ -89,13 +53,7 @@ export class AudioEngine {
   private listeners = new Set<(state: AudioState) => void>();
   private disposed = false;
 
-  /**
-   * Cached immutable view of the state above.
-   *
-   * `useSyncExternalStore` compares snapshots by identity, so this must be the
-   * same object until something actually changes — rebuilding it on every read
-   * would spin React in a render loop.
-   */
+  /** Cached immutable view of the state above. */
   private cached: AudioState;
 
   constructor(channel: ChannelId, volume: number) {
@@ -151,11 +109,7 @@ export class AudioEngine {
     return this.cached;
   }
 
-  /**
-   * Publish the current state. A new snapshot object is minted only when a
-   * field genuinely differs, so redundant emits cost nothing and never cause a
-   * re-render.
-   */
+  /** Publish the current state. */
   private emit() {
     const next = this.build();
     const prev = this.cached;
@@ -180,13 +134,7 @@ export class AudioEngine {
 
   // --- volume -------------------------------------------------------------
 
-  /**
-   * The visitor's chosen level. Applied immediately, without disturbing fades.
-   *
-   * Moving the slider away from silence also unmutes: reaching for the volume
-   * and having nothing happen is the kind of thing that makes a control feel
-   * broken.
-   */
+  /** The visitor's chosen level. */
   setVolume(v: number) {
     this.base = clamp01(v);
     if (this.base > 0) this.muted = false;
@@ -198,12 +146,7 @@ export class AudioEngine {
     return this.base;
   }
 
-  /**
-   * Silence the room without forgetting how loud it was.
-   *
-   * A flag rather than a volume of zero, so the level the visitor chose is
-   * still there to come back to — and is still what gets remembered.
-   */
+  /** Silence the room without forgetting how loud it was. */
   setMuted(muted: boolean) {
     if (this.muted === muted) return;
     this.muted = muted;
@@ -219,10 +162,7 @@ export class AudioEngine {
     return this.muted;
   }
 
-  /**
-   * Lower the music without stopping it — used for breaks. `level` is a factor
-   * of the visitor's chosen volume, so their setting is never overwritten.
-   */
+  /** Lower the music without stopping it — used for breaks. */
   setDuck(level: number, durationMs: number = FADE.duck): Promise<void> {
     this.duckCancel?.();
     const from = this.duck;
@@ -260,10 +200,7 @@ export class AudioEngine {
     return this.decks[this.activeIndex === 0 ? 1 : 0];
   }
 
-  /**
-   * Point a deck at a channel and move it to the channel's current shared
-   * position. Called immediately before a deck is needed, never earlier.
-   */
+  /** Point a deck at a channel and move it to the channel's current shared position. */
   private prepare(deck: Deck, channel: Channel): Promise<void> {
     const el = deck.el;
     if (!(el instanceof HTMLAudioElement)) return Promise.resolve();
@@ -306,12 +243,7 @@ export class AudioEngine {
     });
   }
 
-  /**
-   * Move the audible deck on to whatever the station is playing now.
-   *
-   * Used when a piece ends. The deck keeps its fade level, so the programme
-   * continues at the volume it already had rather than fading in again.
-   */
+  /** Move the audible deck on to whatever the station is playing now. */
   private async advance(): Promise<void> {
     if (this.disposed) return;
     const deck = this.active;
@@ -327,14 +259,7 @@ export class AudioEngine {
     }
   }
 
-  /**
-   * Ramp one deck's fade factor to a target.
-   *
-   * Resolves `true` when the ramp reached its target and `false` when it was
-   * superseded by another ramp — callers use that to decide whether their
-   * follow-up action (stopping the deck, releasing its source) still applies.
-   * A cancelled ramp always settles, so nothing is left awaiting forever.
-   */
+  /** Ramp one deck's fade factor to a target. */
   private fadeDeck(
     deck: Deck,
     to: number,
@@ -371,10 +296,7 @@ export class AudioEngine {
     });
   }
 
-  /**
-   * Start the room. Called once, from the "Enter the room" gesture — the first
-   * moment any audio is permitted to exist.
-   */
+  /** Start the room. */
   async enter(): Promise<void> {
     await this.start(FADE.entry);
   }
@@ -408,7 +330,7 @@ export class AudioEngine {
     await this.fadeDeck(deck, 1, fadeMs);
   }
 
-  /** Fade down over ~1s, then stop. Never cuts. */
+  /** Fade down over ~1s, then stop. */
   async pause(): Promise<void> {
     if (this.disposed) return;
     const deck = this.active;
@@ -424,13 +346,7 @@ export class AudioEngine {
     return this.play();
   }
 
-  /**
-   * Move to another channel.
-   *
-   * While playing this is a genuine crossfade on two decks; the outgoing deck
-   * is stopped and released only once its ramp has finished, so there is never
-   * silence in the middle and never two channels left audible at the end.
-   */
+  /** Move to another channel. */
   async setChannel(next: ChannelId): Promise<void> {
     if (this.disposed || next === this.channelId) return;
 
@@ -542,19 +458,7 @@ function clamp01(v: number): number {
   return Math.min(1, Math.max(0, v));
 }
 
-/**
- * Time-based ramp.
- *
- * Driven by a timer rather than by animation frames. A backgrounded tab stops
- * serving `requestAnimationFrame` entirely, which would freeze a fade
- * mid-flight and leave the music stuck at whatever volume it had reached —
- * silence, if the tab was hidden just after pressing play. Timers are only
- * throttled, so a fade in a hidden tab becomes coarse but still finishes.
- *
- * Progress comes from the clock, not from counting ticks, so throttling
- * changes how smooth a fade sounds and never how long it takes or where it
- * ends up.
- */
+/** Time-based ramp. */
 const RAMP_STEP_MS = 25;
 
 function ramp(durationMs: number, onStep: (t: number) => void, onDone: () => void): () => void {

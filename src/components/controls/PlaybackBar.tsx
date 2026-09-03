@@ -1,11 +1,6 @@
 'use client';
 
-/**
- * Bottom centre: a refined circular play/pause button, with a discreet volume
- * control that expands on hover, focus or tap.
- *
- * Milestone 1 places it; the audio engine behind it arrives in milestone 2.
- */
+/** Bottom centre: a refined circular play/pause button, with a discreet volume control that expands on hover, focus or tap. */
 export function PlaybackBar({
   playing,
   onTogglePlay,

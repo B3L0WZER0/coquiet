@@ -7,13 +7,7 @@ import { pulse as computePulse } from '@/lib/presence/aggregate';
 import { roomPresenceLine, type PresenceStatus } from '@/lib/presence/copy';
 import type { PresenceSession } from '@/lib/presence/types';
 
-/**
- * Bottom left: one persistent line about who is in the room.
- *
- * The text always comes from `roomPresenceLine`, which cannot produce a number
- * unless a live adapter supplied one. When no adapter is running the line is
- * plain text rather than a button, because there is no pulse to open.
- */
+/** Bottom left: one persistent line about who is in the room. */
 export function PresenceLine({
   status,
   sessions,

@@ -1,21 +1,10 @@
-/**
- * Optional desktop notifications for timer transitions.
- *
- * Permission is requested only from `requestOnDeliberateStart`, which is called
- * from the visitor pressing Start — never on load, and never as a side effect
- * of anything else. Someone who only listens to music is never asked.
- */
+/** Optional desktop notifications for timer transitions. */
 
 function supported(): boolean {
   return typeof window !== 'undefined' && 'Notification' in window;
 }
 
-/**
- * Ask once, at the only moment it makes sense to.
- *
- * Returns without prompting if the visitor has already answered, in either
- * direction — a declined permission is a decision, not something to re-ask.
- */
+/** Ask once, at the only moment it makes sense to. */
 export async function requestOnDeliberateStart(): Promise<void> {
   if (!supported()) return;
   if (Notification.permission !== 'default') return;
@@ -27,10 +16,7 @@ export async function requestOnDeliberateStart(): Promise<void> {
   }
 }
 
-/**
- * Show a notification, if the visitor granted permission and is looking
- * elsewhere. There is no point interrupting someone who is watching the room.
- */
+/** Show a notification, if the visitor granted permission and is looking elsewhere. */
 export function notify(title: string, body: string): void {
   if (!supported()) return;
   if (Notification.permission !== 'granted') return;

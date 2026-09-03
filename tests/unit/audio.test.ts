@@ -412,3 +412,124 @@ async function runFade(promise: Promise<unknown>, durationMs: number) {
   await vi.advanceTimersByTimeAsync(durationMs + 100);
   await promise;
 }
+
+/**
+ * jsdom has no Web Audio, so the tests above exercise the `el.volume` fallback.
+ * On iOS that path is silent — `HTMLMediaElement.volume` is read-only there — so
+ * the engine routes each deck through a GainNode instead. This stub is just
+ * enough of that graph to prove the fade lands on the gain, not the element.
+ */
+class FakeParam {
+  value = 1;
+}
+class FakeNode {
+  gain = new FakeParam();
+  connect<T>(next: T): T {
+    return next;
+  }
+  disconnect() {}
+}
+class FakeAudioContext {
+  state: 'suspended' | 'running' = 'suspended';
+  currentTime = 0;
+  destination = new FakeNode();
+  createMediaElementSource() {
+    return new FakeNode();
+  }
+  createGain() {
+    return new FakeNode();
+  }
+  async resume() {
+    this.state = 'running';
+  }
+  async close() {}
+}
+
+describe('audio engine with Web Audio available', () => {
+  let engine: AudioEngine;
+
+  const gainOf = (el: HTMLAudioElement) =>
+    (engine as unknown as { decks: { el: HTMLAudioElement; gain: FakeNode | null }[] }).decks.find(
+      (d) => d.el === el,
+    )!.gain!.gain.value;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(getChannel('flow').epochMs + 60_000);
+    stubMedia();
+    vi.stubGlobal('AudioContext', FakeAudioContext);
+    engine = new AudioEngine('flow', 0.6);
+  });
+
+  afterEach(() => {
+    engine.destroy();
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it('fades on the GainNode and leaves the element wide open', async () => {
+    const promise = engine.enter();
+    await vi.advanceTimersByTimeAsync(0);
+
+    const audible = decks(engine).find((el) => !el.paused)!;
+    // The element is pinned; iOS would ignore a change here anyway.
+    expect(audible.volume).toBe(1);
+    expect(gainOf(audible)).toBe(0);
+
+    await vi.advanceTimersByTimeAsync(FADE.entry / 2);
+    expect(gainOf(audible)).toBeGreaterThan(0.1);
+    expect(gainOf(audible)).toBeLessThan(0.6);
+
+    await vi.advanceTimersByTimeAsync(FADE.entry);
+    await promise;
+    expect(gainOf(audible)).toBeCloseTo(0.6, 3);
+    expect(audible.volume).toBe(1);
+  });
+
+  it('mutes and ducks through the gain, not the element', async () => {
+    await runFade(engine.enter(), FADE.entry);
+    const audible = decks(engine).find((el) => !el.paused)!;
+
+    engine.setMuted(true);
+    expect(gainOf(audible)).toBe(0);
+    expect(audible.volume).toBe(1);
+    expect(engine.getVolume()).toBe(0.6);
+
+    engine.setMuted(false);
+    expect(gainOf(audible)).toBeCloseTo(0.6, 3);
+
+    await runFade(engine.setDuck(0.35), FADE.duck);
+    expect(gainOf(audible)).toBeCloseTo(0.6 * 0.35, 3);
+  });
+
+  it('crossfades on the gains so neither element is turned down', async () => {
+    await runFade(engine.enter(), FADE.entry);
+
+    const promise = engine.setChannel('still');
+    const total = FADE.channelOut + FADE.channelIn;
+    for (let elapsed = 0; elapsed <= total + 200; elapsed += 50) {
+      const running = decks(engine).filter((el) => !el.paused);
+      // Every running element stays wide open...
+      for (const el of running) expect(el.volume).toBe(1);
+      // ...and whenever two are audible, the gain says one is nearly gone.
+      const loudGains = running.map(gainOf).filter((v) => v > 0.6 * 0.25);
+      expect(loudGains.length).toBeLessThanOrEqual(1);
+      await vi.advanceTimersByTimeAsync(50);
+    }
+
+    await vi.advanceTimersByTimeAsync(total);
+    await promise;
+    expect(engine.snapshot().channel).toBe('still');
+    const after = decks(engine).filter((el) => !el.paused);
+    expect(after).toHaveLength(1);
+    expect(gainOf(after[0])).toBeCloseTo(0.6, 3);
+  });
+
+  it('brings the suspended context up on entry', async () => {
+    const ctx = () => (engine as unknown as { ctx: FakeAudioContext | null }).ctx;
+    expect(ctx()).toBeNull();
+    await runFade(engine.enter(), FADE.entry);
+    expect(ctx()?.state).toBe('running');
+  });
+});

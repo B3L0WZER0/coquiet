@@ -8,27 +8,62 @@ import { expect, test, type Page } from '@playwright/test';
  * need a genuinely focused page.
  */
 
-/** Watch every media element the engine creates, from before the first one exists. */
+/**
+ * Watch every media element the engine creates, from before the first one
+ * exists, and remember which GainNode ends up shaping each one — the engine
+ * routes decks through Web Audio (iOS ignores `el.volume`), so the level that
+ * matters lives on the gain, not the element.
+ */
 async function watchDecks(page: Page) {
   await page.addInitScript(() => {
-    const w = window as unknown as { __decks: Set<HTMLMediaElement> };
+    const w = window as unknown as {
+      __decks: Set<HTMLMediaElement>;
+      __gainForEl: Map<HTMLMediaElement, GainNode>;
+    };
     w.__decks = new Set();
+    w.__gainForEl = new Map();
+
     const play = HTMLMediaElement.prototype.play;
     HTMLMediaElement.prototype.play = function (this: HTMLMediaElement, ...args: []) {
       w.__decks.add(this);
       return play.apply(this, args);
     };
+
+    const AC = window.AudioContext ?? (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+    if (AC) {
+      const createSource = AC.prototype.createMediaElementSource;
+      AC.prototype.createMediaElementSource = function (this: AudioContext, el: HTMLMediaElement) {
+        const node = createSource.call(this, el);
+        (node as unknown as { __el: HTMLMediaElement }).__el = el;
+        return node;
+      };
+      const connect = AudioNode.prototype.connect as (this: AudioNode, dest: AudioNode) => AudioNode;
+      // @ts-expect-error - narrowing the overloaded signature is not worth it here
+      AudioNode.prototype.connect = function (this: AudioNode, dest: AudioNode, ...rest: unknown[]) {
+        const el = (this as unknown as { __el?: HTMLMediaElement }).__el;
+        if (el && dest instanceof GainNode) w.__gainForEl.set(el, dest);
+        // @ts-expect-error - forwarding the original variadic call
+        return connect.call(this, dest, ...rest);
+      };
+    }
   });
 }
 
 function deckState(page: Page) {
   return page.evaluate(() => {
-    const w = window as unknown as { __decks: Set<HTMLMediaElement> };
-    return [...w.__decks].map((d) => ({
-      volume: Number(d.volume.toFixed(3)),
-      paused: d.paused,
-      currentTime: d.currentTime,
-    }));
+    const w = window as unknown as {
+      __decks: Set<HTMLMediaElement>;
+      __gainForEl: Map<HTMLMediaElement, GainNode>;
+    };
+    return [...w.__decks].map((d) => {
+      const gain = w.__gainForEl.get(d);
+      return {
+        // The effective level, wherever it is being applied.
+        volume: Number((gain ? gain.gain.value : d.volume).toFixed(3)),
+        paused: d.paused,
+        currentTime: d.currentTime,
+      };
+    });
   });
 }
 
@@ -506,24 +541,11 @@ test.describe('the entry composition', () => {
   });
 
   test('mute silences the room and gives the level back', async ({ page }) => {
-    await page.addInitScript(() => {
-      const w = window as unknown as { __decks: Set<HTMLMediaElement> };
-      w.__decks = new Set();
-      const play = HTMLMediaElement.prototype.play;
-      HTMLMediaElement.prototype.play = function (this: HTMLMediaElement, ...args: []) {
-        w.__decks.add(this);
-        return play.apply(this, args);
-      };
-    });
-    await page.reload();
     await page.locator('.coquiet-cta').click();
     await page.waitForTimeout(5000);
 
-    const volumes = () =>
-      page.evaluate(() => {
-        const w = window as unknown as { __decks: Set<HTMLMediaElement> };
-        return [...w.__decks].filter((d) => !d.paused).map((d) => Number(d.volume.toFixed(3)));
-      });
+    const volumes = async () =>
+      (await deckState(page)).filter((d) => !d.paused).map((d) => d.volume);
 
     const mute = page.getByRole('button', { name: /^(Mute|Unmute)$/ });
     expect((await volumes())[0]).toBeCloseTo(0.7, 1);

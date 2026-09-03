@@ -35,6 +35,11 @@ interface Deck {
   cancel: (() => void) | null;
   /** Which piece this deck currently holds. */
   loaded: { channel: ChannelId; trackIndex: number } | null;
+  /** Web Audio routing (el → source → gain → destination), once the deck has
+   *  played. Absent when Web Audio is unavailable — then the fade falls back to
+   *  `el.volume`, which iOS ignores. */
+  source: MediaElementAudioSourceNode | null;
+  gain: GainNode | null;
 }
 
 export class AudioEngine {
@@ -52,6 +57,9 @@ export class AudioEngine {
 
   private listeners = new Set<(state: AudioState) => void>();
   private disposed = false;
+
+  /** One context for both decks, built the first time sound is asked for. */
+  private ctx: AudioContext | null = null;
 
   /** Cached immutable view of the state above. */
   private cached: AudioState;
@@ -94,7 +102,53 @@ export class AudioEngine {
         void this.advance();
       });
     }
-    return { el, fade: 0, cancel: null, loaded: null };
+    return { el, fade: 0, cancel: null, loaded: null, source: null, gain: null };
+  }
+
+  // --- web audio ---------------------------------------------------------
+
+  /** Build the context. Left until the first sound so nothing is created on a
+   *  page that never enters the room. */
+  private ensureContext(): void {
+    if (this.ctx || typeof window === 'undefined') return;
+    const Ctor =
+      window.AudioContext ??
+      (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ??
+      null;
+    if (!Ctor) return; // No Web Audio (jsdom, very old browsers): stay on el.volume.
+    try {
+      this.ctx = new Ctor();
+    } catch {
+      this.ctx = null;
+    }
+  }
+
+  /** Get the context running. Must be reached from inside a user gesture —
+   *  enter() and play() both are. */
+  private unlock(): void {
+    this.ensureContext();
+    if (this.ctx?.state === 'suspended') void this.ctx.resume();
+  }
+
+  /** Route a deck into the graph the first time it plays. Deferred to here,
+   *  rather than done up front, because on iOS a source node created before its
+   *  element has a source can stay silent. Each element can be tapped only
+   *  once, so this is a no-op on later plays. */
+  private route(deck: Deck): void {
+    if (deck.source || !this.ctx || !(deck.el instanceof HTMLAudioElement)) return;
+    try {
+      const source = this.ctx.createMediaElementSource(deck.el);
+      const gain = this.ctx.createGain();
+      gain.gain.value = 0;
+      source.connect(gain).connect(this.ctx.destination);
+      // The element feeds the graph now; its own volume stays wide open so the
+      // GainNode is the only thing shaping the level.
+      deck.el.volume = 1;
+      deck.source = source;
+      deck.gain = gain;
+    } catch {
+      // Leave this deck on el.volume; the other may still route.
+    }
   }
 
   // --- subscription -------------------------------------------------------
@@ -187,7 +241,14 @@ export class AudioEngine {
 
   private apply(deck: Deck) {
     if (!(deck.el instanceof HTMLAudioElement)) return;
-    deck.el.volume = this.muted ? 0 : clamp01(this.base * deck.fade * this.duck);
+    const level = this.muted ? 0 : clamp01(this.base * deck.fade * this.duck);
+    if (deck.gain) {
+      // Our own ramp() is already stepping this; a plain assignment per step
+      // matches what the element-volume path did.
+      deck.gain.gain.value = level;
+    } else {
+      deck.el.volume = level;
+    }
   }
 
   // --- playback -----------------------------------------------------------
@@ -252,6 +313,7 @@ export class AudioEngine {
     await this.prepare(deck, channel);
     if (this.disposed || this.status !== 'playing') return;
 
+    this.route(deck);
     try {
       await deck.el.play();
     } catch {
@@ -308,12 +370,16 @@ export class AudioEngine {
 
   private async start(fadeMs: number): Promise<void> {
     if (this.disposed) return;
+    // Both callers are inside a click: bring the context up now, while the
+    // gesture still counts.
+    this.unlock();
     const deck = this.active;
     const channel = getChannel(this.channelId);
 
     await this.prepare(deck, channel);
     if (this.disposed) return;
 
+    this.route(deck);
     deck.fade = 0;
     this.apply(deck);
 
@@ -385,6 +451,7 @@ export class AudioEngine {
     await sleep(Math.max(0, FADE.channelOut - FADE.channelOverlap));
     if (this.disposed) return;
 
+    this.route(incoming);
     incoming.fade = 0;
     this.apply(incoming);
 
@@ -444,6 +511,18 @@ export class AudioEngine {
         deck.el.removeAttribute('src');
         deck.el.load();
       }
+      try {
+        deck.source?.disconnect();
+        deck.gain?.disconnect();
+      } catch {
+        // Already torn down.
+      }
+      deck.source = null;
+      deck.gain = null;
+    }
+    if (this.ctx) {
+      void this.ctx.close().catch(() => {});
+      this.ctx = null;
     }
     this.listeners.clear();
   }

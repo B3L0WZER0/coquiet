@@ -77,12 +77,18 @@
   bottom: calc(var(--inset-b) + 1.5rem);
   left: 50%;
   transform: translateX(-50%);
-  color: var(--text-muted);
-  text-decoration: none;
+  color: var(--text-secondary);
+  /* Underlined at rest — nothing else on the screen reads as a link, so a
+     hover-only underline meant a first-time visitor had no way to know this
+     line was clickable at all. */
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--color-cream) 30%, transparent);
   text-underline-offset: 0.28em;
   text-decoration-thickness: 1px;
   text-shadow: var(--shadow-legible);
-  transition: color var(--duration-control) var(--ease-quiet);
+  transition:
+    color var(--duration-control) var(--ease-quiet),
+    text-decoration-color var(--duration-control) var(--ease-quiet);
 }
 
 @media (max-height: 560px) {
@@ -95,8 +101,7 @@
 
 .coquiet-support:hover {
   color: var(--text-primary);
-  text-decoration: underline;
-  text-decoration-color: color-mix(in oklab, var(--color-cream) 45%, transparent);
+  text-decoration-color: color-mix(in oklab, var(--color-cream) 65%, transparent);
 }
 
 .coquiet-support:focus-visible {

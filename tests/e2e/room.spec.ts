@@ -676,14 +676,19 @@ test.describe('the support link', () => {
     expect(ring.width).toBeGreaterThan(0);
   });
 
-  test('underlines only on hover, not at rest', async ({ page }) => {
+  test('underlines at rest, so it reads as a link', async ({ page }) => {
     const link = page.locator('.coquiet-support');
     const decoration = () => link.evaluate((el) => getComputedStyle(el).textDecorationLine);
 
-    expect(await decoration()).toBe('none');
+    expect(await decoration()).toBe('underline');
+
+    // Hovering still strengthens it — brighter text, a stronger underline —
+    // it just isn't the only signal that this line is clickable.
+    const colorBefore = await link.evaluate((el) => getComputedStyle(el).color);
     await link.hover();
     await page.waitForTimeout(300);
     expect(await decoration()).toBe('underline');
+    expect(await link.evaluate((el) => getComputedStyle(el).color)).not.toBe(colorBefore);
   });
 });
 

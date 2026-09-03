@@ -9,14 +9,26 @@ import {
 
 /** The Room pulse panel. */
 export function RoomPulse({ pulse }: { pulse: Pulse }) {
+  return (
+    <div>
+      <p className="label-quiet mb-1">Room pulse</p>
+      <p className="mb-2.5 text-[0.75rem]" style={{ color: 'var(--text-secondary)' }}>
+        See how the room is spending this moment, together.
+      </p>
+      <RoomPulseBody pulse={pulse} />
+    </div>
+  );
+}
+
+function RoomPulseBody({ pulse }: { pulse: Pulse }) {
   if (!pulse.showBreakdown) {
     return (
       <p
         className="text-[0.75rem] leading-relaxed"
         style={{ color: 'var(--text-secondary)' }}
       >
-        Just a few of you here. The room&rsquo;s pulse appears once{' '}
-        {MIN_GROUP_FOR_BREAKDOWN} people are in.
+        A small room right now, but you&rsquo;re not working alone. The pulse fills in
+        once {MIN_GROUP_FOR_BREAKDOWN} or more of you are here.
       </p>
     );
   }
@@ -73,7 +85,8 @@ export function RoomPulse({ pulse }: { pulse: Pulse }) {
           className="text-[0.75rem]"
           style={{ color: 'var(--text-secondary)' }}
         >
-          Nobody has said what they&rsquo;re up to yet.
+          Nobody&rsquo;s shared what they&rsquo;re up to yet — but you&rsquo;re working
+          alongside them all the same.
         </p>
       )}
     </div>

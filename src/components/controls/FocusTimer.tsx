@@ -115,6 +115,13 @@ function TimerPanel({
 
   return (
     <div className="space-y-3">
+      <div>
+        <p className="label-quiet mb-1">Focus timer</p>
+        <p className="text-[0.75rem]" style={{ color: 'var(--text-secondary)' }}>
+          Work for a set stretch, then take a short break.
+        </p>
+      </div>
+
       <div role="radiogroup" aria-label="Session length" className="flex flex-wrap gap-1">
         {PRESETS.map((preset) => (
           <PresetChip
@@ -157,7 +164,13 @@ function TimerPanel({
       )}
 
       <div className="flex gap-1.5 pt-0.5">
-        {idle && <PanelButton primary label="Start" onClick={onStart} />}
+        {idle && (
+          <PanelButton
+            primary
+            label={`Start timer · ${Math.round(session.focusMs / 60_000)} min`}
+            onClick={onStart}
+          />
+        )}
         {running && <PanelButton primary label="Pause" onClick={onPause} />}
         {paused && <PanelButton primary label="Resume" onClick={onResume} />}
         {!idle && <PanelButton label="Reset" onClick={onReset} />}

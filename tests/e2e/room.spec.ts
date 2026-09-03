@@ -342,7 +342,7 @@ test('a custom 1 / 10 session is honoured exactly as typed', async ({ page }) =>
   await brk.blur();
 
   // The readout must agree with the field, not quietly run a different length.
-  await expect(timer).toContainText('Start Timer1');
+  await expect(timer).toContainText('Start Timer1:00');
   await expect(focus).toHaveValue('1');
 
   await page.getByRole('button', { name: /Start timer/ }).click();
@@ -362,7 +362,7 @@ test('an out-of-range custom value corrects itself visibly', async ({ page }) =>
 
   // Corrected in the field itself, so what is shown is what will run.
   await expect(focus).toHaveValue('180');
-  await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer180');
+  await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer3:00:00');
 });
 
 test.describe('the timer does not outlive the page', () => {
@@ -379,7 +379,7 @@ test.describe('the timer does not outlive the page', () => {
 
     await page.reload();
     await enter(page);
-    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer25');
+    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer25:00');
   });
 
   test('an idle custom length does not come back either', async ({ page }) => {
@@ -389,11 +389,11 @@ test.describe('the timer does not outlive the page', () => {
     const focus = page.locator('[role=dialog] input[type=number]').first();
     await focus.fill('7');
     await focus.blur();
-    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer7');
+    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer7:00');
 
     await page.reload();
     await enter(page);
-    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer25');
+    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer25:00');
   });
 
   test('nothing about the timer is written to storage', async ({ page }) => {
@@ -425,7 +425,7 @@ test.describe('the timer does not outlive the page', () => {
     await page.reload();
     await enter(page);
 
-    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer25');
+    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer25:00');
     expect(await page.evaluate(() => localStorage.getItem('coquiet:timer'))).toBeNull();
   });
 });

@@ -82,7 +82,7 @@ export function FocusTimer({
           textShadow: 'var(--shadow-legible)',
         }}
       >
-        {idle ? focusMinutes : display}
+        {display}
       </span>
     </Popover>
   );

@@ -8,6 +8,8 @@ export function PlaybackBar({
 }: {
   playing: boolean;
   onTogglePlay?: () => void;
+  /** The volume control sits beside the button on desktop; on mobile it is its
+      own item in the bar, so this is left out there. */
   volumeControl?: React.ReactNode;
 }) {
   return (

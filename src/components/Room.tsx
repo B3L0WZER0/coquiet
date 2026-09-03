@@ -81,10 +81,15 @@ export function Room() {
 
   // Keyboard visitors should land inside the room rather than back at the top
   // of the document. This has to wait for the render that clears `inert` —
-  // focusing an inert subtree silently does nothing.
+  // focusing an inert subtree silently does nothing. Both the mobile bar and
+  // the desktop spread render a play button; focus whichever one is on screen.
   useEffect(() => {
     if (!entered) return;
-    playButtonRef.current?.querySelector('button')?.focus();
+    const plays = playButtonRef.current?.querySelectorAll<HTMLButtonElement>(
+      'button[aria-label="Play music"], button[aria-label="Pause music"]',
+    );
+    const visible = plays && [...plays].find((b) => b.offsetParent !== null);
+    (visible ?? plays?.[0])?.focus();
     note.show();
     // `note.show` is stable and re-running this on every note change would
     // re-show it constantly.
@@ -128,25 +133,15 @@ export function Room() {
           <Wordmark />
         </div>
 
-        <div className="area-music" data-dim={dimmed || undefined}>
-          <MusicSelector
-            value={audio.state.channel}
-            onChange={(id) => void audio.setChannel(id)}
-            info={<ChannelInfo />}
-          />
-        </div>
-
-        <div className="area-timer" data-dim={dimmed || undefined}>
-          <FocusTimer
-            session={timer.session}
-            remainingMs={timer.remainingMs}
-            onStart={beginFocus}
-            onPause={timer.pause}
-            onResume={timer.resume}
-            onReset={timer.reset}
-            onPreset={timer.setPreset}
-            onCustom={timer.setCustom}
-          />
+        {/* Bottom left on desktop; the top-right corner on mobile, where the
+            bar below has no room for a sentence. */}
+        <div className="area-presence" data-dim={dimmed || undefined}>
+          <span className="only-desktop">
+            <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} />
+          </span>
+          <span className="only-mobile">
+            <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} compact />
+          </span>
         </div>
 
         <div className="area-note">
@@ -162,32 +157,105 @@ export function Room() {
           )}
         </div>
 
-        <div className="area-presence" data-dim={dimmed || undefined}>
-          <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} />
-        </div>
+        {/* The controls. On desktop `display: contents` lets each area take its
+            own grid slot (music/timer up top, playback/personal along the
+            bottom); on mobile the same four collapse into one bottom bar. */}
+        <div className="room-controls" ref={playButtonRef}>
+          <div className="area-music" data-dim={dimmed || undefined}>
+            <span className="only-desktop">
+              <MusicSelector
+                value={audio.state.channel}
+                onChange={(id) => void audio.setChannel(id)}
+                info={<ChannelInfo />}
+              />
+            </span>
+            <span className="only-mobile">
+              <MusicSelector
+                value={audio.state.channel}
+                onChange={(id) => void audio.setChannel(id)}
+                compact
+              />
+            </span>
+          </div>
 
-        <div className="controls-cluster">
-          <div className="area-playback" ref={playButtonRef} data-dim={dimmed || undefined}>
-            <PlaybackBar
-              playing={playing}
-              onTogglePlay={() => void audio.toggle()}
-              volumeControl={
-                <VolumeControl
-                  volume={audio.state.volume}
-                  muted={audio.state.muted}
-                  onChange={audio.setVolume}
-                  onToggleMuted={audio.toggleMuted}
-                />
-              }
+          <div className="area-timer" data-dim={dimmed || undefined}>
+            <span className="only-desktop">
+              <FocusTimer
+                session={timer.session}
+                remainingMs={timer.remainingMs}
+                onStart={beginFocus}
+                onPause={timer.pause}
+                onResume={timer.resume}
+                onReset={timer.reset}
+                onPreset={timer.setPreset}
+                onCustom={timer.setCustom}
+              />
+            </span>
+            <span className="only-mobile">
+              <FocusTimer
+                session={timer.session}
+                remainingMs={timer.remainingMs}
+                onStart={beginFocus}
+                onPause={timer.pause}
+                onResume={timer.resume}
+                onReset={timer.reset}
+                onPreset={timer.setPreset}
+                onCustom={timer.setCustom}
+                compact
+              />
+            </span>
+          </div>
+
+          <div className="area-playback" data-dim={dimmed || undefined}>
+            <span className="only-desktop">
+              <PlaybackBar
+                playing={playing}
+                onTogglePlay={() => void audio.toggle()}
+                volumeControl={
+                  <VolumeControl
+                    volume={audio.state.volume}
+                    muted={audio.state.muted}
+                    onChange={audio.setVolume}
+                    onToggleMuted={audio.toggleMuted}
+                  />
+                }
+              />
+            </span>
+            <span className="only-mobile">
+              <PlaybackBar playing={playing} onTogglePlay={() => void audio.toggle()} />
+            </span>
+          </div>
+
+          {/* Its own slot in the bar on mobile; folded in beside the play
+              button on desktop, so this stray copy is hidden there. */}
+          <div className="only-mobile">
+            <VolumeControl
+              volume={audio.state.volume}
+              muted={audio.state.muted}
+              onChange={audio.setVolume}
+              onToggleMuted={audio.toggleMuted}
+              compact
             />
           </div>
+
           <div className="area-personal" data-dim={dimmed || undefined}>
-            <PersonalPresence
-              activity={presence.own.activity}
-              drink={presence.own.drink}
-              onChange={presence.setPresence}
-              onClear={presence.clearPresence}
-            />
+            <span className="only-desktop">
+              <PersonalPresence
+                activity={presence.own.activity}
+                drink={presence.own.drink}
+                onChange={presence.setPresence}
+                onClear={presence.clearPresence}
+              />
+            </span>
+            <span className="only-mobile">
+              <PersonalPresence
+                activity={presence.own.activity}
+                drink={presence.own.drink}
+                onChange={presence.setPresence}
+                onClear={presence.clearPresence}
+                compact
+              />
+            </span>
           </div>
         </div>
       </div>

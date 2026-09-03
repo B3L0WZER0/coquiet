@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 
+import { ClockMark } from '@/components/icons/DockMarks';
 import { Popover } from '@/components/ui/Popover';
 import {
   CUSTOM_LIMITS,
@@ -25,6 +26,7 @@ export function FocusTimer({
   onReset,
   onPreset,
   onCustom,
+  compact = false,
 }: {
   session: TimerSession;
   remainingMs: number;
@@ -34,6 +36,8 @@ export function FocusTimer({
   onReset: () => void;
   onPreset: (id: string) => void;
   onCustom: (focusMinutes: number, breakMinutes: number) => void;
+  /** Narrow screens: a dock button rather than a labelled pill. */
+  compact?: boolean;
 }) {
   const display = formatRemaining(remainingMs);
   const hint = phaseLabel(session);
@@ -54,9 +58,14 @@ export function FocusTimer({
       }
       // A timer is not something to open by brushing past, or by tabbing past.
       revealOnHoverAndFocus={false}
+      placement={compact ? 'top' : 'bottom'}
       align="end"
       panelClassName="w-[16rem]"
-      triggerClassName="control-surface flex min-h-11 items-center gap-2.5 rounded-full px-4 py-2 transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]"
+      triggerClassName={
+        compact
+          ? 'dock-trigger'
+          : 'control-surface flex min-h-11 items-center gap-2.5 rounded-full px-4 py-2 transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]'
+      }
       panel={
         <TimerPanel
           session={session}
@@ -71,19 +80,38 @@ export function FocusTimer({
         />
       }
     >
-      <span className="label-quiet" style={{ textShadow: 'var(--shadow-legible)' }}>
-        {idle ? 'Start Timer' : hint}
-      </span>
-      <span
-        className="text-[0.9375rem]"
-        style={{
-          color: 'var(--text-primary)',
-          fontVariantNumeric: 'tabular-nums',
-          textShadow: 'var(--shadow-legible)',
-        }}
-      >
-        {display}
-      </span>
+      {compact ? (
+        <>
+          <ClockMark />
+          {!idle && (
+            <span
+              className="text-[0.8125rem]"
+              style={{
+                color: 'var(--text-primary)',
+                fontVariantNumeric: 'tabular-nums',
+              }}
+            >
+              {display}
+            </span>
+          )}
+        </>
+      ) : (
+        <>
+          <span className="label-quiet" style={{ textShadow: 'var(--shadow-legible)' }}>
+            {idle ? 'Start Timer' : hint}
+          </span>
+          <span
+            className="text-[0.9375rem]"
+            style={{
+              color: 'var(--text-primary)',
+              fontVariantNumeric: 'tabular-nums',
+              textShadow: 'var(--shadow-legible)',
+            }}
+          >
+            {display}
+          </span>
+        </>
+      )}
     </Popover>
   );
 }

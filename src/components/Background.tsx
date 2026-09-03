@@ -44,7 +44,7 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
         fetchPriority="high"
       />
 
-      <div aria-hidden="true" className="pointer-events-none fixed inset-0 -z-10 overflow-hidden">
+      <div aria-hidden="true" className="room-backdrop pointer-events-none fixed -z-10 overflow-hidden">
         <div
           // The placeholder is this element's own background, so it is always
           // painted underneath the photograph rather than competing with it in

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 
 import { ACTIVITY_MARKS } from '@/components/icons/ActivityMarks';
+import { PersonMark } from '@/components/icons/DockMarks';
 import { CoffeeMarkInline, DRINK_MARKS } from '@/components/icons/DrinkMarks';
 import { presenceSummary } from '@/lib/presence/aggregate';
 import {
@@ -19,11 +20,14 @@ export function PersonalPresence({
   drink,
   onChange,
   onClear,
+  compact = false,
 }: {
   activity: Activity | null;
   drink: Drink | null;
   onChange: (activity: Activity | null, drink: Drink | null) => void;
   onClear: () => void;
+  /** Narrow screens: a dock button rather than a labelled pill. */
+  compact?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
@@ -70,18 +74,38 @@ export function PersonalPresence({
             ? `Your presence: ${summary}. Change it.`
             : 'Set your presence'
         }
-        className="control-surface flex min-h-11 items-center gap-2 rounded-full px-4 py-2 text-[0.8125rem] transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]"
+        className={
+          compact
+            ? 'dock-trigger'
+            : 'control-surface flex min-h-11 items-center gap-2 rounded-full px-4 py-2 text-[0.8125rem] transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]'
+        }
         style={{
           color: summary ? 'var(--text-primary)' : 'var(--text-secondary)',
         }}
       >
-        {/* The full phrase has room on desktop; at 320px it would push the play button off centre, so the trigger shortens instead of wrapping. */}
-        <span className="hidden whitespace-nowrap md:inline">
-          {summary ?? 'Set your presence'}
-        </span>
-        <span className="whitespace-nowrap md:hidden">
-          {summary ?? 'Presence'}
-        </span>
+        {compact ? (
+          <span className="relative flex items-center justify-center">
+            <PersonMark />
+            {summary && (
+              // A quiet dot: something is set, without spelling it out in the bar.
+              <span
+                aria-hidden="true"
+                className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full"
+                style={{ backgroundColor: 'var(--color-sand)' }}
+              />
+            )}
+          </span>
+        ) : (
+          <>
+            {/* The full phrase has room on desktop; at 320px it would push the play button off centre, so the trigger shortens instead of wrapping. */}
+            <span className="hidden whitespace-nowrap md:inline">
+              {summary ?? 'Set your presence'}
+            </span>
+            <span className="whitespace-nowrap md:hidden">
+              {summary ?? 'Presence'}
+            </span>
+          </>
+        )}
       </button>
 
       {open && (

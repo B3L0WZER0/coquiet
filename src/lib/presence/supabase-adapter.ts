@@ -27,7 +27,28 @@ const ROOM = 'coquiet:room';
 const RETRY_MIN_MS = 1_000;
 const RETRY_MAX_MS = 30_000;
 
+/** How long a dropped connection keeps serving the room it last saw. Mobile
+ *  Safari suspends the socket on every tab switch and lock; without this grace
+ *  the presence line blinked out and back on each reconnect. The sessions it
+ *  keeps showing are still the real ones, expired by the shared `live()` rule. */
+const OFFLINE_GRACE_MS = 40_000;
+
 const SESSION_ID_KEY = 'coquiet:session-id';
+
+/** One Supabase client for the page, not one per adapter or per reconnect —
+ *  each `createClient` spins up its own auth client against the same storage
+ *  key, which the SDK warns about and which churns the realtime socket. */
+let sharedClient: SupabaseClient | null = null;
+
+function getClient(): SupabaseClient {
+  if (!sharedClient) {
+    sharedClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false },
+      realtime: { params: { eventsPerSecond: 4 } },
+    });
+  }
+  return sharedClient;
+}
 
 /** A per-tab anonymous id — the same reasoning as the local adapter. */
 function sessionId(): string {
@@ -70,8 +91,22 @@ function toSession(raw: unknown): PresenceSession | null {
   };
 }
 
+/** Compare on the fields the room actually renders, so a sync that changed
+ *  nothing visible does not re-render every control. */
+function sameSnapshot(a: PresenceSnapshot, b: PresenceSnapshot): boolean {
+  if (a.available !== b.available || a.joined !== b.joined) return false;
+  if (a.sessions.length !== b.sessions.length) return false;
+  for (let i = 0; i < a.sessions.length; i++) {
+    const x = a.sessions[i];
+    const y = b.sessions[i];
+    if (x.id !== y.id || x.activity !== y.activity || x.drink !== y.drink || x.channel !== y.channel) {
+      return false;
+    }
+  }
+  return true;
+}
+
 export class SupabasePresenceAdapter implements PresenceProvider {
-  private client: SupabaseClient | null = null;
   private channel: RealtimeChannel | null = null;
   private id: string;
   private own: PresenceSession;
@@ -80,9 +115,12 @@ export class SupabasePresenceAdapter implements PresenceProvider {
   private heartbeat: number | null = null;
   private retry: number | null = null;
   private retryDelay = RETRY_MIN_MS;
+  private graceTimer: number | null = null;
   private observing = false;
   private joined = false;
   private connected = false;
+  private everConnected = false;
+  private offlineSince: number | null = null;
   private cached: PresenceSnapshot = { sessions: [], joined: false, available: false };
 
   constructor() {
@@ -101,18 +139,15 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     if (this.observing || this.joined) return;
     if (typeof window === 'undefined') return;
     this.observing = true;
+    this.bindVisibility();
     this.connect();
   }
 
   private connect(): void {
     if (this.channel) return;
 
-    this.client = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-      auth: { persistSession: false },
-      realtime: { params: { eventsPerSecond: 4 } },
-    });
-
-    this.channel = this.client.channel(ROOM, {
+    const client = getClient();
+    this.channel = client.channel(ROOM, {
       config: { presence: { key: this.id } },
     });
 
@@ -121,21 +156,42 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     this.channel.subscribe((status) => {
       this.connected = status === 'SUBSCRIBED';
       if (this.connected) {
+        this.everConnected = true;
+        this.offlineSince = null;
         this.retryDelay = RETRY_MIN_MS;
+        this.clearGraceTimer();
         // Joining before the channel was ready leaves nothing tracked, so the
         // track is (re)issued here as well as in join().
         if (this.joined) void this.track();
       } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
         // The socket does not always come back on its own: the channel can
-        // settle into an error state and stay there, leaving the room silently
-        // presence-less until someone reloads.
-        this.others.clear();
+        // settle into an error state and stay there. Keep the last known room
+        // on screen for the grace window rather than blinking it out — the
+        // sessions still expire on their own if the outage outlasts it.
+        this.markOffline();
         this.scheduleReconnect();
       }
       this.publish();
     });
 
     this.publish();
+  }
+
+  /** Note when a live connection first dropped, and arm the timer that retires
+   *  the room once the grace window is spent. */
+  private markOffline(): void {
+    if (this.offlineSince === null) this.offlineSince = Date.now();
+    if (this.graceTimer === null) {
+      this.graceTimer = window.setTimeout(() => {
+        this.graceTimer = null;
+        this.publish();
+      }, OFFLINE_GRACE_MS);
+    }
+  }
+
+  private clearGraceTimer(): void {
+    if (this.graceTimer !== null) window.clearTimeout(this.graceTimer);
+    this.graceTimer = null;
   }
 
   /** Rebuild the channel after a drop, backing off between attempts. */
@@ -150,15 +206,14 @@ export class SupabasePresenceAdapter implements PresenceProvider {
       this.retry = null;
       if (!this.observing && !this.joined) return;
       // A channel left in an error state will not resubscribe, so it is thrown
-      // away and a fresh one built in its place.
+      // away and a fresh one built in its place. The client is kept — only the
+      // channel is rebuilt.
       try {
-        void this.channel?.unsubscribe();
-        void this.client?.removeAllChannels();
+        if (this.channel) getClient().removeChannel(this.channel);
       } catch {
         // Already gone; the replacement below is what matters.
       }
       this.channel = null;
-      this.client = null;
       this.connect();
     }, delay);
   }
@@ -200,6 +255,7 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     this.own = { ...this.own, ...own, lastSeen: Date.now() };
     this.joined = true;
 
+    this.bindVisibility();
     this.connect();
     void this.track();
 
@@ -212,6 +268,31 @@ export class SupabasePresenceAdapter implements PresenceProvider {
   }
 
   private onPageHide = () => this.leave();
+
+  private visibilityBound = false;
+
+  private bindVisibility(): void {
+    if (this.visibilityBound || typeof document === 'undefined') return;
+    this.visibilityBound = true;
+    document.addEventListener('visibilitychange', this.onVisible);
+  }
+
+  /** Coming back to the tab: re-announce at once and, if the socket died while
+   *  we were away, get a reconnect moving now rather than on the slow backoff. */
+  private onVisible = () => {
+    if (document.visibilityState !== 'visible') return;
+    if (!this.observing && !this.joined) return;
+    if (this.connected) {
+      if (this.joined) void this.track();
+      return;
+    }
+    if (this.retry !== null) {
+      window.clearTimeout(this.retry);
+      this.retry = null;
+    }
+    this.retryDelay = RETRY_MIN_MS;
+    this.scheduleReconnect();
+  };
 
   update(patch: Partial<OwnPresence>): void {
     this.own = { ...this.own, ...patch, lastSeen: Date.now() };
@@ -243,22 +324,26 @@ export class SupabasePresenceAdapter implements PresenceProvider {
   }
 
   private build(): PresenceSnapshot {
-    // Not connected is not the same as nobody here, and the difference has to
-    // survive all the way to the UI.
-    if (!this.connected || (!this.joined && !this.observing)) {
+    const watching = this.joined || this.observing;
+    const offlineFor = this.offlineSince === null ? 0 : Date.now() - this.offlineSince;
+    const usable = this.everConnected && offlineFor < OFFLINE_GRACE_MS;
+
+    // Not connected is not the same as nobody here — but a long outage is, and
+    // the difference has to survive all the way to the UI.
+    if (!watching || !usable) {
       return { sessions: [], joined: false, available: false };
     }
     const now = Date.now();
     const others = live([...this.others.values()], now);
-    const sessions = this.joined
-      ? [...others, { ...this.own, lastSeen: now }]
-      : others;
+    const sessions = this.joined ? [...others, { ...this.own, lastSeen: now }] : others;
     return { sessions, joined: this.joined, available: true };
   }
 
   private publish(): void {
-    this.cached = this.build();
-    for (const fn of this.listeners) fn(this.cached);
+    const next = this.build();
+    if (sameSnapshot(this.cached, next)) return;
+    this.cached = next;
+    for (const fn of this.listeners) fn(next);
   }
 
   private stopTimers(): void {
@@ -277,17 +362,20 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     this.leave();
     this.stopTimers();
     this.stopRetry();
+    this.clearGraceTimer();
     if (typeof window !== 'undefined') {
       window.removeEventListener('pagehide', this.onPageHide);
     }
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.onVisible);
+    }
+    this.visibilityBound = false;
     try {
-      void this.channel?.unsubscribe();
-      void this.client?.removeAllChannels();
+      if (this.channel) getClient().removeChannel(this.channel);
     } catch {
       // Nothing useful to do while tearing down.
     }
     this.channel = null;
-    this.client = null;
     this.listeners.clear();
     this.observing = false;
     this.connected = false;

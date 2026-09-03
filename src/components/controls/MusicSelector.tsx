@@ -1,5 +1,7 @@
 'use client';
 
+import { NoteMark } from '@/components/icons/DockMarks';
+import { Popover } from '@/components/ui/Popover';
 import { CHANNELS, type ChannelId } from '@/lib/channels';
 
 /** Still · Flow · Momentum, with an info mark alongside. */
@@ -7,12 +9,17 @@ export function MusicSelector({
   value,
   onChange,
   info,
+  compact = false,
 }: {
   value: ChannelId;
   onChange: (id: ChannelId) => void;
   /** The info affordance, placed just outside the switch's right edge. */
   info?: React.ReactNode;
+  /** Narrow screens: collapse to a single dock button opening a channel sheet. */
+  compact?: boolean;
 }) {
+  if (compact) return <CompactMusic value={value} onChange={onChange} />;
+
   return (
     <div className="relative flex items-center gap-2">
       {/* An empty twin of the info mark on the left. */}
@@ -56,5 +63,68 @@ export function MusicSelector({
 
       {info}
     </div>
+  );
+}
+
+/** The dock version: a note glyph that opens the three channels as a list,
+ *  each with the line that used to live behind the ⓘ. */
+function CompactMusic({
+  value,
+  onChange,
+}: {
+  value: ChannelId;
+  onChange: (id: ChannelId) => void;
+}) {
+  const current = CHANNELS.find((c) => c.id === value);
+
+  return (
+    <Popover
+      label={`Music channel: ${current?.label ?? 'Flow'}. Change it.`}
+      revealOnHoverAndFocus={false}
+      placement="top"
+      align="center"
+      offset={12}
+      panelClassName="w-[16rem]"
+      triggerClassName="dock-trigger"
+      panel={
+        <div>
+          <p className="label-quiet mb-2">Music channel</p>
+          <div role="radiogroup" aria-label="Music channel" className="space-y-1">
+            {CHANNELS.map((channel) => {
+              const active = channel.id === value;
+              return (
+                <button
+                  key={channel.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => onChange(channel.id)}
+                  className="w-full rounded-xl px-3 py-2 text-left transition-colors duration-[var(--duration-control)]"
+                  style={{
+                    backgroundColor: active ? 'var(--surface-active)' : 'transparent',
+                    border: `1px solid ${active ? 'var(--hairline-strong)' : 'var(--hairline)'}`,
+                  }}
+                >
+                  <span
+                    className="block text-[0.8125rem] tracking-[0.02em]"
+                    style={{ color: 'var(--text-primary)' }}
+                  >
+                    {channel.label}
+                  </span>
+                  <span
+                    className="mt-0.5 block text-[0.75rem] leading-relaxed"
+                    style={{ color: 'var(--text-secondary)' }}
+                  >
+                    {channel.description}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      }
+    >
+      <NoteMark />
+    </Popover>
   );
 }

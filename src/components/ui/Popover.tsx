@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 
 type Placement = 'top' | 'bottom';
 type Align = 'start' | 'center' | 'end';
@@ -40,8 +40,10 @@ export function Popover({
   const [hovering, setHovering] = useState(false);
   const [pinned, setPinned] = useState(false);
   const [focusWithin, setFocusWithin] = useState(false);
+  const [shiftX, setShiftX] = useState(0);
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
+  const panelRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
 
   const open = pinned || (revealOnHoverAndFocus && (hovering || focusWithin));
@@ -74,12 +76,32 @@ export function Popover({
     };
   }, [open, close]);
 
+  // Nudge the panel back inside the viewport. The dock triggers sit near the
+  // screen edges, where a centred panel would spill off; measure once open and
+  // translate it in by whatever it overhangs, leaving an 8px margin.
+  useLayoutEffect(() => {
+    if (!open) {
+      setShiftX(0);
+      return;
+    }
+    const el = panelRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const margin = 8;
+    let dx = 0;
+    if (r.left < margin) dx = margin - r.left;
+    else if (r.right > window.innerWidth - margin) dx = window.innerWidth - margin - r.right;
+    if (dx !== 0) setShiftX(dx);
+  }, [open]);
+
+  const centred = align === 'center';
   const alignClass =
-    align === 'start'
-      ? 'left-0'
-      : align === 'end'
-        ? 'right-0'
-        : 'left-1/2 -translate-x-1/2';
+    align === 'start' ? 'left-0' : align === 'end' ? 'right-0' : 'left-1/2';
+  const transform = centred
+    ? `translateX(calc(-50% + ${shiftX}px))`
+    : shiftX
+      ? `translateX(${shiftX}px)`
+      : undefined;
 
   const placementClass = placement === 'top' ? 'bottom-full' : 'top-full';
 
@@ -108,6 +130,7 @@ export function Popover({
 
       {open && (
         <div
+          ref={panelRef}
           id={panelId}
           role="dialog"
           aria-label={label}
@@ -115,6 +138,7 @@ export function Popover({
           style={{
             backgroundColor: 'var(--surface-panel)',
             [placement === 'top' ? 'marginBottom' : 'marginTop']: offset,
+            transform,
           }}
         >
           {panel}

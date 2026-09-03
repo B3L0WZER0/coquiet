@@ -415,9 +415,10 @@ async function runFade(promise: Promise<unknown>, durationMs: number) {
 
 /**
  * jsdom has no Web Audio, so the tests above exercise the `el.volume` fallback.
- * On iOS that path is silent — `HTMLMediaElement.volume` is read-only there — so
- * the engine routes each deck through a GainNode instead. This stub is just
- * enough of that graph to prove the fade lands on the gain, not the element.
+ * On iOS `el.volume` is read-only and that path is silent, so the engine routes
+ * each deck through a GainNode instead — but only where it detects the lock.
+ * Below, `el.volume` is pinned like iOS pins it, and a stub context stands in
+ * for the graph, just enough to prove the fade lands on the gain.
  */
 class FakeParam {
   value = 1;
@@ -457,6 +458,9 @@ describe('audio engine with Web Audio available', () => {
     vi.useFakeTimers();
     vi.setSystemTime(getChannel('flow').epochMs + 60_000);
     stubMedia();
+    // Pin el.volume the way iOS does: setter ignored, getter always 1.
+    vi.spyOn(HTMLMediaElement.prototype, 'volume', 'set').mockImplementation(() => {});
+    vi.spyOn(HTMLMediaElement.prototype, 'volume', 'get').mockReturnValue(1);
     vi.stubGlobal('AudioContext', FakeAudioContext);
     engine = new AudioEngine('flow', 0.6);
   });

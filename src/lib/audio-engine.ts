@@ -58,8 +58,10 @@ export class AudioEngine {
   private listeners = new Set<(state: AudioState) => void>();
   private disposed = false;
 
-  /** One context for both decks, built the first time sound is asked for. */
+  /** One context for both decks, built the first time sound is asked for — and
+   *  only on a browser whose `el.volume` is locked (see volumeLocked). */
   private ctx: AudioContext | null = null;
+  private volumeLockedCache: boolean | null = null;
 
   /** Cached immutable view of the state above. */
   private cached: AudioState;
@@ -107,15 +109,44 @@ export class AudioEngine {
 
   // --- web audio ---------------------------------------------------------
 
-  /** Build the context. Left until the first sound so nothing is created on a
-   *  page that never enters the room. */
+  /**
+   * Whether `HTMLMediaElement.volume` is a dead property here — true on iPhone,
+   * where it is read-only. Only then is it worth routing audio through a
+   * GainNode; every other browser keeps its plain, well-worn `el.volume` path
+   * untouched. Probed once, lazily.
+   */
+  private volumeLocked(): boolean {
+    if (this.volumeLockedCache !== null) return this.volumeLockedCache;
+    const el = this.decks[0].el;
+    if (!(el instanceof HTMLAudioElement)) {
+      this.volumeLockedCache = false;
+      return false;
+    }
+    let locked = false;
+    try {
+      const restore = el.volume;
+      el.volume = 0.5;
+      locked = Math.abs(el.volume - 0.5) > 0.01;
+      el.volume = restore;
+    } catch {
+      // A throwing setter counts as locked; a browser that behaves this way is
+      // exactly the one that needs the gain path.
+      locked = true;
+    }
+    this.volumeLockedCache = locked;
+    return locked;
+  }
+
+  /** Build the context. Left until the first sound, and only where the gain
+   *  path is actually needed. */
   private ensureContext(): void {
     if (this.ctx || typeof window === 'undefined') return;
+    if (!this.volumeLocked()) return; // Desktop: nothing to do, stay on el.volume.
     const Ctor =
       window.AudioContext ??
       (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ??
       null;
-    if (!Ctor) return; // No Web Audio (jsdom, very old browsers): stay on el.volume.
+    if (!Ctor) return;
     try {
       this.ctx = new Ctor();
     } catch {

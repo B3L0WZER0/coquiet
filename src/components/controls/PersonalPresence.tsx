@@ -149,8 +149,7 @@ export function PersonalPresence({
                   href={SUPPORT_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center gap-2 text-[0.8125rem] underline decoration-transparent underline-offset-4 transition-colors duration-[var(--duration-control)] hover:text-[var(--text-primary)] hover:decoration-[var(--hairline-strong)]"
-                  style={{ color: 'var(--text-muted)' }}
+                  className="label-quiet flex items-center gap-2 transition-colors duration-[var(--duration-control)] hover:text-[var(--text-primary)]"
                 >
                   <CoffeeMarkInline />
                   {SUPPORT_LABEL}

@@ -21,6 +21,12 @@ import {
 /** One room, one channel. */
 const ROOM = 'coquiet:room';
 
+/** Reconnect backoff: quick first, then backing off so a dead server isn't
+ *  hammered by every open tab. Someone sitting a 50-minute timer out has to be
+ *  reconnected without being asked to reload. */
+const RETRY_MIN_MS = 1_000;
+const RETRY_MAX_MS = 30_000;
+
 const SESSION_ID_KEY = 'coquiet:session-id';
 
 /** A per-tab anonymous id — the same reasoning as the local adapter. */
@@ -72,6 +78,8 @@ export class SupabasePresenceAdapter implements PresenceProvider {
   private others = new Map<string, PresenceSession>();
   private listeners = new Set<(snapshot: PresenceSnapshot) => void>();
   private heartbeat: number | null = null;
+  private retry: number | null = null;
+  private retryDelay = RETRY_MIN_MS;
   private observing = false;
   private joined = false;
   private connected = false;
@@ -112,13 +120,47 @@ export class SupabasePresenceAdapter implements PresenceProvider {
 
     this.channel.subscribe((status) => {
       this.connected = status === 'SUBSCRIBED';
-      // Joining before the channel was ready leaves nothing tracked, so the
-      // track is (re)issued here as well as in join().
-      if (this.connected && this.joined) void this.track();
+      if (this.connected) {
+        this.retryDelay = RETRY_MIN_MS;
+        // Joining before the channel was ready leaves nothing tracked, so the
+        // track is (re)issued here as well as in join().
+        if (this.joined) void this.track();
+      } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
+        // The socket does not always come back on its own: the channel can
+        // settle into an error state and stay there, leaving the room silently
+        // presence-less until someone reloads.
+        this.others.clear();
+        this.scheduleReconnect();
+      }
       this.publish();
     });
 
     this.publish();
+  }
+
+  /** Rebuild the channel after a drop, backing off between attempts. */
+  private scheduleReconnect(): void {
+    if (this.retry !== null) return;
+    if (!this.observing && !this.joined) return;
+
+    const delay = this.retryDelay;
+    this.retryDelay = Math.min(this.retryDelay * 2, RETRY_MAX_MS);
+
+    this.retry = window.setTimeout(() => {
+      this.retry = null;
+      if (!this.observing && !this.joined) return;
+      // A channel left in an error state will not resubscribe, so it is thrown
+      // away and a fresh one built in its place.
+      try {
+        void this.channel?.unsubscribe();
+        void this.client?.removeAllChannels();
+      } catch {
+        // Already gone; the replacement below is what matters.
+      }
+      this.channel = null;
+      this.client = null;
+      this.connect();
+    }, delay);
   }
 
   /** Replace what we know with what the server currently reports. */
@@ -148,7 +190,8 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     try {
       await this.channel.track(payload);
     } catch {
-      // A dropped socket resubscribes on its own; the next beat re-tracks.
+      // The subscribe callback sees the drop and rebuilds the channel; the
+      // next beat re-tracks once it is back.
     }
   }
 
@@ -223,9 +266,17 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     this.heartbeat = null;
   }
 
+  /** Only on teardown — leaving the room still leaves an observer watching. */
+  private stopRetry(): void {
+    if (this.retry !== null) window.clearTimeout(this.retry);
+    this.retry = null;
+    this.retryDelay = RETRY_MIN_MS;
+  }
+
   destroy(): void {
     this.leave();
     this.stopTimers();
+    this.stopRetry();
     if (typeof window !== 'undefined') {
       window.removeEventListener('pagehide', this.onPageHide);
     }

@@ -632,35 +632,6 @@ test.describe('watching the room from the doorway', () => {
   });
 });
 
-test.describe('the simulated room', () => {
-  test('fills the room and labels itself while it does', async ({ page }) => {
-    await page.goto('/?simulate=300');
-    await page.waitForTimeout(1400);
-
-    await expect(page.getByText(/Simulated room · 300 invented people/)).toBeVisible();
-    await expect(page.getByText(/Room open · 3\d\d focusing now/)).toBeVisible();
-
-    await page.locator('.coquiet-cta').click();
-    await page.waitForTimeout(1600);
-    await expect(page.locator('.area-presence')).toContainText(/Focusing with 3\d\d others/);
-
-    // The breakdown is what the simulation exists to let you look at.
-    await page.evaluate(() => {
-      (document.querySelector('.area-presence button') as HTMLElement).click();
-    });
-    const panel = page.locator('.area-presence [role=dialog]');
-    await expect(panel).toContainText(/\d+ working/);
-    await expect(panel).toContainText(/\d+ coffee/);
-  });
-
-  test('is off unless it is asked for', async ({ page }) => {
-    await page.waitForTimeout(1200);
-    await expect(page.getByText(/Simulated room/)).toHaveCount(0);
-    // And with nobody really there, no number is claimed.
-    await expect(page.getByText(/focusing now/)).toHaveCount(0);
-  });
-});
-
 test.describe('the support link', () => {
   test('sits on the way in, and nowhere inside the room', async ({ page }) => {
     const link = page.locator('.coquiet-support');

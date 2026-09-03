@@ -341,41 +341,17 @@ behaviour does not change, keep storing only the fields in `PresenceSession`
 (anonymous id, activity, drink, channel, last seen), and keep stamping
 `lastSeen` with the receiving client's clock rather than trusting the sender's.
 
-### Looking at a busy room
+### The honesty rule
 
-Three browser tabs is not enough to judge a presence line, a count or the Room
-pulse breakdown. In development:
+A count is rendered only when it came from sessions actually heard from. There
+is no seeding, no minimum, and no fallback figure. The Room pulse breakdown is
+also withheld below three people (`MIN_GROUP_FOR_BREAKDOWN`), because
+"1 reading · 1 tea" describes a person rather than a room.
 
-```
-http://localhost:3000/?simulate=300
-```
-
-fills the room with 300 invented sessions — a realistic spread of activities and
-drinks, including people who shared nothing — and adds arrivals faster than
-departures so the count climbs while you watch.
-
-**Everything it shows is fake**, which is why it is fenced off three ways:
-
-- the switch returns `null` whenever `NODE_ENV` is `production`, checked before
-  anything else, so a visitor cannot turn it on — verified against a real
-  `next build`, where `?simulate=300` produces no marker and no count. (The
-  adapter is still in the bundle; it is unreachable, not absent.);
-- it must be asked for by URL, never on by default;
-- while it runs, the room carries a label saying so, so no screenshot of a busy
-  room can be mistaken for a real one.
-
-It implements the same `PresenceProvider` interface as the real adapter, so what
-you are looking at is exactly what the components would do with real people in
-the room. If you ever want to remove those guards, read the rule in `CLAUDE.md`
-first — they are the only thing separating a design tool from a fake counter.
-
-Two things to preserve when you do:
-
-- The privacy threshold. The Room pulse breakdown is withheld below three people
-  (`MIN_GROUP_FOR_BREAKDOWN`), because "1 reading · 1 tea" describes a person
-  rather than a room.
-- The honesty rule. A count is rendered only when it came from sessions actually
-  heard from. There is no seeding, no minimum, and no fallback figure.
+(There used to be a `?simulate=300` dev-only adapter for eyeballing a busy
+room at a scale real testing can't reach. It was removed once the real
+adapter was verified working across devices; rebuild it behind the same
+`PresenceProvider` interface if that's needed again.)
 
 ---
 

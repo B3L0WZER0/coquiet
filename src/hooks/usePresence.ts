@@ -5,8 +5,6 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { ChannelId } from '@/lib/channels';
 import { hasSupabase } from '@/lib/presence/config';
 import { LocalPresenceAdapter } from '@/lib/presence/local-adapter';
-import { SimulatedPresenceAdapter } from '@/lib/presence/simulated-adapter';
-import { simulatedRoomSize } from '@/lib/presence/simulation';
 import { SupabasePresenceAdapter } from '@/lib/presence/supabase-adapter';
 import type {
   Activity,
@@ -21,8 +19,6 @@ const EMPTY: PresenceSnapshot = { sessions: [], joined: false, available: false 
 
 /** The room's presence provider. */
 function createProvider(): PresenceProvider {
-  const simulated = simulatedRoomSize();
-  if (simulated !== null) return new SimulatedPresenceAdapter(simulated);
   if (hasSupabase()) return new SupabasePresenceAdapter();
   return new LocalPresenceAdapter();
 }
@@ -40,14 +36,6 @@ export function usePresence(entered: boolean, channel: ChannelId) {
   const providerRef = useRef<PresenceProvider | null>(null);
   const [snapshot, setSnapshot] = useState<PresenceSnapshot>(EMPTY);
   const [own, setOwn] = useState<OwnState>(NOTHING_SET);
-  // Read after mount, not during render: it comes from the URL, which the
-  // server cannot see, and branching on it while rendering makes the server's
-  // HTML disagree with the client's.
-  const [simulated, setSimulated] = useState<number | null>(null);
-
-  useEffect(() => {
-    setSimulated(simulatedRoomSize());
-  }, []);
 
   // Earlier versions kept this in localStorage. Clear anything they left
   // behind rather than abandoning it in the visitor's browser — it is personal
@@ -106,7 +94,5 @@ export function usePresence(entered: boolean, channel: ChannelId) {
     own,
     setPresence,
     clearPresence,
-    /** Non-null only when the room is being filled with invented people. */
-    simulated,
   };
 }

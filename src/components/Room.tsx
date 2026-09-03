@@ -166,20 +166,6 @@ export function Room() {
         </div>
       </div>
 
-      {presence.simulated !== null && (
-        // Visible whenever the room is full of invented people, so no
-        // screenshot of a busy room can be mistaken for a real one.
-        <p
-          className="pointer-events-none fixed top-0 left-1/2 z-40 -translate-x-1/2 rounded-b-md px-3 py-1 text-[0.6875rem] tracking-[0.08em] uppercase"
-          style={{
-            backgroundColor: 'var(--color-clay)',
-            color: 'var(--color-cream)',
-          }}
-        >
-          Simulated room · {presence.simulated} invented people
-        </p>
-      )}
-
       {!entered && (
         <EntryLayer
           presenceLine={entryPresenceLine(presence.status)}

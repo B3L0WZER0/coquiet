@@ -15,10 +15,6 @@ Full product detail lives in `SPEC.md`. The build order lives in `PLAN.md`. Read
 
 - No audio plays before the user deliberately presses "Enter the room."
 - Never show a fabricated presence number to a visitor. Numbers a visitor can see must come from sessions actually heard from — no seeding, no minimum, no fallback figure.
-- Invented presence is allowed in one place only: the **simulated room**, a development tool for looking at the interface at a size real testing cannot reach. Three things must stay true of it, or it has become the thing the rule above forbids:
-  1. `simulatedRoomSize()` returns `null` whenever `NODE_ENV` is `production`, checked before anything else, so a visitor cannot switch it on. (The code is still in the bundle — it is unreachable, not absent.)
-  2. It has to be asked for explicitly, with `?simulate=300`. Never on by default.
-  3. While it runs, the room says so on screen, so no screenshot of a busy room can be passed off as a real one.
 - Don't add anything from the Non-goals list in `SPEC.md` — no accounts, avatars, chat, streaks, dashboards, etc. — even if it seems like a natural extension.
 - Respect `prefers-reduced-motion` everywhere motion appears.
 - Every interactive element is keyboard operable with a visible focus state.

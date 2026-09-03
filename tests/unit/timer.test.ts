@@ -25,34 +25,34 @@ const MINUTE = 60_000;
 const T0 = 1_700_000_000_000;
 
 describe('timer defaults', () => {
-  it('starts idle at 50/10', () => {
+  it('starts idle at 25/5', () => {
     const s = createSession();
     expect(s.phase).toBe('idle');
     expect(s.presetId).toBe(DEFAULT_PRESET_ID);
-    expect(s.focusMs).toBe(50 * MINUTE);
-    expect(s.breakMs).toBe(10 * MINUTE);
+    expect(s.focusMs).toBe(25 * MINUTE);
+    expect(s.breakMs).toBe(5 * MINUTE);
     expect(isRunning(s)).toBe(false);
   });
 
   it('shows the full focus length before starting', () => {
-    expect(formatRemaining(remainingMs(createSession(), T0))).toBe('50:00');
+    expect(formatRemaining(remainingMs(createSession(), T0))).toBe('25:00');
   });
 });
 
 describe('accuracy against the clock', () => {
   it('counts down from the end timestamp, not from ticks', () => {
     const s = start(createSession(), T0);
-    expect(remainingMs(s, T0)).toBe(50 * MINUTE);
-    expect(remainingMs(s, T0 + 60_000)).toBe(49 * MINUTE);
-    expect(formatRemaining(remainingMs(s, T0 + 90_000))).toBe('48:30');
+    expect(remainingMs(s, T0)).toBe(25 * MINUTE);
+    expect(remainingMs(s, T0 + 60_000)).toBe(24 * MINUTE);
+    expect(formatRemaining(remainingMs(s, T0 + 90_000))).toBe('23:30');
   });
 
   it('is unaffected by how long the page was asleep', () => {
     const s = start(createSession(), T0);
-    // No ticks at all for twenty minutes, then one look at the clock.
+    // No ticks at all for most of the stretch, then one look at the clock.
     const after = tick(s, T0 + 20 * MINUTE);
     expect(after.events).toEqual([]);
-    expect(formatRemaining(remainingMs(after.session, T0 + 20 * MINUTE))).toBe('30:00');
+    expect(formatRemaining(remainingMs(after.session, T0 + 20 * MINUTE))).toBe('5:00');
   });
 
   it('never reports negative time', () => {
@@ -64,25 +64,25 @@ describe('accuracy against the clock', () => {
 describe('phase transitions', () => {
   it('moves into the break when the focus stretch ends', () => {
     const s = start(createSession(), T0);
-    const { session, events } = tick(s, T0 + 50 * MINUTE);
+    const { session, events } = tick(s, T0 + 25 * MINUTE);
     expect(events).toEqual(['focus-ended']);
     expect(session.phase).toBe('break');
     expect(session.breakCount).toBe(1);
-    expect(remainingMs(session, T0 + 50 * MINUTE)).toBe(10 * MINUTE);
+    expect(remainingMs(session, T0 + 25 * MINUTE)).toBe(5 * MINUTE);
   });
 
   it('chains the break from when focus actually ended, not from the late tick', () => {
     const s = start(createSession(), T0);
     // The tab was asleep and only looked four minutes after focus ended, so
-    // six minutes of break should remain — not a fresh ten.
-    const { session } = tick(s, T0 + 54 * MINUTE);
+    // one minute of break should remain — not a fresh five.
+    const { session } = tick(s, T0 + 29 * MINUTE);
     expect(session.phase).toBe('break');
-    expect(remainingMs(session, T0 + 54 * MINUTE)).toBe(6 * MINUTE);
+    expect(remainingMs(session, T0 + 29 * MINUTE)).toBe(1 * MINUTE);
   });
 
   it('resolves a sleep spanning both phases in a single tick', () => {
     const s = start(createSession(), T0);
-    const { session, events } = tick(s, T0 + 61 * MINUTE);
+    const { session, events } = tick(s, T0 + 31 * MINUTE);
     expect(events).toEqual(['focus-ended', 'break-ended']);
     expect(session.phase).toBe('break-ended');
     expect(isRunning(session)).toBe(false);
@@ -99,17 +99,17 @@ describe('phase transitions', () => {
 describe('pause and resume', () => {
   it('keeps the remaining time across a pause of any length', () => {
     const started = start(createSession(), T0);
-    const paused = pause(started, T0 + 10 * MINUTE);
+    const paused = pause(started, T0 + 5 * MINUTE);
     expect(isPaused(paused)).toBe(true);
     expect(isRunning(paused)).toBe(false);
-    expect(remainingMs(paused, T0 + 10 * MINUTE)).toBe(40 * MINUTE);
+    expect(remainingMs(paused, T0 + 5 * MINUTE)).toBe(20 * MINUTE);
     // Time passing while paused must not consume the session.
-    expect(remainingMs(paused, T0 + 90 * MINUTE)).toBe(40 * MINUTE);
+    expect(remainingMs(paused, T0 + 90 * MINUTE)).toBe(20 * MINUTE);
 
     const resumed = resume(paused, T0 + 90 * MINUTE);
     expect(isRunning(resumed)).toBe(true);
-    expect(remainingMs(resumed, T0 + 90 * MINUTE)).toBe(40 * MINUTE);
-    expect(remainingMs(resumed, T0 + 95 * MINUTE)).toBe(35 * MINUTE);
+    expect(remainingMs(resumed, T0 + 90 * MINUTE)).toBe(20 * MINUTE);
+    expect(remainingMs(resumed, T0 + 95 * MINUTE)).toBe(15 * MINUTE);
   });
 
   it('does not fire a transition while paused', () => {
@@ -190,16 +190,16 @@ describe('clampMinutes', () => {
 describe('the idle readout', () => {
   it('invites a start rather than reporting readiness', () => {
     expect(phaseLabel(createSession())).toBe('Start');
-    const { session: afterBreak } = tick(start(createSession(), T0), T0 + 61 * MINUTE);
+    const { session: afterBreak } = tick(start(createSession(), T0), T0 + 31 * MINUTE);
     expect(afterBreak.phase).toBe('break-ended');
     expect(phaseLabel(afterBreak)).toBe('Start');
   });
 
   it('shows the length of the session that start would begin', () => {
     // Not 0:00, which alongside "Start" reads as a broken clock.
-    const { session: afterBreak } = tick(start(createSession(), T0), T0 + 61 * MINUTE);
-    expect(formatRemaining(remainingMs(afterBreak, T0 + 61 * MINUTE))).toBe('50:00');
-    expect(formatRemaining(remainingMs(createSession(), T0))).toBe('50:00');
+    const { session: afterBreak } = tick(start(createSession(), T0), T0 + 31 * MINUTE);
+    expect(formatRemaining(remainingMs(afterBreak, T0 + 31 * MINUTE))).toBe('25:00');
+    expect(formatRemaining(remainingMs(createSession(), T0))).toBe('25:00');
   });
 });
 
@@ -224,11 +224,10 @@ describe('preset ordering', () => {
     expect(minutes).toEqual([25, 50, 90]);
   });
 
-  it('defaults to 50/10 regardless of what the list starts with', () => {
-    // The order is for the eye; the default must not follow it.
-    expect(PRESETS[0].id).not.toBe(DEFAULT_PRESET_ID);
-    expect(createSession().focusMs).toBe(50 * MINUTE);
-    // An unrecognised id falls back to the default, not to the first entry.
-    expect(createSession('nonsense').focusMs).toBe(50 * MINUTE);
+  it('falls back to the default for an unrecognised id', () => {
+    expect(createSession().focusMs).toBe(25 * MINUTE);
+    // An unrecognised id falls back to the default, not to the first entry —
+    // they currently happen to be the same preset, but for different reasons.
+    expect(createSession('nonsense').focusMs).toBe(25 * MINUTE);
   });
 });

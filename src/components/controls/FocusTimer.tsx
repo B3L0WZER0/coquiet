@@ -40,14 +40,16 @@ export function FocusTimer({
   const running = isRunning(session);
   const paused = isPaused(session);
   const idle = !running && !paused;
+  const focusMinutes = Math.round(session.focusMs / 60_000);
 
   return (
     <Popover
-      // "Start, 50:00 remaining" would be nonsense read aloud — nothing is
-      // counting down yet.
+      // "Start, 25:00 remaining" would be nonsense read aloud — nothing is
+      // counting down yet. Naming the length instead of showing a countdown
+      // also makes clear, before opening the panel, what pressing it does.
       label={
         idle
-          ? `Focus timer, ${display}, not started`
+          ? `Focus timer. Start a ${focusMinutes} minute session.`
           : `Focus timer, ${hint}, ${display} remaining`
       }
       // A timer is not something to open by brushing past, or by tabbing past.
@@ -70,7 +72,7 @@ export function FocusTimer({
       }
     >
       <span className="label-quiet" style={{ textShadow: 'var(--shadow-legible)' }}>
-        {hint}
+        {idle ? 'Start Timer' : hint}
       </span>
       <span
         className="text-[0.9375rem]"
@@ -80,7 +82,7 @@ export function FocusTimer({
           textShadow: 'var(--shadow-legible)',
         }}
       >
-        {display}
+        {idle ? focusMinutes : display}
       </span>
     </Popover>
   );
@@ -194,12 +196,7 @@ function PresetChip({
       role="radio"
       aria-checked={active}
       onClick={onClick}
-      className="min-h-9 rounded-full px-3 py-1.5 text-[0.75rem] tracking-[0.02em] transition-all duration-[var(--duration-control)]"
-      style={{
-        backgroundColor: active ? 'var(--surface-active)' : 'transparent',
-        border: `1px solid ${active ? 'var(--hairline-strong)' : 'var(--hairline)'}`,
-        color: active ? 'var(--text-primary)' : 'var(--text-muted)',
-      }}
+      className="chip-select min-h-9 rounded-full px-3 py-1.5 text-[0.75rem] tracking-[0.02em] transition-all duration-[var(--duration-control)]"
     >
       {label}
     </button>

@@ -140,7 +140,7 @@ Short original notes, not clichés or misattributed quotes. Shown briefly after 
 
 ## Focus timer
 
-Small, secondary, upper-right. Default 50/10 (focus/break); presets 25/5, 90/15, and Custom. Popover: Start, Pause, Resume, Reset, preset selection.
+Small, secondary, upper-right. Default 25/5 (focus/break); presets 50/10, 90/15, and Custom. Popover: Start, Pause, Resume, Reset, preset selection.
 
 - Uses target timestamps, not interval ticks alone — accurate in background tabs and after device sleep
 - Restores an active session after refresh; persists locally

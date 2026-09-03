@@ -135,12 +135,12 @@ test('starting a timer counts down and survives a refresh', async ({ page }) => 
   await page.waitForTimeout(1500);
 
   await page.getByRole('button', { name: /Focus timer/ }).click();
-  await page.getByRole('button', { name: 'Start', exact: true }).click();
+  await page.getByRole('button', { name: /Start timer/ }).click();
 
   const timer = page.getByRole('button', { name: /Focus timer/ });
   await expect(timer).toContainText('Focus');
   await page.waitForTimeout(2500);
-  await expect(timer).toContainText(/49:5[0-9]/);
+  await expect(timer).toContainText(/24:5[0-9]/);
 });
 
 test('the whole critical path is reachable by keyboard alone', async ({ page }) => {
@@ -201,7 +201,7 @@ test('tabbing past the timer does not pop its panel open', async ({ page }) => {
   // But it is still fully operable from the keyboard.
   await page.keyboard.press('Enter');
   await expect(timer).toHaveAttribute('aria-expanded', 'true');
-  await expect(page.getByRole('button', { name: 'Start', exact: true })).toBeVisible();
+  await expect(page.getByRole('button', { name: /Start timer/ })).toBeVisible();
   await page.keyboard.press('Escape');
   await expect(timer).toHaveAttribute('aria-expanded', 'false');
   await expect(timer).toBeFocused();
@@ -321,7 +321,7 @@ test.describe('reduced motion', () => {
     );
 
     await page.getByRole('button', { name: /Focus timer/ }).click();
-    await page.getByRole('button', { name: 'Start', exact: true }).click();
+    await page.getByRole('button', { name: /Start timer/ }).click();
     await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Focus');
   });
 });
@@ -342,10 +342,10 @@ test('a custom 1 / 10 session is honoured exactly as typed', async ({ page }) =>
   await brk.blur();
 
   // The readout must agree with the field, not quietly run a different length.
-  await expect(timer).toContainText('1:00');
+  await expect(timer).toContainText('Start Timer1');
   await expect(focus).toHaveValue('1');
 
-  await page.getByRole('button', { name: 'Start', exact: true }).click();
+  await page.getByRole('button', { name: /Start timer/ }).click();
   await expect(timer).toContainText(/Focus0:5[0-9]/);
 });
 
@@ -362,7 +362,7 @@ test('an out-of-range custom value corrects itself visibly', async ({ page }) =>
 
   // Corrected in the field itself, so what is shown is what will run.
   await expect(focus).toHaveValue('180');
-  await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('3:00:00');
+  await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer180');
 });
 
 test.describe('the timer does not outlive the page', () => {
@@ -374,12 +374,12 @@ test.describe('the timer does not outlive the page', () => {
   test('a running session is gone after a refresh', async ({ page }) => {
     await enter(page);
     await page.getByRole('button', { name: /Focus timer/ }).click();
-    await page.getByRole('button', { name: 'Start', exact: true }).click();
+    await page.getByRole('button', { name: /Start timer/ }).click();
     await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Focus');
 
     await page.reload();
     await enter(page);
-    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start50:00');
+    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer25');
   });
 
   test('an idle custom length does not come back either', async ({ page }) => {
@@ -389,17 +389,17 @@ test.describe('the timer does not outlive the page', () => {
     const focus = page.locator('[role=dialog] input[type=number]').first();
     await focus.fill('7');
     await focus.blur();
-    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('7:00');
+    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer7');
 
     await page.reload();
     await enter(page);
-    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start50:00');
+    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer25');
   });
 
   test('nothing about the timer is written to storage', async ({ page }) => {
     await enter(page);
     await page.getByRole('button', { name: /Focus timer/ }).click();
-    await page.getByRole('button', { name: 'Start', exact: true }).click();
+    await page.getByRole('button', { name: /Start timer/ }).click();
     await page.waitForTimeout(600);
     expect(await page.evaluate(() => localStorage.getItem('coquiet:timer'))).toBeNull();
   });
@@ -425,7 +425,7 @@ test.describe('the timer does not outlive the page', () => {
     await page.reload();
     await enter(page);
 
-    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start50:00');
+    await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer25');
     expect(await page.evaluate(() => localStorage.getItem('coquiet:timer'))).toBeNull();
   });
 });

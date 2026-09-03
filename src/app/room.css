@@ -196,31 +196,35 @@
   background-color: color-mix(in oklab, var(--color-ink) 86%, var(--color-charcoal));
 }
 
-/* The chips sit on the sheet's own ink, where --surface-active (a darker well,
-   read against the room image) is ink on ink and all but invisible. Selection
-   lifts here instead: a warm sand tint with a sand edge, the mark warming too. */
-.presence-choice {
+/* Shared "chip" selection style — presence's activity/drink pills and the
+   timer's session-length pills. The chips sit on the sheet's own ink, where
+   --surface-active (a darker well, read against the room image) is ink on ink
+   and all but invisible. Selection lifts here instead: a warm sand tint with
+   a sand edge, the mark warming too. Presence chips are role="button" with
+   aria-pressed; the timer's are role="radio" with aria-checked — both match. */
+.chip-select {
   background-color: transparent;
   border: 1px solid var(--hairline);
   color: var(--text-muted);
 }
 
-.presence-choice:hover {
+.chip-select:hover {
   border-color: var(--hairline-strong);
   color: var(--text-secondary);
 }
 
-.presence-choice[aria-pressed='true'] {
+.chip-select[aria-pressed='true'],
+.chip-select[aria-checked='true'] {
   background-color: color-mix(in oklab, var(--color-sand) 32%, transparent);
   border-color: color-mix(in oklab, var(--color-sand) 72%, transparent);
   color: var(--color-cream);
 }
 
-.presence-choice-mark {
+.chip-select-mark {
   color: var(--color-taupe);
 }
 
-.presence-choice[aria-pressed='true'] .presence-choice-mark {
+.chip-select[aria-pressed='true'] .chip-select-mark {
   color: var(--color-sand);
 }
 

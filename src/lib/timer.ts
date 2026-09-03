@@ -24,7 +24,7 @@ export const PRESETS: readonly TimerPreset[] = [
   { id: '90-15', label: '90 / 15', focusMinutes: 90, breakMinutes: 15 },
 ];
 
-export const DEFAULT_PRESET_ID = '50-10';
+export const DEFAULT_PRESET_ID = '25-5';
 export const CUSTOM_PRESET_ID = 'custom';
 
 /** Bounds for the custom preset, in minutes. */

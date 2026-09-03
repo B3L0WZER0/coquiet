@@ -209,9 +209,9 @@ function Choice({
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className="presence-choice flex min-h-11 items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8125rem] transition-all duration-[var(--duration-control)]"
+      className="chip-select flex min-h-11 items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8125rem] transition-all duration-[var(--duration-control)]"
     >
-      {mark && <span className="presence-choice-mark">{mark}</span>}
+      {mark && <span className="chip-select-mark">{mark}</span>}
       {label}
     </button>
   );

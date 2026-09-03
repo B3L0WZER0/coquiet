@@ -635,7 +635,7 @@ test.describe('watching the room from the doorway', () => {
 test.describe('the support link', () => {
   test('sits on the way in, and nowhere inside the room', async ({ page }) => {
     const link = page.locator('.coquiet-support');
-    await expect(link).toHaveText('Buy us a coffee');
+    await expect(link).toHaveText('Support us with a coffee');
     await expect(link).toHaveAttribute('target', '_blank');
 
     // A footer: at the foot of the screen, not trailing the composition.

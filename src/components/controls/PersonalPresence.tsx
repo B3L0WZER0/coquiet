@@ -176,7 +176,8 @@ export function PersonalPresence({
                   className="label-quiet flex items-center gap-2 transition-colors duration-[var(--duration-control)] hover:text-[var(--text-primary)]"
                 >
                   <CoffeeMarkInline />
-                  {SUPPORT_LABEL}
+                  {/* Underlined so it reads as a link — nothing else on the sheet does. */}
+                  <span className="underline decoration-1 underline-offset-4">{SUPPORT_LABEL}</span>
                 </a>
               </div>
             )}

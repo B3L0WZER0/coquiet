@@ -1,4 +1,4 @@
-/** Where "Buy me a coffee" points. */
+/** Where the support link points. */
 export const SUPPORT_URL = 'https://buymeacoffee.com/coquiet';
 
-export const SUPPORT_LABEL = 'Buy us a coffee';
+export const SUPPORT_LABEL = 'Support us with a coffee';

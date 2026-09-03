@@ -173,10 +173,12 @@ export function PersonalPresence({
                   href={SUPPORT_URL}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="label-quiet flex items-center gap-2 transition-colors duration-[var(--duration-control)] hover:text-[var(--text-primary)]"
+                  className="flex items-center gap-2 text-[0.8125rem] transition-colors duration-[var(--duration-control)] hover:text-[var(--text-primary)]"
+                  style={{ color: 'var(--text-secondary)' }}
                 >
                   <CoffeeMarkInline />
-                  {/* Underlined so it reads as a link — nothing else on the sheet does. */}
+                  {/* Sentence case, matching the way in; underlined so it reads
+                      as a link — nothing else on the sheet does. */}
                   <span className="underline decoration-1 underline-offset-4">{SUPPORT_LABEL}</span>
                 </a>
               </div>

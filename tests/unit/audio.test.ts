@@ -458,7 +458,11 @@ describe('audio engine with Web Audio available', () => {
     vi.useFakeTimers();
     vi.setSystemTime(getChannel('flow').epochMs + 60_000);
     stubMedia();
-    // Pin el.volume the way iOS does: setter ignored, getter always 1.
+    // Stand in for an iPhone: an iOS user agent, and el.volume pinned the way
+    // iOS pins it (setter ignored, getter always 1).
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(
+      'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15',
+    );
     vi.spyOn(HTMLMediaElement.prototype, 'volume', 'set').mockImplementation(() => {});
     vi.spyOn(HTMLMediaElement.prototype, 'volume', 'get').mockReturnValue(1);
     vi.stubGlobal('AudioContext', FakeAudioContext);

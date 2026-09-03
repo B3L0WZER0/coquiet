@@ -61,7 +61,7 @@ export class AudioEngine {
   /** One context for both decks, built the first time sound is asked for — and
    *  only on a browser whose `el.volume` is locked (see volumeLocked). */
   private ctx: AudioContext | null = null;
-  private volumeLockedCache: boolean | null = null;
+  private gainPathCache: boolean | null = null;
 
   /** Cached immutable view of the state above. */
   private cached: AudioState;
@@ -110,38 +110,49 @@ export class AudioEngine {
   // --- web audio ---------------------------------------------------------
 
   /**
-   * Whether `HTMLMediaElement.volume` is a dead property here — true on iPhone,
-   * where it is read-only. Only then is it worth routing audio through a
-   * GainNode; every other browser keeps its plain, well-worn `el.volume` path
-   * untouched. Probed once, lazily.
+   * Whether to route through a GainNode instead of `el.volume`. Only iOS needs
+   * this — it is the one place `HTMLMediaElement.volume` is read-only — so the
+   * gate is deliberately narrow: an iOS user agent *and* a probe confirming the
+   * property really is stuck. Every other browser, desktop Safari included,
+   * keeps its plain, well-worn `el.volume` path completely untouched.
    */
-  private volumeLocked(): boolean {
-    if (this.volumeLockedCache !== null) return this.volumeLockedCache;
+  private needsGainPath(): boolean {
+    if (this.gainPathCache !== null) return this.gainPathCache;
+    this.gainPathCache = this.looksLikeIOS() && this.volumeIsLocked();
+    return this.gainPathCache;
+  }
+
+  private looksLikeIOS(): boolean {
+    if (typeof navigator === 'undefined') return false;
+    const ua = navigator.userAgent;
+    // iPhone/iPod are unambiguous; an iPad has reported as "Macintosh" since
+    // iPadOS 13, so a Mac UA with touch points is one too.
+    return (
+      /iPad|iPhone|iPod/.test(ua) ||
+      (/Macintosh/.test(ua) && typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 1)
+    );
+  }
+
+  private volumeIsLocked(): boolean {
     const el = this.decks[0].el;
-    if (!(el instanceof HTMLAudioElement)) {
-      this.volumeLockedCache = false;
-      return false;
-    }
-    let locked = false;
+    if (!(el instanceof HTMLAudioElement)) return false;
     try {
       const restore = el.volume;
       el.volume = 0.5;
-      locked = Math.abs(el.volume - 0.5) > 0.01;
+      const locked = Math.abs(el.volume - 0.5) > 0.01;
       el.volume = restore;
+      return locked;
     } catch {
-      // A throwing setter counts as locked; a browser that behaves this way is
-      // exactly the one that needs the gain path.
-      locked = true;
+      // A throwing setter is exactly the browser that needs the gain path.
+      return true;
     }
-    this.volumeLockedCache = locked;
-    return locked;
   }
 
   /** Build the context. Left until the first sound, and only where the gain
    *  path is actually needed. */
   private ensureContext(): void {
     if (this.ctx || typeof window === 'undefined') return;
-    if (!this.volumeLocked()) return; // Desktop: nothing to do, stay on el.volume.
+    if (!this.needsGainPath()) return; // Desktop: nothing to do, stay on el.volume.
     const Ctor =
       window.AudioContext ??
       (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ??

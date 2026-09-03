@@ -239,14 +239,16 @@ body {
      Height and padding are in the same clamp family as the label on purpose:
      scaling the text alone leaves a small word rattling around inside a pill
      that stayed laptop-sized. Each floor is the value this has always had, so
-     nothing below 640px moves. */
-  min-height: clamp(3rem, calc(2.25rem + 1.1vw), 4.5rem);
-  padding: 0 clamp(2.75rem, calc(1.875rem + 1.4vw), 5rem);
+     nothing below 640px moves — and each slope is now half what it was, for
+     the same reason the wordmark's is: on a wide window the old rates made
+     the button grow past the point where it still read as a quiet invitation. */
+  min-height: clamp(3rem, calc(2.5rem + 0.55vw), 3.75rem);
+  padding: 0 clamp(2.75rem, calc(2.25rem + 0.7vw), 4rem);
   border: 1px solid transparent;
   border-radius: 999px;
   background-color: var(--color-stone);
   color: var(--color-ink);
-  font-size: clamp(0.9375rem, calc(0.625rem + 0.45vw), 1.3125rem);
+  font-size: clamp(0.9375rem, calc(0.75rem + 0.22vw), 1.125rem);
   font-weight: 500;
   letter-spacing: 0.01em;
   cursor: pointer;

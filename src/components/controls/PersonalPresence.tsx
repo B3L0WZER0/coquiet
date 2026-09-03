@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 
 import { ACTIVITY_MARKS } from '@/components/icons/ActivityMarks';
-import { DRINK_MARKS } from '@/components/icons/DrinkMarks';
+import { CoffeeMarkInline, DRINK_MARKS } from '@/components/icons/DrinkMarks';
 import { presenceSummary } from '@/lib/presence/aggregate';
 import {
   ACTIVITIES,
@@ -11,6 +11,7 @@ import {
   type Activity,
   type Drink,
 } from '@/lib/presence/types';
+import { SUPPORT_LABEL, SUPPORT_URL } from '@/lib/support';
 
 /** The optional personal presence control, bottom right. */
 export function PersonalPresence({
@@ -139,6 +140,23 @@ export function PersonalPresence({
                 })}
               </div>
             </fieldset>
+
+            {SUPPORT_URL && (
+              // A hairline sets it apart from the drinks above — it reads as
+              // its own thing, not a fifth option alongside real presence.
+              <div className="mt-4 pt-3" style={{ borderTop: '1px solid var(--hairline)' }}>
+                <a
+                  href={SUPPORT_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 text-[0.8125rem] underline decoration-transparent underline-offset-4 transition-colors duration-[var(--duration-control)] hover:text-[var(--text-primary)] hover:decoration-[var(--hairline-strong)]"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  <CoffeeMarkInline />
+                  {SUPPORT_LABEL}
+                </a>
+              </div>
+            )}
 
             <div className="mt-4 flex gap-1.5">
               <button

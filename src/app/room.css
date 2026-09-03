@@ -59,9 +59,13 @@
   justify-self: center;
 }
 
-/* Mobile: the bottom bar. Desktop: dissolves so each control takes its own
-   grid slot. A plain translucent fill, no backdrop blur — a full-width blurred
-   layer is the worst case for repaint flicker on iOS Safari. */
+/* Mobile: a full-bleed bar sitting flush to the foot of the screen, set apart
+   by a single hairline rather than drawn as a floating pill. The negative
+   margins cancel the grid's padding so it reaches every edge; the padding puts
+   it back on the content, plus the safe area. Desktop: dissolves so each
+   control takes its own grid slot.
+   No backdrop blur — a full-width blurred layer is the worst case for repaint
+   flicker on iOS Safari. */
 .room-controls {
   grid-area: controls;
   align-self: end;
@@ -69,11 +73,13 @@
   align-items: center;
   justify-content: space-evenly;
   gap: 0.125rem;
-  width: 100%;
-  padding: 0.3rem 0.4rem;
-  border-radius: 999px;
-  border: 1px solid var(--hairline);
-  background-color: color-mix(in oklab, var(--color-ink) 82%, transparent);
+  width: calc(100% + var(--inset-l) + var(--inset-r) + 1.7rem);
+  margin: 0 calc(-1 * (var(--inset-r) + 0.85rem)) calc(-1 * (var(--inset-b) + 0.85rem))
+    calc(-1 * (var(--inset-l) + 0.85rem));
+  padding: 0.55rem calc(var(--inset-r) + 0.6rem) calc(var(--inset-b) + 0.5rem)
+    calc(var(--inset-l) + 0.6rem);
+  border-top: 1px solid var(--hairline);
+  background-color: color-mix(in oklab, var(--color-ink) 84%, transparent);
 }
 
 /* The dock trigger: a bare icon target, styled only on hover and while open so

@@ -192,14 +192,9 @@ function Choice({
       type="button"
       aria-pressed={active}
       onClick={onClick}
-      className="flex min-h-11 items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8125rem] transition-all duration-[var(--duration-control)]"
-      style={{
-        backgroundColor: active ? 'var(--surface-active)' : 'transparent',
-        border: `1px solid ${active ? 'var(--hairline-strong)' : 'var(--hairline)'}`,
-        color: active ? 'var(--text-primary)' : 'var(--text-muted)',
-      }}
+      className="presence-choice flex min-h-11 items-center gap-1.5 rounded-full px-3.5 py-2 text-[0.8125rem] transition-all duration-[var(--duration-control)]"
     >
-      {mark && <span style={{ color: 'var(--color-taupe)' }}>{mark}</span>}
+      {mark && <span className="presence-choice-mark">{mark}</span>}
       {label}
     </button>
   );

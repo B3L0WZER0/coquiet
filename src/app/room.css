@@ -196,6 +196,34 @@
   background-color: color-mix(in oklab, var(--color-ink) 86%, var(--color-charcoal));
 }
 
+/* The chips sit on the sheet's own ink, where --surface-active (a darker well,
+   read against the room image) is ink on ink and all but invisible. Selection
+   lifts here instead: a warm sand tint with a sand edge, the mark warming too. */
+.presence-choice {
+  background-color: transparent;
+  border: 1px solid var(--hairline);
+  color: var(--text-muted);
+}
+
+.presence-choice:hover {
+  border-color: var(--hairline-strong);
+  color: var(--text-secondary);
+}
+
+.presence-choice[aria-pressed='true'] {
+  background-color: color-mix(in oklab, var(--color-sand) 32%, transparent);
+  border-color: color-mix(in oklab, var(--color-sand) 72%, transparent);
+  color: var(--color-cream);
+}
+
+.presence-choice-mark {
+  color: var(--color-taupe);
+}
+
+.presence-choice[aria-pressed='true'] .presence-choice-mark {
+  color: var(--color-sand);
+}
+
 /* Dims the room behind the sheet; gone once the panel becomes a popover. */
 .presence-scrim {
   position: fixed;

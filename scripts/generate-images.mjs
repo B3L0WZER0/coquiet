@@ -35,13 +35,26 @@ const LQIP_HEIGHT = 18;
  * Anything not listed defaults to the middle, which is rarely right.
  */
 const FOCAL_X = {
+  'alpine-lake-studio': 68,
   'cafe-concrete-hall': 50,
   'cafe-garden-door': 68,
   'cafe-windows': 32,
+  'calm-ocean-screen': 65,
+  'calm-screen-working': 43,
+  'circular-window-studio': 65,
   'cliff-cave': 50,
+  'coastal-observatory': 74,
   'desert-arches': 42,
+  'desert-rock-pavilion': 60,
+  // No person in frame; centred on the lit desk.
+  'forest-console-invitation': 50,
   'garden-pool': 66,
+  'mountain-cavern': 55,
+  // No person in frame; centred on the desk and chair.
+  'ocean-workstation-invitation': 68,
   'oculus-courtyard': 68,
+  'open-ocean-reading-room': 16,
+  'rain-garden-pavilion': 64,
   'valley-vault': 34,
 };
 

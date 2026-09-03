@@ -2,22 +2,18 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { Popover } from '@/components/ui/Popover';
-
-/** Discreet volume, beside play/pause. */
+/** Discreet volume, beside play/pause. Desktop only — iOS ignores
+ *  `HTMLMediaElement.volume`, so the slider is left out of the mobile bar. */
 export function VolumeControl({
   volume,
   muted,
   onChange,
   onToggleMuted,
-  compact = false,
 }: {
   volume: number;
   muted: boolean;
   onChange: (v: number) => void;
   onToggleMuted: () => void;
-  /** Narrow screens: a dock button opening the slider in a panel above. */
-  compact?: boolean;
 }) {
   const [hovering, setHovering] = useState(false);
   const [focusWithin, setFocusWithin] = useState(false);
@@ -37,51 +33,6 @@ export function VolumeControl({
     document.addEventListener('pointerdown', onPointerDown);
     return () => document.removeEventListener('pointerdown', onPointerDown);
   }, [touched]);
-
-  if (compact) {
-    return (
-      <Popover
-        label={silent ? `Volume ${percent} percent, muted. Adjust.` : `Volume ${percent} percent. Adjust.`}
-        revealOnHoverAndFocus={false}
-        placement="top"
-        align="center"
-        offset={12}
-        panelClassName="w-[13rem]"
-        triggerClassName="dock-trigger"
-        panel={
-          <div>
-            <p className="label-quiet mb-2">Volume</p>
-            <div className="flex items-center gap-2.5">
-              <button
-                type="button"
-                onClick={onToggleMuted}
-                aria-label={silent ? 'Unmute' : 'Mute'}
-                aria-pressed={silent}
-                className="flex h-6 w-6 shrink-0 items-center justify-center transition-colors duration-[var(--duration-control)]"
-                style={{ color: silent ? 'var(--color-clay)' : 'var(--text-secondary)' }}
-              >
-                <SpeakerGlyph muted={silent} />
-              </button>
-              <input
-                type="range"
-                min={0}
-                max={1}
-                step={0.01}
-                value={volume}
-                onChange={(e) => onChange(Number.parseFloat(e.target.value))}
-                aria-label="Volume"
-                aria-valuetext={muted ? `${percent} percent, muted` : `${percent} percent`}
-                className="coquiet-range h-1 min-w-0 flex-1"
-                data-muted={muted || undefined}
-              />
-            </div>
-          </div>
-        }
-      >
-        <SpeakerGlyph muted={silent} />
-      </Popover>
-    );
-  }
 
   return (
     <div

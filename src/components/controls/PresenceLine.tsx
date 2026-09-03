@@ -1,41 +1,64 @@
 'use client';
 
 import { RoomPulse } from '@/components/controls/RoomPulse';
+import { PeopleMark } from '@/components/icons/DockMarks';
 import { LiveDot } from '@/components/ui/LiveDot';
 import { Popover } from '@/components/ui/Popover';
 import { pulse as computePulse } from '@/lib/presence/aggregate';
-import {
-  roomPresenceLine,
-  shortRoomPresenceLine,
-  type PresenceStatus,
-} from '@/lib/presence/copy';
+import { roomPresenceLine, type PresenceStatus } from '@/lib/presence/copy';
 import type { PresenceSession } from '@/lib/presence/types';
 
-/** One persistent line about who is in the room — bottom left on desktop, the
- *  top-right corner on mobile. */
+/** One persistent handle on who else is in the room — a labelled pill in the
+ *  bottom-left on desktop, a figure-and-count dock button on mobile. Both open
+ *  the Room pulse. */
 export function PresenceLine({
   status,
   sessions,
-  compact = false,
+  dock = false,
 }: {
   status: PresenceStatus;
   sessions: readonly PresenceSession[];
-  /** Narrow screens: a terser label, and the panel drops below the trigger. */
-  compact?: boolean;
+  /** Narrow screens: render as a dock trigger in the bottom bar. */
+  dock?: boolean;
 }) {
   const label = roomPresenceLine(status);
   // No adapter, so no honest thing to put here.
   if (label === null) return null;
 
-  const shown = compact ? (shortRoomPresenceLine(status) ?? label) : label;
+  const others = status.kind === 'live' ? Math.max(0, status.count - 1) : 0;
+
+  if (dock) {
+    return (
+      <Popover
+        label={`${label}. Room pulse.`}
+        revealOnHoverAndFocus={false}
+        placement="top"
+        align="center"
+        offset={12}
+        panelClassName="w-[16rem]"
+        triggerClassName="dock-trigger"
+        panel={<RoomPulse pulse={computePulse(sessions)} />}
+      >
+        <PeopleMark />
+        {others > 0 && (
+          <span
+            className="text-[0.8125rem]"
+            style={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}
+          >
+            {others}
+          </span>
+        )}
+      </Popover>
+    );
+  }
 
   return (
     <Popover
       label={`${label}. Room pulse.`}
       // Presence is glanceable; opening the panel should be deliberate.
       revealOnHoverAndFocus={false}
-      placement={compact ? 'bottom' : 'top'}
-      align={compact ? 'end' : 'start'}
+      placement="top"
+      align="start"
       offset={10}
       panelClassName="w-[17rem]"
       // A pill, matching the badge on the entry screen. As bare text this read
@@ -46,7 +69,7 @@ export function PresenceLine({
     >
       <span className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
         <LiveDot />
-        {shown}
+        {label}
       </span>
     </Popover>
   );

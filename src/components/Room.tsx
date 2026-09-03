@@ -133,15 +133,10 @@ export function Room() {
           <Wordmark />
         </div>
 
-        {/* Bottom left on desktop; the top-right corner on mobile, where the
-            bar below has no room for a sentence. */}
+        {/* Bottom-left labelled pill on desktop. Hidden on mobile — there it
+            moves into the bar as a figure-and-count button, below. */}
         <div className="area-presence" data-dim={dimmed || undefined}>
-          <span className="only-desktop">
-            <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} />
-          </span>
-          <span className="only-mobile">
-            <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} compact />
-          </span>
+          <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} />
         </div>
 
         <div className="area-note">
@@ -226,16 +221,10 @@ export function Room() {
             </span>
           </div>
 
-          {/* Its own slot in the bar on mobile; folded in beside the play
-              button on desktop, so this stray copy is hidden there. */}
+          {/* The rest of the room. Only in the bar on mobile; on desktop this
+              lives bottom-left as `.area-presence` above, so this copy hides. */}
           <div className="only-mobile">
-            <VolumeControl
-              volume={audio.state.volume}
-              muted={audio.state.muted}
-              onChange={audio.setVolume}
-              onToggleMuted={audio.toggleMuted}
-              compact
-            />
+            <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} dock />
           </div>
 
           <div className="area-personal" data-dim={dimmed || undefined}>

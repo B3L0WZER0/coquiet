@@ -89,7 +89,7 @@ function CompactMusic({
       panel={
         <div>
           <p className="label-quiet mb-2">Music channel</p>
-          <div role="radiogroup" aria-label="Music channel" className="space-y-1">
+          <div role="radiogroup" aria-label="Music channel" className="space-y-1.5">
             {CHANNELS.map((channel) => {
               const active = channel.id === value;
               return (
@@ -99,17 +99,36 @@ function CompactMusic({
                   role="radio"
                   aria-checked={active}
                   onClick={() => onChange(channel.id)}
+                  // Selected uses the warm sand tint the timer and presence
+                  // chips use — a darker "well" is ink-on-ink here and all but
+                  // invisible against the panel.
                   className="w-full rounded-xl px-3 py-2 text-left transition-colors duration-[var(--duration-control)]"
                   style={{
-                    backgroundColor: active ? 'var(--surface-active)' : 'transparent',
-                    border: `1px solid ${active ? 'var(--hairline-strong)' : 'var(--hairline)'}`,
+                    backgroundColor: active
+                      ? 'color-mix(in oklab, var(--color-sand) 30%, transparent)'
+                      : 'transparent',
+                    border: `1px solid ${
+                      active
+                        ? 'color-mix(in oklab, var(--color-sand) 70%, transparent)'
+                        : 'var(--hairline)'
+                    }`,
                   }}
                 >
-                  <span
-                    className="block text-[0.8125rem] tracking-[0.02em]"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    {channel.label}
+                  <span className="flex items-center gap-1.5">
+                    <span
+                      className="text-[0.8125rem] tracking-[0.02em]"
+                      style={{ color: 'var(--color-cream)' }}
+                    >
+                      {channel.label}
+                    </span>
+                    {active && (
+                      <span
+                        className="label-quiet"
+                        style={{ color: 'var(--color-sand)' }}
+                      >
+                        Playing
+                      </span>
+                    )}
                   </span>
                   <span
                     className="mt-0.5 block text-[0.75rem] leading-relaxed"

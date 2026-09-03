@@ -25,14 +25,3 @@ export function roomPresenceLine(status: PresenceStatus): string | null {
   if (others === 1) return 'Focusing with 1 other';
   return `Focusing with ${others} others`;
 }
-
-/** A terser version for the narrow mobile top row, where the full sentence
- *  crowds the wordmark. Same honesty rules — still no number when there is
- *  nobody else to count. */
-export function shortRoomPresenceLine(status: PresenceStatus): string | null {
-  if (status.kind === 'unavailable') return null;
-  const others = status.count - 1;
-  if (others <= 0) return 'Just you';
-  if (others === 1) return '1 other here';
-  return `${others} others here`;
-}

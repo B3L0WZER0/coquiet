@@ -22,22 +22,22 @@
   display: contents;
 }
 
-/* Mobile (default): wordmark and a short presence line share the top row, the
-   focus note fills the middle, and every control collapses into one bottom bar
-   of icon triggers. A departure from SPEC's "music near top centre" — the bar
-   the user asked for needs the width more than the top does. */
+/* Mobile (default): the wordmark alone across the top, the focus note filling
+   the middle, and every control collapsed into one bottom bar of icon
+   triggers. A departure from SPEC's "music near top centre" — the bar the user
+   asked for needs the width more than the top does. */
 .room-grid {
   display: grid;
   height: 100%;
   gap: 0.75rem;
   padding: calc(var(--inset-t) + 0.85rem) calc(var(--inset-r) + 0.85rem)
     calc(var(--inset-b) + 0.85rem) calc(var(--inset-l) + 0.85rem);
-  grid-template-columns: 1fr auto;
+  grid-template-columns: 1fr;
   grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-areas:
-    'wordmark presence'
-    'note     note'
-    'controls controls';
+    'wordmark'
+    'note'
+    'controls';
   align-items: start;
 }
 
@@ -49,10 +49,9 @@
   align-items: center;
   min-height: var(--control-height);
 }
+/* Mobile shows the room's company in the bar instead; this pill is desktop-only. */
 .area-presence {
-  grid-area: presence;
-  justify-self: end;
-  align-self: center;
+  display: none;
 }
 .area-note {
   grid-area: note;

@@ -47,3 +47,17 @@ export function PersonMark() {
     </Frame>
   );
 }
+
+/** Three figures — the rest of the room. A centre figure with two behind it. */
+export function PeopleMark() {
+  return (
+    <Frame>
+      <circle cx="4.4" cy="7" r="1.7" {...stroke} opacity="0.65" />
+      <path d="M1.6 13.4a3 3 0 0 1 3.9-2.6" {...stroke} opacity="0.65" />
+      <circle cx="15.6" cy="7" r="1.7" {...stroke} opacity="0.65" />
+      <path d="M18.4 13.4a3 3 0 0 0-3.9-2.6" {...stroke} opacity="0.65" />
+      <circle cx="10" cy="7.4" r="2.6" {...stroke} />
+      <path d="M5.4 15.6a4.7 4.7 0 0 1 9.2 0" {...stroke} />
+    </Frame>
+  );
+}

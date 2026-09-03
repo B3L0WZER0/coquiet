@@ -18,7 +18,7 @@ import { usePresence } from '@/hooks/usePresence';
 import { useFocusNote } from '@/hooks/useFocusNote';
 import { useIdleDim } from '@/hooks/useIdleDim';
 import { useTimer } from '@/hooks/useTimer';
-import { primeChime } from '@/lib/chime';
+import { CHIME_DURATION_MS, primeChime } from '@/lib/chime';
 import { breakSuggestion } from '@/lib/notes';
 import { entryPresenceLine } from '@/lib/presence/copy';
 
@@ -27,6 +27,11 @@ const DISSOLVE_MS = 900;
 
 /** How far the music drops during a break — lowered, never stopped. */
 const BREAK_DUCK = 0.35;
+
+/** The extra dip right as the chime rings, so it can be heard over the music. */
+const CHIME_DUCK = 0.08;
+const CHIME_DUCK_IN = 220;
+const CHIME_DUCK_OUT = 900;
 
 export function Room() {
   const [entered, setEntered] = useState(false);
@@ -39,7 +44,24 @@ export function Room() {
 
   const presence = usePresence(entered, audio.state.channel);
 
-  const timer = useTimer();
+  // Set by the dip below and read by the phase effect further down, so the
+  // sustained break duck doesn't immediately cancel the chime's fast one —
+  // the two are cooperating on the same fade, not competing for it.
+  const chimeDuckingRef = useRef(false);
+  const onBreakRef = useRef(false);
+
+  // A quick dip under the chime, then back to whatever the room should
+  // actually be resting at once it's done ringing.
+  const duckForChime = useCallback(() => {
+    chimeDuckingRef.current = true;
+    void audio.setDuck(CHIME_DUCK, CHIME_DUCK_IN);
+    window.setTimeout(() => {
+      chimeDuckingRef.current = false;
+      void audio.setDuck(onBreakRef.current ? BREAK_DUCK : 1, CHIME_DUCK_OUT);
+    }, CHIME_DURATION_MS);
+  }, [audio]);
+
+  const timer = useTimer({ onFocusEnded: duckForChime, onBreakEnded: duckForChime });
 
   const handleEnter = useCallback(() => {
     // Start the audio inside the click handler itself, so the browser sees an
@@ -77,12 +99,16 @@ export function Room() {
 
   const playing = audio.state.status === 'playing';
   const onBreak = timer.session.phase === 'break' || timer.session.phase === 'break-ended';
+  onBreakRef.current = onBreak;
 
   // The music is lowered for the whole of a break and comes back up when the
   // next session begins. Driving this from the phase rather than from the
   // transition event means a break restored after a refresh is also quiet —
   // and that pressing pause and play during a break cannot undo it.
   useEffect(() => {
+    // The chime's own dip is already carrying this transition to its resting
+    // level; jumping in here too would cancel the dip before it lands.
+    if (chimeDuckingRef.current) return;
     void audio.setDuck(onBreak ? BREAK_DUCK : 1);
   }, [onBreak, audio]);
 

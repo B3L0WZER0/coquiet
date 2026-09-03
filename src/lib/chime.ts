@@ -8,6 +8,9 @@ const TONES = [
 /** Peak gain per tone. */
 const PEAK = 0.3;
 
+/** How long the chime rings, so callers can time a duck around it. */
+export const CHIME_DURATION_MS = Math.max(...TONES.map((t) => t.startAt + t.duration)) * 1000;
+
 let context: AudioContext | null = null;
 
 function audioContextClass(): typeof AudioContext | null {

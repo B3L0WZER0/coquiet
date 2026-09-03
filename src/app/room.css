@@ -1,15 +1,22 @@
 /* Room layout, volume slider, personal presence panel, idle dimming. */
 
-/* The background sits behind everything and must cover the largest the viewport
-   can ever get — on iOS the URL bar retracts on scroll and a plain `inset: 0`
-   fixed layer leaves a strip of bare page colour at the foot. Pin it top-left
-   and size it to the large viewport; `overflow: hidden` clips the overscan. */
+/* The background sits behind everything and has to cover the screen through
+   every move iOS Safari makes: the URL bar retracting, and — with
+   viewport-fit=cover — the strip under the home indicator that the viewport
+   units can stop short of. Pin it to the top and oversize it well past the
+   bottom; `overflow: hidden` and the image's `object-cover` absorb the
+   overscan, so there is no cost to being generous. `100vh` is the fallback
+   (already the *large* viewport on iOS); `min-height` then pushes past the
+   bottom regardless of what `lvh` resolves to on older iOS. */
 .room-backdrop {
   top: 0;
   left: 0;
+  right: 0;
   width: 100vw;
   height: 100vh;
   height: 100lvh;
+  min-height: calc(100vh + env(safe-area-inset-bottom, 0px) + 4rem);
+  min-height: calc(100lvh + env(safe-area-inset-bottom, 0px) + 4rem);
 }
 
 /* Toggles for the two presentations of a control. `display: contents` so the

@@ -31,6 +31,16 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
     if (current.id !== buildRoom.id) setRoom(current);
   }, [buildRoom]);
 
+  // iOS Safari paints its own toolbar with the page's theme colour, and on a
+  // page that never scrolls it keeps that toolbar expanded permanently — so a
+  // flat near-black there reads as a black bar bolted under the room. No image
+  // can reach behind browser chrome, but the colour can at least be the room's
+  // own, which lets the bar pass for the floor continuing past the edge.
+  useEffect(() => {
+    const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+    if (meta) meta.content = room.chrome;
+  }, [room]);
+
   return (
     <>
       {/* Only this room is preloaded. */}

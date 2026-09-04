@@ -86,7 +86,17 @@
   padding: 0.55rem calc(var(--inset-r) + 0.6rem) calc(var(--inset-b) + 0.5rem)
     calc(var(--inset-l) + 0.6rem);
   border-top: 1px solid var(--hairline);
-  background-color: color-mix(in oklab, var(--color-ink) 84%, transparent);
+  /* Was a flat 84% ink, which read as a solid slab across the foot of the
+     room. A gradient instead: light enough at the hairline for the room to
+     carry through the bar, settling to near-solid at the very bottom where it
+     meets the browser's own toolbar — so the two darken into each other rather
+     than meeting at a visible edge. */
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--color-ink) 46%, transparent) 0%,
+    color-mix(in oklab, var(--color-ink) 72%, transparent) 55%,
+    color-mix(in oklab, var(--color-ink) 88%, transparent) 100%
+  );
 }
 
 /* The dock trigger: a bare icon target, styled only on hover and while open so

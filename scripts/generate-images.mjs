@@ -113,14 +113,38 @@ for (const file of sources) {
 
   if (!(id in FOCAL_X)) missingFocal.push(id);
 
+  // The colour iOS Safari should tint its own toolbar with. The browser will
+  // only take a flat colour there — no image reaches behind browser chrome —
+  // so the next best thing is the colour the room already is along its bottom
+  // edge, which turns a black bar into something the room appears to continue
+  // into. Sampled from the focal window, since that is the strip a phone
+  // actually shows, and only the bottom eighth, where the bar meets the room.
+  const focal = (FOCAL_X[id] ?? 50) / 100;
+  const sw = Math.max(1, Math.round(meta.width * 0.3));
+  const chromeRaw = await sharp(source)
+    .extract({
+      left: Math.round(Math.min(Math.max(meta.width * focal - sw / 2, 0), meta.width - sw)),
+      top: Math.round(meta.height * 0.875),
+      width: sw,
+      height: Math.max(1, Math.round(meta.height * 0.125)),
+    })
+    .resize(1, 1, { fit: 'fill' })
+    .raw()
+    .toBuffer();
+  const chrome =
+    '#' + [...chromeRaw.subarray(0, 3)].map((c) => c.toString(16).padStart(2, '0')).join('');
+
   rooms.push({
     id,
     widths,
     focalX: FOCAL_X[id] ?? 50,
+    chrome,
     lqip: `data:image/webp;base64,${lqip.toString('base64')}`,
   });
 
-  console.log(`  ${id.padEnd(22)} ${widths.join('/')}  focal ${FOCAL_X[id] ?? 50}%`);
+  console.log(
+    `  ${id.padEnd(22)} ${widths.join('/')}  focal ${String(FOCAL_X[id] ?? 50).padStart(3)}%  chrome ${chrome}`,
+  );
 }
 
 const lines = [
@@ -129,13 +153,15 @@ const lines = [
   ' *',
   ' * One entry per image in /design-reference. `focalX` is where the crop',
   ' * centres when the viewport is portrait; `lqip` is the blurred placeholder,',
-  ' * inlined so the first paint is already warm.',
+  ' * inlined so the first paint is already warm. `chrome` is the colour along',
+  ' * the room\'s bottom edge, handed to the browser to tint its own toolbar.',
   ' */',
   '',
   'export interface ManifestRoom {',
   '  id: string;',
   '  widths: readonly number[];',
   '  focalX: number;',
+  '  chrome: string;',
   '  lqip: string;',
   '}',
   '',
@@ -147,6 +173,7 @@ for (const room of rooms) {
   lines.push(`    id: ${JSON.stringify(room.id)},`);
   lines.push(`    widths: [${room.widths.join(', ')}],`);
   lines.push(`    focalX: ${room.focalX},`);
+  lines.push(`    chrome: ${JSON.stringify(room.chrome)},`);
   lines.push(`    lqip: ${JSON.stringify(room.lqip)},`);
   lines.push('  },');
 }

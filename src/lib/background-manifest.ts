@@ -51,6 +51,18 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADwBACdASogABIAPu1mqk2ppaQiMAgBMB2JYwC06BHoW1uR3q32PKMnaJLwWyEcEOgAeMMLZBp5WmF+9TwJrbEKaaeh0LAPqsfGai7WRjuakn4jVlP+y3ootueJaLvIU5b+LeuiooDAswCYAAA=",
   },
   {
+    id: "cave-forest",
+    widths: [640, 1024, 1600],
+    focalX: 70,
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADwBACdASobABIAPu1aqE2ppKOiN/VYATAdiWUAuwALPQ3nGFyqC5ZEOIHrGzOMnAAA/t3+Z5gJrJfnge7g0i1ddsIqZMOrfEXgQ/tzE+3ollaU1YFNds8D508fKI3BqKvwvCGF7JoHakAA",
+  },
+  {
+    id: "cave-working",
+    widths: [640, 1024, 1600],
+    focalX: 65,
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAADwBACdASobABIAPu1wr1KppiQiqAgBMB2JZwC4MAtZZwJgAUxBOq8iJdBCI+3RPCAA/tDNRpD6mBMQlelutjYmBa+Jl05MkxWJmwSEMsthVpISZrI0SkPvve2UAdyiXRMwNo0d51leaixYLoAAAA==",
+  },
+  {
     id: "circular-window-studio",
     widths: [640, 1024, 1600],
     focalX: 65,
@@ -63,10 +75,28 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABwBQCdASogABIAPuFeqk2opSQiMAwBEBwJZQC2yCIgt+7ELhLJ8r+T3bEnkYNz2sLw7l2gAP6+K5zHYEK88xWy3WDEfnVzd7TLse3eZJ5wtnDJ02Hzyo1/r3phdZW9WfUA20fO3u33a7dl8C4ogAAA",
   },
   {
+    id: "cliffside-cafe-focus",
+    widths: [640, 1024, 1600],
+    focalX: 68,
+    lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASogABIAPuFWpU2opKOiN/qoARAcCWUAvzgh3Kt1+V91C1lIFLSqzoAA/u6AhfAK+NseSPf7k/S8qKHAo/Etku2Ycwig7qQXYo4C7lVpp/RDDQaamL4DY0nwn97igAAA",
+  },
+  {
+    id: "coastal-grotto-writer",
+    widths: [640, 1024, 1600],
+    focalX: 60,
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACQBQCdASogABIAPu1kqU2ppaOiMAgBMB2JYwC1GzlDU4vG9hzuca2YOH3Z6PTdxW/3kdPJgAD+ueYzbZDIu468FlQl3IuT31Y+Mtqz3S27HrrehEJYVh2dfaTTdUUA4kmHxaOG+ARZENs5YefAAA==",
+  },
+  {
     id: "coastal-observatory",
     widths: [640, 1024, 1600],
     focalX: 74,
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwBQCdASogABIAPu1ipU4ppSMiMBgMATAdiWcAwcwL1ILDDkPXKTOrmTGJm2PDxnVvcAD7Izonbx7AD+83aI1fqlul6aq5/JcHzJvp3rs6vF6GCCFML63euSL+H2CUJ7IJMgkwQ6B9nSO8Ocsg1AAA",
+  },
+  {
+    id: "concrete-cave",
+    widths: [640, 1024, 1600],
+    focalX: 63,
+    lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABQBACdASobABIAPu1wslKppiSiqAgBMB2JZQCxHy/BqT4Pux/00/dbZdeAAP7xfSedMP0db3UfxMIdLNNph9Zn4GrqSZP4LrBxJqRKbop6CS40g5217Acx12xjEgLhDTkbb3aW9Czly81O0sgwWcAA",
   },
   {
     id: "desert-arches",
@@ -87,10 +117,22 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAACwBACdASogABIAPuFcqU2opSQiMAwBEBwJZQC/7CHe1zKdh/cLa0lbQ73yS7cIAP7o6HTL6VqBdhLP2QfCQkEpGRvyBD+pRTWWQ+ZESvLP88bx5Yks2OHAAAA=",
   },
   {
+    id: "forest-waterfall-salon",
+    widths: [640, 1024, 1600],
+    focalX: 18,
+    lqip: "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAACwBACdASogABIAPu1ip02ppaMiMAgBMB2JZwDH5CHEmoUUZ5ECl9druAzyiVOAAP7ysUscYk71Gv1csGARlucd26fJlMzuyXvb0QkRCI7lRBGofdXIXosJIv1gAA==",
+  },
+  {
     id: "garden-pool",
     widths: [640, 1024, 1600],
     focalX: 66,
     lqip: "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADQBACdASogABIAPu1mq04ppaQiMAgBMB2JZQC2yCFoUFbAMkzwnCJ0WQSkemlasAD+7ov2KavS/hRIE2QlTnj/CN1NADUWdGs0KtMvxNPj3l2K93YqUdFHqOSfYPzr7+AqZL8dp1PoFZzy/rJpVl7gAAA=",
+  },
+  {
+    id: "mist-lake-pavilion",
+    widths: [640, 1024, 1600],
+    focalX: 30,
+    lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAQBQCdASogABIAPu1oqk4ppiQiMAgBMB2JZwDA3B6V4Lipjay5jbYfhlUR5m001ZegAP7r/yN5IFSEiIhzF7duojrjY+qkT6AsdD2xRx+Crlcb7mqnMLsw9wyaIH/93wx36aQAAAA=",
   },
   {
     id: "mountain-cavern",

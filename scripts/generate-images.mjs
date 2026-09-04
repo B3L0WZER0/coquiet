@@ -41,14 +41,25 @@ const FOCAL_X = {
   'cafe-windows': 32,
   'calm-ocean-screen': 65,
   'calm-screen-working': 43,
+  // No person in frame; centred on the lamp and the shelf above the bench.
+  'cave-forest': 70,
+  'cave-working': 65,
   'circular-window-studio': 65,
   'cliff-cave': 50,
+  'cliffside-cafe-focus': 68,
+  'coastal-grotto-writer': 60,
   'coastal-observatory': 74,
+  'concrete-cave': 63,
   'desert-arches': 42,
   'desert-rock-pavilion': 60,
   // No person in frame; centred on the lit desk.
   'forest-console-invitation': 50,
+  // The exception to favouring a person: the one figure sits so hard against
+  // the left edge that framing them means losing the waterfall the image is
+  // built around. Centred on the view instead; in portrait they fall outside.
+  'forest-waterfall-salon': 18,
   'garden-pool': 66,
+  'mist-lake-pavilion': 30,
   'mountain-cavern': 55,
   // No person in frame; centred on the desk and chair.
   'ocean-workstation-invitation': 68,

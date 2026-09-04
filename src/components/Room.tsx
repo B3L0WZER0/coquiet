@@ -43,6 +43,11 @@ export function Room() {
   const [dissolving, setDissolving] = useState(false);
 
   const audio = useAudio();
+  // `useAudio` hands back a fresh object every render, and this component
+  // re-renders on every tick of the clock. Effects below must hang off the
+  // stable callback, not the wrapper, or they tear themselves down twice a
+  // second — which would cancel a duck the moment it started.
+  const setDuck = audio.setDuck;
   const note = useFocusNote(entered);
   const dimmed = useIdleDim(entered);
   const playButtonRef = useRef<HTMLDivElement>(null);
@@ -65,9 +70,9 @@ export function Room() {
   const beginChimeDuck = useCallback(
     (durationMs: number) => {
       chimeDuckingRef.current = true;
-      void audio.setDuck(CHIME_DUCK, durationMs);
+      void setDuck(CHIME_DUCK, durationMs);
     },
-    [audio],
+    [setDuck],
   );
 
   // Once the chime has rung, back to whatever the room should actually be
@@ -82,9 +87,9 @@ export function Room() {
     chimeDuckTimer.current = window.setTimeout(() => {
       chimeDuckTimer.current = null;
       chimeDuckingRef.current = false;
-      void audio.setDuck(restingDuck(), CHIME_DUCK_OUT);
+      void setDuck(restingDuck(), CHIME_DUCK_OUT);
     }, CHIME_DURATION_MS);
-  }, [audio, restingDuck, beginChimeDuck]);
+  }, [setDuck, restingDuck, beginChimeDuck]);
 
   // The dip above hands control back through a timeout, and the phase effect
   // below stands aside while it is in flight. On a phone that is a real risk:
@@ -100,7 +105,7 @@ export function Room() {
         chimeDuckTimer.current = null;
       }
       chimeDuckingRef.current = false;
-      void audio.setDuck(restingDuck(), CHIME_DUCK_OUT);
+      void setDuck(restingDuck(), CHIME_DUCK_OUT);
     };
     document.addEventListener('visibilitychange', reassert);
     return () => {
@@ -108,7 +113,7 @@ export function Room() {
       if (chimeDuckTimer.current !== null) window.clearTimeout(chimeDuckTimer.current);
       if (chimeLeadTimer.current !== null) window.clearTimeout(chimeLeadTimer.current);
     };
-  }, [audio, restingDuck]);
+  }, [setDuck, restingDuck]);
 
   const timer = useTimer({ onFocusEnded: duckForChime, onBreakEnded: duckForChime });
 
@@ -136,10 +141,10 @@ export function Room() {
       // (At a real phase change the chime has already claimed the restore.)
       if (chimeDuckingRef.current && chimeDuckTimer.current === null) {
         chimeDuckingRef.current = false;
-        void audio.setDuck(restingDuck(), CHIME_DUCK_OUT);
+        void setDuck(restingDuck(), CHIME_DUCK_OUT);
       }
     };
-  }, [endsAt, beginChimeDuck, audio, restingDuck]);
+  }, [endsAt, beginChimeDuck, setDuck, restingDuck]);
 
   const handleEnter = useCallback(() => {
     // Start the audio inside the click handler itself, so the browser sees an
@@ -192,8 +197,8 @@ export function Room() {
     // The chime's own dip is already carrying this transition to its resting
     // level; jumping in here too would cancel the dip before it lands.
     if (chimeDuckingRef.current) return;
-    void audio.setDuck(onBreak ? BREAK_DUCK : 1);
-  }, [onBreak, audio]);
+    void setDuck(onBreak ? BREAK_DUCK : 1);
+  }, [onBreak, setDuck]);
 
   const suggestion = useMemo(
     () => breakSuggestion(timer.session.breakCount),

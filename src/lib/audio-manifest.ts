@@ -16,47 +16,47 @@ export interface ManifestTrack {
 export const AUDIO_MANIFEST: Record<string, readonly ManifestTrack[]> = {
   still: [
     {
-      src: "/audio/Still%201.mp3",
-      durationSeconds: 2626.344,
+      src: "/audio/Still%201.m4a",
+      durationSeconds: 2626.343,
       title: "Still 1",
     },
     {
-      src: "/audio/Still%202.mp3",
-      durationSeconds: 3695.464,
+      src: "/audio/Still%202.m4a",
+      durationSeconds: 3695.456,
       title: "Still 2",
     },
   ],
   flow: [
     {
-      src: "/audio/Flow%201.mp3",
-      durationSeconds: 3639.816,
+      src: "/audio/Flow%201.m4a",
+      durationSeconds: 3639.815,
       title: "Flow 1",
     },
     {
-      src: "/audio/Flow%202.mp3",
-      durationSeconds: 3646.848,
+      src: "/audio/Flow%202.m4a",
+      durationSeconds: 3646.847,
       title: "Flow 2",
     },
     {
-      src: "/audio/Flow%203.mp3",
-      durationSeconds: 3815.497,
+      src: "/audio/Flow%203.m4a",
+      durationSeconds: 3815.48,
       title: "Flow 3",
     },
   ],
   momentum: [
     {
-      src: "/audio/Momentum%201.mp3",
-      durationSeconds: 3724.896,
+      src: "/audio/Momentum%201.m4a",
+      durationSeconds: 3724.895,
       title: "Momentum 1",
     },
     {
-      src: "/audio/Momentum%202.mp3",
-      durationSeconds: 3708.735,
+      src: "/audio/Momentum%202.m4a",
+      durationSeconds: 3708.714,
       title: "Momentum 2",
     },
     {
-      src: "/audio/Momentum%203.mp3",
-      durationSeconds: 3694.55,
+      src: "/audio/Momentum%203.m4a",
+      durationSeconds: 3694.527,
       title: "Momentum 3",
     },
   ],

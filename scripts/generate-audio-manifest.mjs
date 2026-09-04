@@ -3,7 +3,13 @@
  *
  * Usage: npm run assets:audio
  *
- * Name a file after its channel and a number — "Flow 1.mp3", "Still 2.mp3" —
+ * The tracks themselves are no longer in this repository — they are served
+ * from object storage (see NEXT_PUBLIC_AUDIO_BASE_URL in asset-path.ts), and
+ * src/lib/audio-manifest.ts is committed so a build never needs them. To
+ * regenerate it, put the files back in public/audio first; the archive of both
+ * encodings lives outside the repo.
+ *
+ * Name a file after its channel and a number — "Flow 1.m4a", "Still 2.m4a" —
  * and it becomes part of that channel's programme. The numbers only decide the
  * order, so they do not have to start at one or be contiguous.
  *

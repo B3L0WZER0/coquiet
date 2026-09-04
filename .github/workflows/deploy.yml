@@ -36,11 +36,26 @@ jobs:
       - run: npm ci
 
       - name: Build static export
-        # The repository name is the path the site is served under. Read from
-        # the event rather than written in, so a rename doesn't break the build.
-        run: npm run build
+        # Where the site is served from decides the base path. A github.io
+        # project page lives under /<repo> — read from the event rather than
+        # written in, so a rename doesn't break the build. A custom domain
+        # serves it at the root instead, and needs no prefix at all.
+        #
+        # To move to a domain: set the SITE_CUSTOM_DOMAIN repository variable
+        # (Settings -> Secrets and variables -> Actions -> Variables) to the
+        # domain, and set the same domain under Settings -> Pages. Unset, this
+        # builds exactly as it always has.
+        run: |
+          if [ -n "${{ vars.SITE_CUSTOM_DOMAIN }}" ]; then
+            echo "Building for https://${{ vars.SITE_CUSTOM_DOMAIN }}/ (no base path)"
+            export NEXT_PUBLIC_BASE_PATH=""
+          else
+            echo "Building for a github.io project page under /${{ github.event.repository.name }}"
+            export NEXT_PUBLIC_BASE_PATH="/${{ github.event.repository.name }}"
+          fi
+          npm run build
         env:
-          NEXT_PUBLIC_BASE_PATH: /${{ github.event.repository.name }}
+          STATIC_EXPORT: '1'
           # Cross-device presence. Both are public values — the anon key is
           # meant to be shipped to browsers — so they are repository variables
           # rather than secrets. Unset, the build still succeeds and the room

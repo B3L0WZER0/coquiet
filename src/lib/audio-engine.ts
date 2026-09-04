@@ -193,6 +193,13 @@ export class AudioEngine {
     }
   }
 
+  /** The room's context, where one exists — currently iOS only. Shared so the
+   *  chime can ring through the same audio session as the music rather than
+   *  opening its own, which iOS silences with the ring switch. */
+  sharedContext(): AudioContext | null {
+    return this.ctx;
+  }
+
   // --- subscription -------------------------------------------------------
 
   subscribe(fn: (state: AudioState) => void): () => void {

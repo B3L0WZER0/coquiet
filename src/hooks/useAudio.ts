@@ -4,6 +4,7 @@ import { useCallback, useSyncExternalStore } from 'react';
 
 import { AudioEngine, type AudioState } from '@/lib/audio-engine';
 import { DEFAULT_CHANNEL, isChannelId, type ChannelId } from '@/lib/channels';
+import { setChimeContextSource } from '@/lib/chime';
 import { STORAGE_KEYS, readStored, writeStored } from '@/lib/storage';
 
 export const DEFAULT_VOLUME = 0.5;
@@ -38,7 +39,12 @@ let engine: AudioEngine | null = null;
 
 function getEngine(): AudioEngine | null {
   if (typeof window === 'undefined') return null;
-  if (engine === null) engine = new AudioEngine(storedChannel(), storedVolume());
+  if (engine === null) {
+    engine = new AudioEngine(storedChannel(), storedVolume());
+    // Let the chime ring through the room's own audio session where there is
+    // one, rather than opening a second context iOS will not keep alive.
+    setChimeContextSource(() => engine?.sharedContext() ?? null);
+  }
   return engine;
 }
 

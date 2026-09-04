@@ -62,6 +62,11 @@ jobs:
           # falls back to presence across tabs of one browser.
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # Where the music is served from, when it has outgrown Pages. Set it
+          # to the bucket's own origin — https://audio.example.com, no trailing
+          # slash, files at the root — and that host must send CORS headers, or
+          # iOS loses its sound. Unset, the tracks ship with the site as before.
+          NEXT_PUBLIC_AUDIO_BASE_URL: ${{ vars.NEXT_PUBLIC_AUDIO_BASE_URL }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

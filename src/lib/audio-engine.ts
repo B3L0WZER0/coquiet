@@ -1,5 +1,6 @@
 /** The audio engine. */
 
+import { audioIsOffOrigin } from '@/lib/asset-path';
 import { getChannel, stationPosition, type Channel, type ChannelId } from '@/lib/channels';
 
 export const FADE = {
@@ -88,6 +89,14 @@ export class AudioEngine {
     if (el instanceof HTMLAudioElement) {
       // Nothing is fetched until a source is assigned and load() is called.
       el.preload = 'none';
+      // Only when the music is served from another origin, and then always.
+      // iOS routes each deck through createMediaElementSource, and a
+      // cross-origin element without CORS taints the graph: the node yields
+      // silence, with no error anywhere. Desktop, still on el.volume, would
+      // play perfectly — so the failure would show up as "the iPhone is mute"
+      // and nothing else. Left off for a same-origin file, which needs none of
+      // this and would only gain a pointless preflight.
+      if (audioIsOffOrigin) el.crossOrigin = 'anonymous';
       el.volume = 0;
       el.addEventListener('error', () => {
         // A deck failing is only fatal if it is the one we are listening to.

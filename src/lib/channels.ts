@@ -1,6 +1,6 @@
 /** The three music channels. */
 
-import { assetPath } from '@/lib/asset-path';
+import { audioPath } from '@/lib/asset-path';
 import { AUDIO_MANIFEST, type ManifestTrack } from '@/lib/audio-manifest';
 
 export type ChannelId = 'still' | 'flow' | 'momentum';
@@ -33,8 +33,9 @@ function build(
   if (manifest.length === 0) {
     throw new Error(`No audio for the ${label} channel. Run: npm run assets:audio`);
   }
-  // The manifest is generated against the domain root; the site may not be there.
-  const tracks = manifest.map((t) => ({ ...t, src: assetPath(t.src) }));
+  // The manifest is generated against the domain root; neither the site nor
+  // the music is necessarily there.
+  const tracks = manifest.map((t) => ({ ...t, src: audioPath(t.src) }));
   return {
     id,
     label,

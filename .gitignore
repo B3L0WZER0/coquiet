@@ -11,3 +11,10 @@ playwright-report/
 next-env.d.ts
 tsconfig.tsbuildinfo
 shots/
+
+# Dist dir for the e2e server, so it can run beside a normal `next dev`.
+.next-e2e/
+
+# The tracks live in R2 and are archived outside the repo; keep a local copy
+# here for `next dev` and the e2e suite, but never commit it again.
+/public/audio/

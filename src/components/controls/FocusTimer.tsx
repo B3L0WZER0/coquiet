@@ -244,6 +244,10 @@ function MinutesField({
   max: number;
   onChange: (v: number) => void;
 }) {
+  // Null while the field agrees with the number; a string once someone is
+  // mid-edit, including the empty string.
+  const [draft, setDraft] = useState<string | null>(null);
+
   return (
     <label className="flex-1">
       <span className="label-quiet mb-1 block">{label}</span>
@@ -252,9 +256,17 @@ function MinutesField({
         inputMode="numeric"
         min={min}
         max={max}
-        value={value}
+        // The field shows what was typed, not the number behind it. Fully
+        // controlled by `value`, backspacing "25" down to nothing put the old
+        // number straight back: an empty string parses to NaN, nothing was
+        // reported, and React re-rendered the field with what it had. Emptying
+        // it to type a fresh number was impossible without selecting all first.
+        value={draft ?? String(value)}
         onChange={(e) => {
-          const v = Number.parseInt(e.target.value, 10);
+          const raw = e.target.value;
+          setDraft(raw);
+          const v = Number.parseInt(raw, 10);
+          // An empty or half-typed field reports nothing and simply waits.
           if (Number.isFinite(v)) onChange(v);
         }}
         // Correct out-of-range entries when the field is done with, not while
@@ -263,10 +275,12 @@ function MinutesField({
         // the field showing what was typed while the session holds the clamped
         // value.
         onBlur={() => {
+          // Leaving the field empty means keeping the number it had.
+          setDraft(null);
           const clamped = clampMinutes(value, { min, max });
           if (clamped !== value) onChange(clamped);
         }}
-        className="w-full min-h-9 rounded-lg px-2 py-1.5 text-[0.8125rem]"
+        className="minutes-field w-full min-h-9 rounded-lg px-2 py-1.5 text-[0.8125rem]"
         style={{
           backgroundColor: 'color-mix(in oklab, var(--color-ink) 40%, transparent)',
           border: '1px solid var(--hairline)',

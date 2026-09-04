@@ -49,17 +49,48 @@ export function Room() {
   // the two are cooperating on the same fade, not competing for it.
   const chimeDuckingRef = useRef(false);
   const onBreakRef = useRef(false);
+  const chimeDuckTimer = useRef<number | null>(null);
+
+  /** The level the room should be resting at right now, chime aside. */
+  const restingDuck = useCallback(() => (onBreakRef.current ? BREAK_DUCK : 1), []);
 
   // A quick dip under the chime, then back to whatever the room should
   // actually be resting at once it's done ringing.
   const duckForChime = useCallback(() => {
+    // A second chime arriving mid-dip must not leave the first one's restore
+    // pending — it would land late and fight the phase this one belongs to.
+    if (chimeDuckTimer.current !== null) window.clearTimeout(chimeDuckTimer.current);
     chimeDuckingRef.current = true;
     void audio.setDuck(CHIME_DUCK, CHIME_DUCK_IN);
-    window.setTimeout(() => {
+    chimeDuckTimer.current = window.setTimeout(() => {
+      chimeDuckTimer.current = null;
       chimeDuckingRef.current = false;
-      void audio.setDuck(onBreakRef.current ? BREAK_DUCK : 1, CHIME_DUCK_OUT);
+      void audio.setDuck(restingDuck(), CHIME_DUCK_OUT);
     }, CHIME_DURATION_MS);
-  }, [audio]);
+  }, [audio, restingDuck]);
+
+  // The dip above hands control back through a timeout, and the phase effect
+  // below stands aside while it is in flight. On a phone that is a real risk:
+  // iOS suspends timers once Safari is backgrounded or the screen locks, so a
+  // chime that rings as the phone is put down can leave the flag stuck set —
+  // and from then on nothing ever ducks again, for the rest of the session.
+  // Coming back to the page re-asserts the level the phase actually calls for.
+  useEffect(() => {
+    const reassert = () => {
+      if (document.visibilityState !== 'visible') return;
+      if (chimeDuckTimer.current !== null) {
+        window.clearTimeout(chimeDuckTimer.current);
+        chimeDuckTimer.current = null;
+      }
+      chimeDuckingRef.current = false;
+      void audio.setDuck(restingDuck(), CHIME_DUCK_OUT);
+    };
+    document.addEventListener('visibilitychange', reassert);
+    return () => {
+      document.removeEventListener('visibilitychange', reassert);
+      if (chimeDuckTimer.current !== null) window.clearTimeout(chimeDuckTimer.current);
+    };
+  }, [audio, restingDuck]);
 
   const timer = useTimer({ onFocusEnded: duckForChime, onBreakEnded: duckForChime });
 

@@ -339,3 +339,15 @@
 .room-controls > *:not([data-dim]) {
   transition-duration: 180ms; /* coming back is immediate; only fading away is slow */
 }
+
+/* iOS Safari zooms the whole page in when a focused input's text is smaller
+   than 16px, and never zooms back out. Once zoomed, the layout looks wider
+   than the screen and `position: fixed` layers stop covering it — which is
+   what left a black band under the bar. These are the only text inputs in the
+   room, so raising them on touch pointers is the whole fix. Page zoom is left
+   available; taking it away with maximum-scale would cost more than it saves. */
+@media (pointer: coarse) {
+  .minutes-field {
+    font-size: 16px;
+  }
+}

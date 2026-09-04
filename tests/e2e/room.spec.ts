@@ -384,6 +384,32 @@ test('a custom 1 / 10 session is honoured exactly as typed', async ({ page }) =>
   await expect(timer).toContainText(/Focus0:5[0-9]/);
 });
 
+test('the custom field can be emptied with backspace', async ({ page }) => {
+  await page.getByRole('button', { name: 'Enter the room' }).click();
+  await page.waitForTimeout(1400);
+
+  await page.getByRole('button', { name: /Focus timer/ }).click();
+  await page.getByRole('radio', { name: 'Custom' }).click();
+
+  const focus = page.locator('[role=dialog] input[type=number]').first();
+  await focus.click();
+
+  // Backspacing a controlled number field used to be impossible: the empty
+  // string parsed to NaN, nothing was reported, and the old value was put
+  // straight back. Clearing it to type a fresh number needed a select-all.
+  await focus.press('End');
+  await focus.press('Backspace');
+  await expect(focus).toHaveValue('2');
+  await focus.press('Backspace');
+  await expect(focus).toHaveValue('');
+
+  // Typing then continues from empty rather than appending to what was there.
+  await focus.pressSequentially('45');
+  await expect(focus).toHaveValue('45');
+  await focus.blur();
+  await expect(page.getByRole('button', { name: /Focus timer/ })).toContainText('Start Timer45:00');
+});
+
 test('an out-of-range custom value corrects itself visibly', async ({ page }) => {
   await page.getByRole('button', { name: 'Enter the room' }).click();
   await page.waitForTimeout(1400);

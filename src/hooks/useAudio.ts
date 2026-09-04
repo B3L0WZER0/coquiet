@@ -6,7 +6,7 @@ import { AudioEngine, type AudioState } from '@/lib/audio-engine';
 import { DEFAULT_CHANNEL, isChannelId, type ChannelId } from '@/lib/channels';
 import { STORAGE_KEYS, readStored, writeStored } from '@/lib/storage';
 
-export const DEFAULT_VOLUME = 0.7;
+export const DEFAULT_VOLUME = 0.5;
 
 /** The visitor's remembered channel, or Flow. */
 export function storedChannel(): ChannelId {

@@ -110,7 +110,7 @@ test('entry starts Flow and fades in from silence', async ({ page }) => {
   // By the end of the entry fade it has reached the default level.
   await page.waitForTimeout(4200);
   const settled = await deckState(page);
-  expect(settled[0].volume).toBeCloseTo(0.7, 1);
+  expect(settled[0].volume).toBeCloseTo(0.5, 1);
 
   // It joined the station partway through, not at the beginning of the file.
   expect(settled[0].currentTime).toBeGreaterThan(1);
@@ -132,7 +132,7 @@ test('switching channel hands over rather than blending', async ({ page }) => {
   }
 
   for (const levels of profile) {
-    expect(levels.filter((v) => v > 0.7 * 0.25).length).toBeLessThanOrEqual(1);
+    expect(levels.filter((v) => v > 0.5 * 0.25).length).toBeLessThanOrEqual(1);
   }
   // And it never drops out entirely.
   expect(Math.min(...profile.map((l) => Math.max(0, ...l)))).toBeGreaterThan(0);
@@ -140,7 +140,7 @@ test('switching channel hands over rather than blending', async ({ page }) => {
   await page.waitForTimeout(2000);
   const after = await deckState(page);
   expect(after.filter((d) => !d.paused)).toHaveLength(1);
-  expect(after.find((d) => !d.paused)!.volume).toBeCloseTo(0.7, 1);
+  expect(after.find((d) => !d.paused)!.volume).toBeCloseTo(0.5, 1);
 
   await expect(page.getByRole('radio', { name: 'Momentum' })).toHaveAttribute(
     'aria-checked',
@@ -158,7 +158,7 @@ test('play and pause fade rather than cut', async ({ page }) => {
   // Still running, but on its way down.
   expect(during).toBeDefined();
   expect(during!.volume).toBeGreaterThan(0);
-  expect(during!.volume).toBeLessThan(0.7);
+  expect(during!.volume).toBeLessThan(0.5);
 
   await page.waitForTimeout(1000);
   expect((await deckState(page)).every((d) => d.paused)).toBe(true);
@@ -548,7 +548,7 @@ test.describe('the entry composition', () => {
       (await deckState(page)).filter((d) => !d.paused).map((d) => d.volume);
 
     const mute = page.getByRole('button', { name: /^(Mute|Unmute)$/ });
-    expect((await volumes())[0]).toBeCloseTo(0.7, 1);
+    expect((await volumes())[0]).toBeCloseTo(0.5, 1);
     await expect(mute).toHaveAttribute('aria-pressed', 'false');
 
     await mute.click();
@@ -560,7 +560,7 @@ test.describe('the entry composition', () => {
     await mute.click();
     await page.waitForTimeout(400);
     // The chosen level was kept, not overwritten with zero.
-    expect((await volumes())[0]).toBeCloseTo(0.7, 1);
+    expect((await volumes())[0]).toBeCloseTo(0.5, 1);
     await expect(mute).toHaveAttribute('aria-label', 'Mute');
   });
 

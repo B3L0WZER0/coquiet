@@ -30,7 +30,12 @@ const BREAK_DUCK = 0.35;
 
 /** The extra dip right as the chime rings, so it can be heard over the music. */
 const CHIME_DUCK = 0.08;
-const CHIME_DUCK_IN = 220;
+/** The music steps aside this far ahead of the chime, rather than with it. */
+const CHIME_LEAD_MS = 1000;
+/** The unhurried dip when there was time to see the chime coming, and the
+ *  quick one for when there wasn't — a resumed timer, or a sleeping tab. */
+const CHIME_DUCK_IN = 900;
+const CHIME_DUCK_IN_LATE = 220;
 const CHIME_DUCK_OUT = 900;
 
 export function Room() {
@@ -50,24 +55,36 @@ export function Room() {
   const chimeDuckingRef = useRef(false);
   const onBreakRef = useRef(false);
   const chimeDuckTimer = useRef<number | null>(null);
+  const chimeLeadTimer = useRef<number | null>(null);
 
   /** The level the room should be resting at right now, chime aside. */
   const restingDuck = useCallback(() => (onBreakRef.current ? BREAK_DUCK : 1), []);
 
-  // A quick dip under the chime, then back to whatever the room should
-  // actually be resting at once it's done ringing.
+  // The dip itself. Started early by the lead-in below when the room can see
+  // the chime coming, and by the chime itself when it can't.
+  const beginChimeDuck = useCallback(
+    (durationMs: number) => {
+      chimeDuckingRef.current = true;
+      void audio.setDuck(CHIME_DUCK, durationMs);
+    },
+    [audio],
+  );
+
+  // Once the chime has rung, back to whatever the room should actually be
+  // resting at.
   const duckForChime = useCallback(() => {
     // A second chime arriving mid-dip must not leave the first one's restore
     // pending — it would land late and fight the phase this one belongs to.
     if (chimeDuckTimer.current !== null) window.clearTimeout(chimeDuckTimer.current);
-    chimeDuckingRef.current = true;
-    void audio.setDuck(CHIME_DUCK, CHIME_DUCK_IN);
+    // Normally the lead-in has already taken the music down by now; only dip
+    // here if it didn't get the chance.
+    if (!chimeDuckingRef.current) beginChimeDuck(CHIME_DUCK_IN_LATE);
     chimeDuckTimer.current = window.setTimeout(() => {
       chimeDuckTimer.current = null;
       chimeDuckingRef.current = false;
       void audio.setDuck(restingDuck(), CHIME_DUCK_OUT);
     }, CHIME_DURATION_MS);
-  }, [audio, restingDuck]);
+  }, [audio, restingDuck, beginChimeDuck]);
 
   // The dip above hands control back through a timeout, and the phase effect
   // below stands aside while it is in flight. On a phone that is a real risk:
@@ -89,10 +106,40 @@ export function Room() {
     return () => {
       document.removeEventListener('visibilitychange', reassert);
       if (chimeDuckTimer.current !== null) window.clearTimeout(chimeDuckTimer.current);
+      if (chimeLeadTimer.current !== null) window.clearTimeout(chimeLeadTimer.current);
     };
   }, [audio, restingDuck]);
 
   const timer = useTimer({ onFocusEnded: duckForChime, onBreakEnded: duckForChime });
+
+  // Start the dip a moment before the phase actually ends, so the chime lands
+  // in a room that has already quietened rather than one still on its way
+  // down. Keyed on `endsAt`, which clears on pause and moves on resume, so a
+  // lead-in that no longer belongs to the running phase is dropped.
+  const endsAt = timer.session.endsAt;
+  useEffect(() => {
+    if (endsAt === null) return;
+    const lead = endsAt - Date.now() - CHIME_LEAD_MS;
+    // Already inside the lead — the chime's own dip will have to carry it.
+    if (lead < 0) return;
+    chimeLeadTimer.current = window.setTimeout(() => {
+      chimeLeadTimer.current = null;
+      beginChimeDuck(CHIME_DUCK_IN);
+    }, lead);
+    return () => {
+      if (chimeLeadTimer.current !== null) {
+        window.clearTimeout(chimeLeadTimer.current);
+        chimeLeadTimer.current = null;
+      }
+      // Paused or reset mid-lead-in: the chime this dip was making room for is
+      // never going to ring, so nothing else would bring the music back up.
+      // (At a real phase change the chime has already claimed the restore.)
+      if (chimeDuckingRef.current && chimeDuckTimer.current === null) {
+        chimeDuckingRef.current = false;
+        void audio.setDuck(restingDuck(), CHIME_DUCK_OUT);
+      }
+    };
+  }, [endsAt, beginChimeDuck, audio, restingDuck]);
 
   const handleEnter = useCallback(() => {
     // Start the audio inside the click handler itself, so the browser sees an

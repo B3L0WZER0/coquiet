@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from 'next';
-import { Instrument_Serif } from 'next/font/google';
+import { Playfair_Display } from 'next/font/google';
 
 import './globals.css';
 
 /** The one display face: the entry headline, and nothing else. */
-const displaySerif = Instrument_Serif({
-  weight: '400',
+const displaySerif = Playfair_Display({
+  weight: ['400', '500'],
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-display',

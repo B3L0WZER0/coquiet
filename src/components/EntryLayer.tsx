@@ -50,7 +50,7 @@ export function EntryLayer({
           {/* The slot is always here, at its full height, even before anyone has been heard from. */}
           <div className="entry-presence-slot flex items-center">
             <p
-              className="flex items-center gap-2.5 text-[0.875rem] transition-opacity duration-[600ms] ease-[var(--ease-quiet)]"
+              className="flex items-center gap-2.5 transition-opacity duration-[600ms] ease-[var(--ease-quiet)]"
               style={{
                 color: 'var(--text-secondary)',
                 textShadow: 'var(--shadow-legible)',

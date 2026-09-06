@@ -25,7 +25,7 @@ export function PresenceLine({
   // No adapter, so no honest thing to put here.
   if (label === null) return null;
 
-  const others = status.kind === 'live' ? Math.max(0, status.count - 1) : 0;
+  const here = status.kind === 'live' ? status.count : 0;
 
   if (dock) {
     return (
@@ -40,14 +40,11 @@ export function PresenceLine({
         panel={<RoomPulse pulse={computePulse(sessions)} />}
       >
         <PeopleMark />
-        {others > 0 && (
-          <span
-            className="text-[0.8125rem]"
-            style={{ color: 'var(--text-primary)', fontVariantNumeric: 'tabular-nums' }}
-          >
-            {others}
-          </span>
-        )}
+        {/* Everyone in the room, the reader included — so "1 here" is true when
+            they are the only one, rather than a promise of company. */}
+        <span className="dock-label" style={{ fontVariantNumeric: 'tabular-nums' }}>
+          {here > 0 ? `${here} here` : 'Room'}
+        </span>
       </Popover>
     );
   }

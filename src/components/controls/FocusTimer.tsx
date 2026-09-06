@@ -83,17 +83,10 @@ export function FocusTimer({
       {compact ? (
         <>
           <ClockMark />
-          {!idle && (
-            <span
-              className="text-[0.8125rem]"
-              style={{
-                color: 'var(--text-primary)',
-                fontVariantNumeric: 'tabular-nums',
-              }}
-            >
-              {display}
-            </span>
-          )}
+          {/* The length it would start, until it is running; then the count. */}
+          <span className="dock-label" style={{ fontVariantNumeric: 'tabular-nums' }}>
+            {idle ? `${focusMinutes} min` : display}
+          </span>
         </>
       ) : (
         <>

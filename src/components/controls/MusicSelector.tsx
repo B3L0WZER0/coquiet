@@ -144,6 +144,7 @@ function CompactMusic({
       }
     >
       <NoteMark />
+      <span className="dock-label">{current?.label ?? 'Flow'}</span>
     </Popover>
   );
 }

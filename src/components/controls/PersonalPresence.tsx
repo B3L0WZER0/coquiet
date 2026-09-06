@@ -84,17 +84,20 @@ export function PersonalPresence({
         }}
       >
         {compact ? (
-          <span className="relative flex items-center justify-center">
-            <PersonMark />
-            {summary && (
-              // A quiet dot: something is set, without spelling it out in the bar.
-              <span
-                aria-hidden="true"
-                className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full"
-                style={{ backgroundColor: 'var(--color-sand)' }}
-              />
-            )}
-          </span>
+          <>
+            <span className="relative flex items-center justify-center">
+              <PersonMark />
+              {summary && (
+                // A quiet dot: something is set, without spelling it out in the bar.
+                <span
+                  aria-hidden="true"
+                  className="absolute -top-0.5 -right-0.5 h-1.5 w-1.5 rounded-full"
+                  style={{ backgroundColor: 'var(--color-sand)' }}
+                />
+              )}
+            </span>
+            <span className="dock-label">Presence</span>
+          </>
         ) : (
           <>
             {/* The full phrase has room on desktop; at 320px it would push the play button off centre, so the trigger shortens instead of wrapping. */}

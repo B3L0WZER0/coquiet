@@ -19,7 +19,7 @@ export function FocusNote({
         style={{
           opacity: shown ? 1 : 0,
           background:
-            'radial-gradient(46% 34% at 50% 50%, color-mix(in oklab, var(--color-ink) 74%, transparent) 0%, color-mix(in oklab, var(--color-ink) 64%, transparent) 26%, color-mix(in oklab, var(--color-ink) 44%, transparent) 48%, color-mix(in oklab, var(--color-ink) 22%, transparent) 68%, color-mix(in oklab, var(--color-ink) 7%, transparent) 85%, transparent 100%)',
+            `radial-gradient(var(--note-pool) at 50% 50%, color-mix(in oklab, var(--color-ink) 74%, transparent) 0%, color-mix(in oklab, var(--color-ink) 64%, transparent) 26%, color-mix(in oklab, var(--color-ink) 44%, transparent) 48%, color-mix(in oklab, var(--color-ink) 22%, transparent) 68%, color-mix(in oklab, var(--color-ink) 7%, transparent) 85%, transparent 100%)`,
         }}
       />
 

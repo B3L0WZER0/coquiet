@@ -211,6 +211,14 @@ for (const roomId of ROOM_IDS) {
   await page.waitForTimeout(200);
   await audit(`${roomId} · room`);
 
+  // The phone puts the whole room in one floating dock, with a word under
+  // every mark — small type over a translucent panel, so it is checked too.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(400);
+  await audit(`${roomId} · room phone`);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.waitForTimeout(400);
+
   // Open every panel so their contents are audited too.
   await page.getByRole('button', { name: 'What the channels are' }).click();
   await page.waitForTimeout(400);

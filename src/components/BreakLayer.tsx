@@ -21,7 +21,7 @@ export function BreakLayer({
         className="pointer-events-none absolute inset-0 -z-10"
         style={{
           background:
-            'radial-gradient(46% 34% at 50% 50%, color-mix(in oklab, var(--color-ink) 62%, transparent) 0%, transparent 74%)',
+            `radial-gradient(var(--note-pool) at 50% 50%, color-mix(in oklab, var(--color-ink) 62%, transparent) 0%, transparent 74%)`,
         }}
       />
 

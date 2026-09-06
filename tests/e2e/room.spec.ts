@@ -710,6 +710,68 @@ test.describe('watching the room from the doorway', () => {
   });
 });
 
+test.describe('the phone dock', () => {
+  test('is one floating dock, each mark named by what it is set to', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('.coquiet-cta').click();
+    await page.waitForTimeout(1600);
+
+    // Floating, not a slab flush to the foot of the screen.
+    const dock = (await page.locator('.room-controls').boundingBox())!;
+    expect(dock.x).toBeGreaterThan(4);
+    expect(390 - (dock.x + dock.width)).toBeGreaterThan(4);
+    expect(844 - (dock.y + dock.height)).toBeGreaterThan(4);
+
+    // Every mark says what it is currently set to, not what it is called.
+    await expect(page.locator('.dock-label')).toHaveText([
+      'Flow',
+      '25 min',
+      '1 here',
+      'Presence',
+    ]);
+
+    // The one solid thing in the room, and an actual circle — the global focus
+    // ring used to square it off at 4px. The mouse is parked first: the entry
+    // button it just pressed sits where the play button lands, so it would
+    // otherwise still be hovering it.
+    await page.mouse.move(0, 0);
+    await page.waitForTimeout(400);
+    const play = page.locator('.area-playback button:visible');
+    const shape = await play.evaluate((el) => {
+      const c = getComputedStyle(el);
+      return {
+        bg: c.backgroundColor,
+        radius: parseFloat(c.borderRadius),
+        width: parseFloat(c.width),
+      };
+    });
+    expect(shape.bg).toBe('rgb(242, 236, 225)');
+    expect(shape.radius).toBeGreaterThanOrEqual(shape.width / 2);
+
+    await play.focus();
+    const focused = await play.evaluate((el) => parseFloat(getComputedStyle(el).borderRadius));
+    expect(focused).toBeGreaterThanOrEqual(shape.width / 2);
+
+    // And the dock is still the whole room: four panels, all reachable.
+    await expect(page.locator('.dock-trigger')).toHaveCount(4);
+  });
+
+  test('the timer trigger counts down in place once it is running', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('.coquiet-cta').click();
+    await page.waitForTimeout(1600);
+
+    const timer = page.locator('.dock-trigger').nth(1);
+    await expect(timer.locator('.dock-label')).toHaveText('25 min');
+
+    await timer.click();
+    await page.getByRole('button', { name: /^Start timer/ }).click();
+    await page.waitForTimeout(1500);
+
+    await expect(timer.locator('.dock-label')).toHaveText(/^2[45]:\d\d$/);
+  });
+});
+
 test.describe('the support link', () => {
   test('sits on the way in, and nowhere inside the room', async ({ page }) => {
     const link = page.locator('.coquiet-support');

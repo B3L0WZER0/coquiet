@@ -2,6 +2,7 @@
 
 import { DEFAULT_CHANNEL, isChannelId } from '@/lib/channels';
 import { EXPIRY_MS, HEARTBEAT_MS, live } from '@/lib/presence/aggregate';
+import { documentSessionId } from '@/lib/presence/session-id';
 import {
   isActivity,
   isDrink,
@@ -12,7 +13,6 @@ import {
 } from '@/lib/presence/types';
 
 const CHANNEL_NAME = 'coquiet:presence';
-const SESSION_ID_KEY = 'coquiet:session-id';
 
 /** How often expired sessions are swept out. */
 const SWEEP_MS = 5_000;
@@ -24,26 +24,6 @@ type Message =
   | { kind: 'roll-call'; from: string }
   /** "I am leaving." */
   | { kind: 'gone'; id: string };
-
-/** A per-tab anonymous id. */
-function sessionId(): string {
-  try {
-    const existing = window.sessionStorage.getItem(SESSION_ID_KEY);
-    if (existing) return existing;
-    const id = newId();
-    window.sessionStorage.setItem(SESSION_ID_KEY, id);
-    return id;
-  } catch {
-    // Private mode, or storage blocked. An in-memory id still gives correct
-    // presence for the life of the tab.
-    return newId();
-  }
-}
-
-function newId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
-  return `s-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`;
-}
 
 export class LocalPresenceAdapter implements PresenceProvider {
   private channel: BroadcastChannel | null = null;
@@ -58,7 +38,7 @@ export class LocalPresenceAdapter implements PresenceProvider {
   private cached: PresenceSnapshot = { sessions: [], joined: false, available: false };
 
   constructor() {
-    this.id = typeof window === 'undefined' ? 'server' : sessionId();
+    this.id = typeof window === 'undefined' ? 'server' : documentSessionId();
     this.own = {
       id: this.id,
       activity: null,

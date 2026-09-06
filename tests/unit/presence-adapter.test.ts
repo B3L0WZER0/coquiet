@@ -88,3 +88,19 @@ describe('supabase presence expiry', () => {
     adapter.destroy();
   });
 });
+
+describe('tab identity', () => {
+  // Chrome copies sessionStorage into a duplicated tab, so an id kept there is
+  // shared by every tab opened from another — and three real tabs then arrive
+  // in the room as one person.
+  it('does not adopt an id left in sessionStorage', async () => {
+    window.sessionStorage.setItem('coquiet:session-id', 'cloned-from-another-tab');
+    const { documentSessionId } = await import('@/lib/presence/session-id');
+    expect(documentSessionId()).not.toBe('cloned-from-another-tab');
+  });
+
+  it('is stable within one document', async () => {
+    const { documentSessionId } = await import('@/lib/presence/session-id');
+    expect(documentSessionId()).toBe(documentSessionId());
+  });
+});

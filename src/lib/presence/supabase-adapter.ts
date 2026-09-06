@@ -9,6 +9,7 @@ import {
 import { DEFAULT_CHANNEL, isChannelId } from '@/lib/channels';
 import { EXPIRY_MS, HEARTBEAT_MS, live } from '@/lib/presence/aggregate';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/lib/presence/config';
+import { documentSessionId } from '@/lib/presence/session-id';
 import {
   isActivity,
   isDrink,
@@ -40,8 +41,6 @@ const OFFLINE_GRACE_MS = 40_000;
  *  reporting people who have gone. */
 const SWEEP_MS = 5_000;
 
-const SESSION_ID_KEY = 'coquiet:session-id';
-
 /** One Supabase client for the page, not one per adapter or per reconnect —
  *  each `createClient` spins up its own auth client against the same storage
  *  key, which the SDK warns about and which churns the realtime socket. */
@@ -55,24 +54,6 @@ function getClient(): SupabaseClient {
     });
   }
   return sharedClient;
-}
-
-/** A per-tab anonymous id — the same reasoning as the local adapter. */
-function sessionId(): string {
-  try {
-    const existing = window.sessionStorage.getItem(SESSION_ID_KEY);
-    if (existing) return existing;
-    const id = newId();
-    window.sessionStorage.setItem(SESSION_ID_KEY, id);
-    return id;
-  } catch {
-    return newId();
-  }
-}
-
-function newId(): string {
-  if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
-  return `s-${Math.random().toString(36).slice(2)}-${Date.now().toString(36)}`;
 }
 
 /** What one person publishes about themselves. */
@@ -132,7 +113,7 @@ export class SupabasePresenceAdapter implements PresenceProvider {
   private cached: PresenceSnapshot = { sessions: [], joined: false, available: false };
 
   constructor() {
-    this.id = typeof window === 'undefined' ? 'server' : sessionId();
+    this.id = typeof window === 'undefined' ? 'server' : documentSessionId();
     this.own = {
       id: this.id,
       activity: null,

@@ -9,7 +9,9 @@
   --color-tobacco: #7b6247;
   --color-clay: #8c6a52;
 
-  --color-stone: #d8c5a7; /* the one solid surface: the entry CTA */
+  --color-sage: #a9c4a3; /* the live dot on the way in, and nothing else */
+
+  --color-stone: #f2ece1; /* the one solid surface: the entry CTA */
   --color-charcoal: #2c2823;
   --color-ink: #1a1713;
 

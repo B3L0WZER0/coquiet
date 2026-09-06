@@ -92,7 +92,7 @@ test('no audio exists or is fetched before the room is entered', async ({ page }
   // The entry screen watches the room, but with nobody in it there is no
   // count to show — only the fact that the room is open.
   await expect(page.getByText('Room open', { exact: true })).toBeVisible();
-  await expect(page.getByText(/focusing now/)).toHaveCount(0);
+  await expect(page.getByText(/focusing/)).toHaveCount(0);
 });
 
 test('entry starts Flow and fades in from silence', async ({ page }) => {
@@ -540,8 +540,9 @@ test.describe('personal presence is per visit', () => {
 test.describe('the entry composition', () => {
   test('says what the product is, in one glance', async ({ page }) => {
     await expect(page.getByRole('heading', { name: 'Focus quietly, together' })).toBeVisible();
-    await expect(page.getByText(/shared room and work alongside other people/)).toBeVisible();
-    await expect(page.getByText('Ambient sound fades in · mute anytime.')).toBeVisible();
+    await expect(page.getByText(/Quiet company for whatever needs your focus/)).toBeVisible();
+    await expect(page.getByText('No chat. No cameras. Just company.')).toBeVisible();
+    await expect(page.getByText('Ambient sound fades in. Mute anytime.')).toBeVisible();
   });
 
   test('the call to action is solid stone, with hover and focus states', async ({ page }) => {
@@ -549,11 +550,11 @@ test.describe('the entry composition', () => {
     const bg = () => cta.evaluate((el) => getComputedStyle(el).backgroundColor);
 
     await expect(cta).toHaveText('Enter the room');
-    expect(await bg()).toBe('rgb(216, 197, 167)');
+    expect(await bg()).toBe('rgb(242, 236, 225)');
 
     await cta.hover();
     await page.waitForTimeout(350);
-    expect(await bg(), 'hover should lift the fill').not.toBe('rgb(216, 197, 167)');
+    expect(await bg(), 'hover should lift the fill').not.toBe('rgb(242, 236, 225)');
 
     await page.mouse.move(0, 0);
     await page.keyboard.press('Tab');
@@ -627,7 +628,7 @@ test.describe('watching the room from the doorway', () => {
     context,
     page,
   }) => {
-    const badge = page.getByText(/Room open/);
+    const badge = page.locator('.entry-presence-slot p');
     await expect(badge).toHaveText('Room open');
 
     // Someone else actually enters.
@@ -635,13 +636,13 @@ test.describe('watching the room from the doorway', () => {
     await first.goto('/');
     await first.locator('.coquiet-cta').click();
     await first.waitForTimeout(1200);
-    await expect(badge).toHaveText('Room open · 1 focusing now');
+    await expect(badge).toHaveText('1 person focusing right now');
 
     const second = await context.newPage();
     await second.goto('/');
     await second.locator('.coquiet-cta').click();
     await second.waitForTimeout(1200);
-    await expect(badge).toHaveText('Room open · 2 focusing now');
+    await expect(badge).toHaveText('2 people focusing together');
 
     // The people inside must not be able to see the watcher. Standing in the
     // doorway is not being in the room, and counting it would be a lie told to
@@ -670,10 +671,10 @@ test.describe('watching the room from the doorway', () => {
 
     // The slot stays, so the layout does not move; the badge inside it is
     // hidden, from sight and from assistive tech alike, and claims nothing.
-    const badge = page.locator('.coquiet-cta').locator('xpath=preceding-sibling::div[1]//p');
+    const badge = page.locator('.entry-presence-slot p');
     await expect(badge).toHaveAttribute('aria-hidden', 'true');
     await expect(badge).toHaveCSS('opacity', '0');
-    await expect(page.getByText(/focusing now/)).toHaveCount(0);
+    await expect(page.getByText(/focusing/)).toHaveCount(0);
 
     // The room is still perfectly usable without it.
     await expect(page.locator('.coquiet-cta')).toBeVisible();
@@ -686,18 +687,20 @@ test.describe('the support link', () => {
     await expect(link).toHaveText('Support us with a coffee');
     await expect(link).toHaveAttribute('target', '_blank');
 
-    // A footer: at the foot of the screen, not trailing the composition.
+    // A footer: at the foot of the screen, on the opposite side to the note it
+    // shares the row with, and clear of the composition above it.
     const geometry = await page.evaluate(() => {
       const a = document.querySelector('.coquiet-support')!.getBoundingClientRect();
-      const composition = [...document.querySelectorAll('.fixed.z-30 p')]
-        .pop()!
-        .getBoundingClientRect();
+      const note = document.querySelector('.entry-footnote')!.getBoundingClientRect();
+      const composition = document.querySelector('.entry-reassurance')!.getBoundingClientRect();
       return {
         gapBelow: window.innerHeight - a.bottom,
+        rightOfNote: a.left - note.right,
         clearOfComposition: a.top - composition.bottom,
       };
     });
-    expect(geometry.gapBelow).toBeLessThan(48);
+    expect(geometry.gapBelow).toBeLessThan(64);
+    expect(geometry.rightOfNote).toBeGreaterThan(0);
     expect(geometry.clearOfComposition).toBeGreaterThan(20);
     // Opening a new tab without this hands the opener to the other origin.
     await expect(link).toHaveAttribute('rel', 'noopener noreferrer');

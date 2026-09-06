@@ -21,17 +21,139 @@
   }
 }
 
+/* The entry composition is ranged left against the dark side of the room,
+   with the photograph left to carry the rest of the frame. */
+.entry-layer {
+  --entry-gutter: clamp(1.5rem, 5vw, 4.75rem);
+  padding: calc(var(--inset-t) + clamp(1.75rem, 4vh, 3.25rem))
+    calc(var(--inset-r) + var(--entry-gutter))
+    calc(var(--inset-b) + clamp(1.75rem, 4vh, 3rem))
+    calc(var(--inset-l) + var(--entry-gutter));
+}
+
+/* Shade poured in from the left edge rather than a pool under a centred block,
+   plus a little weight top and bottom to hold the wordmark and the footer. */
+.entry-scrim {
+  background:
+    linear-gradient(
+      to right,
+      color-mix(in oklab, var(--color-ink) 92%, transparent) 0%,
+      color-mix(in oklab, var(--color-ink) 86%, transparent) 17%,
+      color-mix(in oklab, var(--color-ink) 64%, transparent) 33%,
+      color-mix(in oklab, var(--color-ink) 34%, transparent) 47%,
+      color-mix(in oklab, var(--color-ink) 12%, transparent) 62%,
+      transparent 78%
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-ink) 36%, transparent) 0%,
+      transparent 20%,
+      transparent 66%,
+      color-mix(in oklab, var(--color-ink) 44%, transparent) 100%
+    );
+}
+
+/* A narrow window has no room to the right to give away, so the shade becomes
+   an even veil instead of a side. (The phone layout proper comes later.) */
+@media (max-width: 767px) {
+  .entry-scrim {
+    background:
+      linear-gradient(
+        to right,
+        color-mix(in oklab, var(--color-ink) 88%, transparent) 0%,
+        color-mix(in oklab, var(--color-ink) 74%, transparent) 55%,
+        color-mix(in oklab, var(--color-ink) 58%, transparent) 100%
+      ),
+      linear-gradient(
+        to bottom,
+        color-mix(in oklab, var(--color-ink) 30%, transparent) 0%,
+        transparent 24%,
+        transparent 62%,
+        color-mix(in oklab, var(--color-ink) 46%, transparent) 100%
+      );
+  }
+}
+
+.entry-frame {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+/* Centred in whatever the wordmark leaves behind; the footer is out of flow,
+   so the block does not drift up as the footer grows. */
+.entry-copy {
+  margin-block: auto;
+  max-width: 34rem;
+  text-align: left;
+}
+
+.entry-headline {
+  margin: 0;
+  font-family: var(--font-display), ui-serif, Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(2.75rem, calc(2rem + 2.8vw), 5rem);
+  line-height: 1.02;
+  letter-spacing: -0.005em;
+  color: var(--text-primary);
+  text-shadow: var(--shadow-legible);
+}
+
+.entry-sub {
+  margin: clamp(1.25rem, 2.4vh, 1.875rem) 0 0;
+  font-size: clamp(0.9375rem, calc(0.8125rem + 0.22vw), 1.125rem);
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-shadow: var(--shadow-legible);
+}
+
+/* Full height whether or not anyone has been heard from, so nothing below it
+   moves when a count arrives. */
+.entry-presence-slot {
+  min-height: 1.75rem;
+  margin-top: clamp(1.5rem, 3.2vh, 2.5rem);
+}
+
+.entry-reassurance {
+  margin: 1.125rem 0 0;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  text-shadow: var(--shadow-legible);
+}
+
+/* One line across the foot of the screen: the promise on the left, the ask on
+   the right, both well clear of the composition. */
+.entry-footer {
+  position: absolute;
+  left: calc(var(--inset-l) + var(--entry-gutter));
+  right: calc(var(--inset-r) + var(--entry-gutter));
+  bottom: calc(var(--inset-b) + clamp(1.5rem, 3.5vh, 2.75rem));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+
+.entry-footnote {
+  margin: 0;
+  font-size: 0.8125rem;
+  color: var(--text-secondary);
+  text-shadow: var(--shadow-legible);
+}
+
 /* Everything else in the room is translucent; this is deliberately solid —
    the one thing a first-time visitor has to find. */
 .coquiet-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  /* Floors match the size this has always had below 640px; the slopes above
-     that are gentle so a wide window doesn't grow the button past a quiet
-     invitation into a shout. */
-  min-height: clamp(3rem, calc(2.5rem + 0.55vw), 3.75rem);
-  padding: 0 clamp(2.75rem, calc(2.25rem + 0.7vw), 4rem);
+  /* Sized as an invitation, not a shout: the slopes above the floor are gentle
+     so a wide window doesn't inflate it. */
+  gap: 0.75rem;
+  margin-top: clamp(1.375rem, 2.6vh, 2rem);
+  min-height: clamp(3rem, calc(2.75rem + 0.35vw), 3.5rem);
+  padding: 0 clamp(1.75rem, calc(1.5rem + 0.5vw), 2.375rem);
   border: 1px solid transparent;
   border-radius: 999px;
   background-color: var(--color-stone);
@@ -48,13 +170,22 @@
 }
 
 .coquiet-cta:hover {
-  background-color: color-mix(in oklab, var(--color-stone) 84%, white);
+  background-color: color-mix(in oklab, var(--color-stone) 62%, white);
   box-shadow: 0 4px 30px color-mix(in oklab, var(--color-ink) 55%, transparent);
+}
+
+/* The arrow leans towards the door on hover — the one bit of movement here. */
+.entry-cta-arrow {
+  transition: transform var(--duration-control) var(--ease-quiet);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .coquiet-cta:hover {
     transform: translateY(-1px);
+  }
+
+  .coquiet-cta:hover .entry-cta-arrow {
+    transform: translateX(2px);
   }
 }
 
@@ -69,15 +200,11 @@
   outline-offset: 4px;
 }
 
-/* Centred along the bottom edge, on the same centreline as the rest of the
-   entry composition — a corner link read as stuck on afterwards. Reverts to
-   the corner on short windows, where a centred footer collides with the button. */
+/* The right-hand half of the footer row; the footer places it, so it only has
+   to describe how it reads. */
 .coquiet-support {
-  position: absolute;
-  bottom: calc(var(--inset-b) + 1.5rem);
-  left: 50%;
-  transform: translateX(-50%);
   color: var(--text-secondary);
+  font-size: 0.8125rem;
   /* Underlined at rest — nothing else on the screen reads as a link, so a
      hover-only underline meant a first-time visitor had no way to know this
      line was clickable at all. */
@@ -89,14 +216,6 @@
   transition:
     color var(--duration-control) var(--ease-quiet),
     text-decoration-color var(--duration-control) var(--ease-quiet);
-}
-
-@media (max-height: 560px) {
-  .coquiet-support {
-    left: auto;
-    right: calc(var(--inset-r) + 1.75rem);
-    transform: none;
-  }
 }
 
 .coquiet-support:hover {

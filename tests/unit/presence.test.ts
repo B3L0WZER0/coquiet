@@ -136,8 +136,8 @@ describe('honest copy', () => {
   });
 
   it('counts the people already working, on the way in', () => {
-    expect(entryPresenceLine({ kind: 'live', count: 1 })).toBe('Room open · 1 focusing now');
-    expect(entryPresenceLine({ kind: 'live', count: 24 })).toBe('Room open · 24 focusing now');
+    expect(entryPresenceLine({ kind: 'live', count: 1 })).toBe('1 person focusing right now');
+    expect(entryPresenceLine({ kind: 'live', count: 24 })).toBe('24 people focusing together');
   });
 
   it('invites rather than promising company, when there is none', () => {
@@ -177,7 +177,7 @@ describe('honest copy', () => {
   });
 
   it('reports only counts it was actually given', () => {
-    expect(entryPresenceLine({ kind: 'live', count: 4 })).toBe('Room open · 4 focusing now');
+    expect(entryPresenceLine({ kind: 'live', count: 4 })).toBe('4 people focusing together');
     expect(roomPresenceLine({ kind: 'live', count: 2 })).toBe('Focusing with 1 other');
     expect(roomPresenceLine({ kind: 'live', count: 12 })).toBe('Focusing with 11 others');
   });

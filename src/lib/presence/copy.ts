@@ -11,8 +11,10 @@ export function entryPresenceLine(status: PresenceStatus): string | null {
   // Not listening, so not entitled to the live dot or anything beside it.
   if (status.kind === 'unavailable') return null;
   if (status.count <= 0) return 'Room open';
-  if (status.count === 1) return 'Room open · 1 focusing now';
-  return `Room open · ${status.count} focusing now`;
+  // "Together" needs somebody to be together with, so one person gets their
+  // own sentence rather than a plural bent around a single session.
+  if (status.count === 1) return '1 person focusing right now';
+  return `${status.count} people focusing together`;
 }
 
 /** The persistent line inside the room. */

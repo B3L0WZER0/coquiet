@@ -56,34 +56,6 @@
     );
 }
 
-/* A narrow window has no room to the right to give away, so the shade becomes
-   an even veil instead of a side. (The phone layout proper comes later.) */
-@media (max-width: 767px) {
-  .entry-scrim {
-    background:
-      linear-gradient(
-        to right,
-        color-mix(in oklab, var(--color-ink) 88%, transparent) 0%,
-        color-mix(in oklab, var(--color-ink) 74%, transparent) 55%,
-        color-mix(in oklab, var(--color-ink) 58%, transparent) 100%
-      ),
-      linear-gradient(
-        to bottom,
-        color-mix(in oklab, var(--color-ink) 30%, transparent) 0%,
-        transparent 24%,
-        transparent 62%,
-        color-mix(in oklab, var(--color-ink) 46%, transparent) 100%
-      );
-  }
-
-  /* Nothing to the side to leave alone, so the column takes the width and its
-     lines wrap where they must. */
-  .entry-copy {
-    width: auto;
-    max-width: none;
-  }
-}
-
 .entry-frame {
   display: flex;
   height: 100%;
@@ -138,20 +110,19 @@
   text-shadow: var(--shadow-legible);
 }
 
-/* One line across the foot of the screen: the promise on the left, the ask on
-   the right, both well clear of the composition. */
-.entry-footer {
-  position: absolute;
-  left: calc(var(--inset-l) + var(--entry-gutter));
-  right: calc(var(--inset-r) + var(--entry-gutter));
-  bottom: calc(var(--inset-b) + clamp(1.5rem, 3.5vh, 2.75rem));
+.entry-actions {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 1.5rem;
+  margin-top: clamp(1.375rem, 2.6vh, 2rem);
 }
 
+/* One line across the foot of the screen: the promise on the left, the ask on
+   the right. Both are placed against the edge rather than carried by a row, so
+   the phone can lift the ask out and set it beside the door instead. */
 .entry-footnote {
+  position: absolute;
+  left: calc(var(--inset-l) + var(--entry-gutter));
+  bottom: calc(var(--inset-b) + clamp(1.5rem, 3.5vh, 2.75rem));
   margin: 0;
   font-size: clamp(0.8125rem, calc(0.72rem + 0.2vw), 0.9375rem);
   color: var(--text-secondary);
@@ -167,7 +138,6 @@
   /* Sized as an invitation, not a shout: the slopes above the floor are gentle
      so a wide window doesn't inflate it. */
   gap: 0.75rem;
-  margin-top: clamp(1.375rem, 2.6vh, 2rem);
   min-height: clamp(3rem, calc(2.6rem + 1.05vw), 3.75rem);
   padding: 0 clamp(1.75rem, calc(1.4rem + 1.4vw), 3rem);
   border: 1px solid transparent;
@@ -216,9 +186,14 @@
   outline-offset: 4px;
 }
 
-/* The right-hand half of the footer row; the footer places it, so it only has
-   to describe how it reads. */
+/* The right-hand half of the footer row. */
 .coquiet-support {
+  position: absolute;
+  right: calc(var(--inset-r) + var(--entry-gutter));
+  bottom: calc(var(--inset-b) + clamp(1.5rem, 3.5vh, 2.75rem));
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   color: var(--text-secondary);
   font-size: clamp(0.8125rem, calc(0.72rem + 0.2vw), 0.9375rem);
   /* Underlined at rest — nothing else on the screen reads as a link, so a
@@ -234,6 +209,15 @@
     text-decoration-color var(--duration-control) var(--ease-quiet);
 }
 
+/* Two cups, one shown at a time: small beside the label, larger in the circle. */
+.entry-support-inline {
+  display: flex;
+}
+
+.entry-support-round {
+  display: none;
+}
+
 .coquiet-support:hover {
   color: var(--text-primary);
   text-decoration-color: color-mix(in oklab, var(--color-cream) 65%, transparent);
@@ -244,4 +228,116 @@
   outline: 2px solid var(--color-cream);
   outline-offset: 4px;
   border-radius: 3px;
+}
+
+/* ---- The phone ----------------------------------------------------------
+   A different composition, not the desktop one squeezed: no side to range
+   against, so the type sits along the bottom of the photograph and the
+   support link becomes a cup beside the door. */
+@media (max-width: 767px) {
+  .entry-layer {
+    --entry-gutter: 1.5rem;
+    /* The row of actions is the floor of the composition; it wants a hand's
+       width under it, not a footer's. */
+    padding-bottom: calc(var(--inset-b) + 2.25rem);
+  }
+
+  /* Shade rising from the foot instead of in from the side, with just enough
+     at the very top to hold the wordmark off a bright ceiling. */
+  /* A mark in the corner, not a title: the composition's headline is the
+     thing being read here. */
+  .entry-wordmark span {
+    font-size: 1.5rem;
+  }
+
+  .entry-scrim {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-ink) 34%, transparent) 0%,
+      color-mix(in oklab, var(--color-ink) 8%, transparent) 13%,
+      transparent 27%,
+      color-mix(in oklab, var(--color-ink) 22%, transparent) 41%,
+      color-mix(in oklab, var(--color-ink) 52%, transparent) 55%,
+      color-mix(in oklab, var(--color-ink) 74%, transparent) 71%,
+      color-mix(in oklab, var(--color-ink) 84%, transparent) 87%,
+      color-mix(in oklab, var(--color-ink) 88%, transparent) 100%
+    );
+  }
+
+  /* Pushed to the floor rather than centred: the photograph gets the top half
+     of the screen whole. */
+  .entry-copy {
+    width: 100%;
+    max-width: none;
+    margin-top: auto;
+    margin-bottom: 0;
+  }
+
+  /* Nearly the full width of the phone — the headline is the composition here,
+     and its two hand-broken lines are what the rest is measured against. */
+  .entry-headline {
+    font-size: clamp(2.5rem, 13.4vw, 4.5rem);
+    line-height: 1.04;
+  }
+
+  .entry-sub {
+    /* No hand-break on the second sentence at this width; it wraps to three
+       lines and reads as a paragraph rather than a stack. */
+    font-size: clamp(1rem, 4.6vw, 1.25rem);
+    line-height: 1.45;
+    /* Narrower than the headline on purpose, and measured in em so the turn
+       holds at every size: it breaks the second sentence after "whatever"
+       rather than dropping the tail onto a line of its own. */
+    max-width: min(14em, 100%);
+  }
+
+  .entry-presence-slot {
+    margin-top: 1.5rem;
+    font-size: clamp(0.9375rem, 3.9vw, 1.0625rem);
+  }
+
+  /* The door and the cup, one row, sized as one control. */
+  .entry-actions {
+    --entry-action-size: 3.5rem;
+    width: 100%;
+    gap: 0.875rem;
+    margin-top: 1.5rem;
+  }
+
+  .coquiet-cta {
+    flex: 1;
+    min-height: var(--entry-action-size);
+    padding: 0 1.5rem;
+    font-size: 1.0625rem;
+  }
+
+  /* Out of the corner and into the row: a circle with a cup in it, no label. */
+  .coquiet-support {
+    position: static;
+    flex: none;
+    width: var(--entry-action-size);
+    height: var(--entry-action-size);
+    justify-content: center;
+    gap: 0;
+    border: 1px solid var(--hairline-strong);
+    border-radius: 999px;
+    color: var(--text-primary);
+    text-decoration: none;
+  }
+
+  .entry-support-inline,
+  .entry-support-label {
+    display: none;
+  }
+
+  .entry-support-round {
+    display: flex;
+  }
+
+  /* Both said again by the room a moment later, and there is no quiet corner
+     left to say them in. */
+  .entry-reassurance,
+  .entry-footnote {
+    display: none;
+  }
 }

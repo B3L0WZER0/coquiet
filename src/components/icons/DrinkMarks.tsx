@@ -71,3 +71,16 @@ export function CoffeeMarkInline() {
     </svg>
   );
 }
+
+/** The cup on the round support button: bigger, and steaming. */
+export function CoffeeMarkSteaming() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 20 20" aria-hidden="true" className="shrink-0">
+      <path d="M4.6 8h9v3.5a3.4 3.4 0 0 1-3.4 3.4H8a3.4 3.4 0 0 1-3.4-3.4z" {...stroke} />
+      <path d="M13.6 9.2h1.2a1.7 1.7 0 0 1 0 3.3h-1.2" {...stroke} />
+      <path d="M3.4 16.6h11.2" {...stroke} />
+      <path d="M7.7 5.5c-.8-.8-.8-1.6 0-2.4" {...stroke} opacity="0.8" />
+      <path d="M10.5 5.5c-.8-.8-.8-1.6 0-2.4" {...stroke} opacity="0.8" />
+    </svg>
+  );
+}

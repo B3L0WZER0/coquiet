@@ -130,7 +130,9 @@ async function audit(label) {
 
   const shot = await page.screenshot({ type: 'png' });
   const { data, info } = await sharp(shot).ensureAlpha().raw().toBuffer({ resolveWithObject: true });
-  const scale = info.width / 1440;
+  // Against the viewport actually being audited, not a fixed desktop width —
+  // the phone pass renders narrower and every rect would be sampled elsewhere.
+  const scale = info.width / page.viewportSize().width;
 
   for (const target of targets) {
     let worst = null;
@@ -186,6 +188,15 @@ for (const roomId of ROOM_IDS) {
   await page.waitForTimeout(2500);
 
   await audit(`${roomId} · entry`);
+
+  // The phone gets a different composition — type along the foot of the
+  // photograph rather than against a shaded side — so it is a different veil
+  // and has to be checked as one.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(400);
+  await audit(`${roomId} · entry phone`);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.waitForTimeout(400);
 
   await page.getByRole('button', { name: 'Enter the room' }).click();
   await page.waitForTimeout(2500);

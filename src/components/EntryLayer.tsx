@@ -1,7 +1,7 @@
 'use client';
 
 import { Wordmark } from '@/components/Wordmark';
-import { CoffeeMarkInline } from '@/components/icons/DrinkMarks';
+import { CoffeeMarkInline, CoffeeMarkSteaming } from '@/components/icons/DrinkMarks';
 import { LiveDot } from '@/components/ui/LiveDot';
 import { SUPPORT_LABEL, SUPPORT_URL } from '@/lib/support';
 
@@ -30,7 +30,11 @@ export function EntryLayer({
       <div aria-hidden="true" className="entry-scrim pointer-events-none absolute inset-0 -z-10" />
 
       <div className="entry-frame">
-        <Wordmark />
+        {/* Wrapped so the phone can set it as a small mark in the corner
+            without touching the size it has inside the room. */}
+        <div className="entry-wordmark">
+          <Wordmark />
+        </div>
 
         {/* One column, ranged left: the name, what it is, then what to do. */}
         <div className="entry-copy">
@@ -66,46 +70,57 @@ export function EntryLayer({
             </p>
           </div>
 
-          <button type="button" onClick={onEnter} className="coquiet-cta">
-            Enter the room
-            <svg
-              aria-hidden="true"
-              width="17"
-              height="17"
-              viewBox="0 0 17 17"
-              fill="none"
-              className="entry-cta-arrow"
-            >
-              <path
-                d="M2.5 8.5h11m-4.2-4.4 4.4 4.4-4.4 4.4"
-                stroke="currentColor"
-                strokeWidth="1.4"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
+          {/* One row: the door, and — on a phone, where there is no footer to
+              put it in — the coffee beside it. */}
+          <div className="entry-actions">
+            <button type="button" onClick={onEnter} className="coquiet-cta">
+              Enter the room
+              <svg
+                aria-hidden="true"
+                width="17"
+                height="17"
+                viewBox="0 0 17 17"
+                fill="none"
+                className="entry-cta-arrow"
+              >
+                <path
+                  d="M2.5 8.5h11m-4.2-4.4 4.4 4.4-4.4 4.4"
+                  stroke="currentColor"
+                  strokeWidth="1.4"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </button>
+
+            {SUPPORT_URL && (
+              <a
+                href={SUPPORT_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="coquiet-support"
+                // The label is text on a desktop and a cup on a phone; the name
+                // is the same either way.
+                aria-label={SUPPORT_LABEL}
+              >
+                <span className="entry-support-inline">
+                  <CoffeeMarkInline />
+                </span>
+                <span className="entry-support-round">
+                  <CoffeeMarkSteaming />
+                </span>
+                <span className="entry-support-label">{SUPPORT_LABEL}</span>
+              </a>
+            )}
+          </div>
 
           <p className="entry-reassurance">No chat. No cameras. Just company.</p>
         </div>
       </div>
 
-      {/* A real footer: pinned to the bottom edge, one line across the screen. */}
-      <div className="entry-footer">
-        <p className="entry-footnote">Ambient sound fades in. Mute anytime.</p>
+      {/* Pinned to the bottom edge on a desktop; the phone has no room for it. */}
+      <p className="entry-footnote">Ambient sound fades in. Mute anytime.</p>
 
-        {SUPPORT_URL && (
-          <a
-            href={SUPPORT_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="coquiet-support flex items-center gap-2"
-          >
-            <CoffeeMarkInline />
-            {SUPPORT_LABEL}
-          </a>
-        )}
-      </div>
     </div>
   );
 }

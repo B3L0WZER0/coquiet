@@ -545,6 +545,35 @@ test.describe('the entry composition', () => {
     await expect(page.getByText('Ambient sound fades in. Mute anytime.')).toBeVisible();
   });
 
+  test('the phone is composed differently, not the desktop squeezed', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.waitForTimeout(400);
+
+    // The type sits along the foot of the photograph rather than centred in it,
+    // so the top half of the room is left whole.
+    const copy = (await page.locator('.entry-copy').boundingBox())!;
+    expect(copy.y).toBeGreaterThan(844 * 0.45);
+
+    // The support link leaves the corner and becomes a cup beside the door —
+    // a circle, on the same centreline, carrying the same name.
+    const link = page.locator('.coquiet-support');
+    const cta = page.locator('.coquiet-cta');
+    await expect(link).toHaveAttribute('aria-label', 'Support us with a coffee');
+
+    const l = (await link.boundingBox())!;
+    const c = (await cta.boundingBox())!;
+    expect(l.x).toBeGreaterThan(c.x + c.width);
+    expect(Math.abs(l.y + l.height / 2 - (c.y + c.height / 2))).toBeLessThan(1.5);
+    expect(Math.abs(l.width - l.height)).toBeLessThan(1);
+
+    // The door still gets the room's width, less the cup.
+    expect(c.width).toBeGreaterThan(390 * 0.6);
+
+    // And the way in is still one tap, still reachable by keyboard first.
+    await page.keyboard.press('Tab');
+    await expect(cta).toBeFocused();
+  });
+
   test('the call to action is solid stone, with hover and focus states', async ({ page }) => {
     const cta = page.locator('.coquiet-cta');
     const bg = () => cta.evaluate((el) => getComputedStyle(el).backgroundColor);

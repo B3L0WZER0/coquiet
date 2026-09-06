@@ -19,6 +19,7 @@ export function Popover({
   offset = 8,
   triggerClassName,
   anchorToAncestor = false,
+  dock = false,
 }: {
   /** Accessible name for the trigger. */
   label: string;
@@ -36,6 +37,9 @@ export function Popover({
   triggerClassName?: string;
   /** Position the panel against the nearest positioned ancestor instead of against the trigger. */
   anchorToAncestor?: boolean;
+  /** The phone dock: the panel spans the dock rather than hanging off one of
+   *  its marks, so CSS places it and nothing here measures or nudges it. */
+  dock?: boolean;
 }) {
   const [hovering, setHovering] = useState(false);
   const [pinned, setPinned] = useState(false);
@@ -80,6 +84,7 @@ export function Popover({
   // screen edges, where a centred panel would spill off; measure once open and
   // translate it in by whatever it overhangs, leaving an 8px margin.
   useLayoutEffect(() => {
+    if (dock) return;
     if (!open) {
       setShiftX(0);
       return;
@@ -92,7 +97,7 @@ export function Popover({
     if (r.left < margin) dx = margin - r.left;
     else if (r.right > window.innerWidth - margin) dx = window.innerWidth - margin - r.right;
     if (dx !== 0) setShiftX(dx);
-  }, [open]);
+  }, [open, dock]);
 
   const centred = align === 'center';
   const alignClass =
@@ -108,7 +113,7 @@ export function Popover({
   return (
     <div
       ref={rootRef}
-      className={`${anchorToAncestor ? '' : 'relative'} ${className ?? ''}`}
+      className={`${anchorToAncestor || dock ? '' : 'relative'} ${className ?? ''}`}
       onPointerEnter={() => setHovering(true)}
       onPointerLeave={() => setHovering(false)}
       onFocus={() => setFocusWithin(true)}
@@ -134,12 +139,20 @@ export function Popover({
           id={panelId}
           role="dialog"
           aria-label={label}
-          className={`control-surface absolute z-20 rounded-2xl px-4 py-3 ${placementClass} ${alignClass} ${panelClassName ?? ''}`}
-          style={{
-            backgroundColor: 'var(--surface-panel)',
-            [placement === 'top' ? 'marginBottom' : 'marginTop']: offset,
-            transform,
-          }}
+          className={
+            dock
+              ? 'dock-panel control-surface absolute z-20 bottom-full'
+              : `control-surface absolute z-20 rounded-2xl px-4 py-3 ${placementClass} ${alignClass} ${panelClassName ?? ''}`
+          }
+          style={
+            dock
+              ? undefined
+              : {
+                  backgroundColor: 'var(--surface-panel)',
+                  [placement === 'top' ? 'marginBottom' : 'marginTop']: offset,
+                  transform,
+                }
+          }
         >
           {panel}
         </div>

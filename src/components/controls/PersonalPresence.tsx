@@ -62,7 +62,9 @@ export function PersonalPresence({
   }, [open, close]);
 
   return (
-    <div ref={rootRef} className="relative">
+    // In the dock the sheet spans the whole bar, so this must not become the
+    // thing it is positioned against.
+    <div ref={rootRef} className={compact ? undefined : 'relative'}>
       <button
         ref={triggerRef}
         type="button"
@@ -113,12 +115,6 @@ export function PersonalPresence({
 
       {open && (
         <>
-          {/* On a narrow screen the sheet covers the playback controls, so the room behind it recedes rather than showing through. */}
-          <div
-            aria-hidden="true"
-            onPointerDown={() => setOpen(false)}
-            className="presence-scrim"
-          />
           <div
             id={panelId}
             role="dialog"

@@ -756,6 +756,59 @@ test.describe('the phone dock', () => {
     await expect(page.locator('.dock-trigger')).toHaveCount(4);
   });
 
+  test('every panel it opens is the width of the dock, just above it', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('.coquiet-cta').click();
+    await page.waitForTimeout(1600);
+
+    const dock = (await page.locator('.room-controls').boundingBox())!;
+
+    for (const nth of [0, 1, 2, 3]) {
+      await page.locator('.dock-trigger').nth(nth).click();
+      await page.waitForTimeout(300);
+      const panel = (await page.locator('[role="dialog"]:visible').boundingBox())!;
+
+      // Squared to the dock, not hung off whichever mark opened it. The dock's
+      // own border accounts for the pixel of slack.
+      expect(Math.abs(panel.x - dock.x)).toBeLessThanOrEqual(2);
+      expect(Math.abs(panel.width - dock.width)).toBeLessThanOrEqual(2);
+      // And sitting on top of it, not over it.
+      const gap = dock.y - (panel.y + panel.height);
+      expect(gap).toBeGreaterThan(0);
+      expect(gap).toBeLessThan(24);
+
+      await page.keyboard.press('Escape');
+      await page.waitForTimeout(200);
+    }
+  });
+
+  test('a label changing length does not move the marks either side of it', async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.locator('.coquiet-cta').click();
+    await page.waitForTimeout(1600);
+
+    // The marks themselves: a wider word makes its own trigger wider, but the
+    // mark stays centred in a slot that does not move.
+    const marks = () =>
+      page.evaluate(() =>
+        [...document.querySelectorAll('.dock-trigger svg')].map((el) =>
+          Math.round(el.getBoundingClientRect().x),
+        ),
+      );
+
+    const before = await marks();
+
+    // "Flow" becomes "Momentum", the widest word the dock ever holds.
+    await page.locator('.dock-trigger').first().click();
+    await page.getByRole('radio', { name: /Momentum/ }).click();
+    await page.waitForTimeout(400);
+    await page.keyboard.press('Escape');
+    await page.waitForTimeout(300);
+
+    await expect(page.locator('.dock-label').first()).toHaveText('Momentum');
+    expect(await marks()).toEqual(before);
+  });
+
   test('the timer trigger counts down in place once it is running', async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.locator('.coquiet-cta').click();

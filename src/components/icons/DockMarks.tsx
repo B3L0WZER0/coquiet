@@ -48,16 +48,16 @@ export function PersonMark() {
   );
 }
 
-/** Three figures — the rest of the room. A centre figure with two behind it. */
+/** Two figures — the rest of the room. Three heads crowded into 20px read as
+ *  a smudge beside the single-stroke marks either side of it; two stand
+ *  apart. */
 export function PeopleMark() {
   return (
     <Frame>
-      <circle cx="4.4" cy="7" r="1.7" {...stroke} opacity="0.65" />
-      <path d="M1.6 13.4a3 3 0 0 1 3.9-2.6" {...stroke} opacity="0.65" />
-      <circle cx="15.6" cy="7" r="1.7" {...stroke} opacity="0.65" />
-      <path d="M18.4 13.4a3 3 0 0 0-3.9-2.6" {...stroke} opacity="0.65" />
-      <circle cx="10" cy="7.4" r="2.6" {...stroke} />
-      <path d="M5.4 15.6a4.7 4.7 0 0 1 9.2 0" {...stroke} />
+      <circle cx="8" cy="7.2" r="2.7" {...stroke} />
+      <path d="M2.9 15.6a5.1 5.1 0 0 1 10.2 0" {...stroke} />
+      <circle cx="14.9" cy="6.4" r="2" {...stroke} />
+      <path d="M15.1 11a4.3 4.3 0 0 1 3.3 4.6" {...stroke} />
     </Frame>
   );
 }

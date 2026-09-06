@@ -79,12 +79,12 @@
   grid-area: controls;
   align-self: end;
   justify-self: stretch;
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.25rem;
   margin: 0 0.75rem 1rem;
-  padding: 0.75rem 1.1rem;
+  padding: 0.75rem;
   border: 1px solid var(--hairline);
   border-radius: 1.875rem;
   background-image: linear-gradient(
@@ -92,6 +92,24 @@
     color-mix(in oklab, var(--color-ink) 58%, transparent) 0%,
     color-mix(in oklab, var(--color-ink) 74%, transparent) 100%
   );
+}
+
+/* Every slot but the button is the same width, whatever word is in it. The
+   words change — Flow to Momentum, 25 min to a countdown, 1 here to 2 here —
+   and sized to their content the whole dock shuffled sideways each time.
+   Scoped to the phone: on a desktop these same children are `display: none`
+   or their own grid areas, and a `display` here would outrank both. */
+@media (max-width: 767px) {
+  .room-controls > *:not(.area-playback) {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  .room-controls .dock-trigger {
+    width: 100%;
+  }
 }
 
 /* The dock trigger: a mark with its own word under it, styled only on hover
@@ -103,8 +121,8 @@
   justify-content: center;
   gap: 0.3rem;
   min-height: 3.25rem;
-  min-width: 3.25rem;
-  padding: 0.25rem 0.4rem;
+  min-width: 2.75rem;
+  padding: 0.25rem 0.2rem;
   border-radius: 1.125rem;
   color: var(--text-secondary);
   transition:
@@ -130,12 +148,34 @@
 /* The word under the mark: what the control is currently set to, not what it
    is called — "Flow", "25 min", "1 here". */
 .dock-label {
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   line-height: 1;
   letter-spacing: 0.01em;
   white-space: nowrap;
   color: currentColor;
 }
+
+/* Every panel the dock opens: the width of the dock, sitting just above it,
+   cornered like it. They used to hang off whichever mark opened them and get
+   nudged sideways to stay on screen, which read as four different panels. */
+.dock-panel,
+.presence-sheet {
+  position: absolute;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  top: auto;
+  width: auto;
+  margin-bottom: 0.625rem;
+  border: 1px solid var(--hairline);
+  border-radius: 1.5rem;
+  padding: 1.125rem 1.25rem;
+  background-color: color-mix(in oklab, var(--color-ink) 90%, var(--color-charcoal));
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 
 /* The one solid thing in the room, as on the way in: the dock's centre. The
    desktop room keeps its translucent button, so this stays on the phone. */
@@ -307,22 +347,6 @@
   background: var(--color-taupe);
 }
 
-/* Personal presence: a bottom sheet on narrow screens, a popover from tablet up. */
-.presence-sheet {
-  position: fixed;
-  z-index: 30;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  border-radius: 1.25rem 1.25rem 0 0;
-  border: 1px solid var(--hairline);
-  border-bottom: 0;
-  padding: 1.25rem 1.25rem calc(1.25rem + var(--inset-b));
-  /* Opaque, unlike other surfaces — it covers playback and the focus note,
-     and letting those ghost through would read as a rendering fault. */
-  background-color: color-mix(in oklab, var(--color-ink) 86%, var(--color-charcoal));
-}
-
 /* Shared "chip" selection style — presence's activity/drink pills and the
    timer's session-length pills. The chips sit on the sheet's own ink, where
    --surface-active (a darker well, read against the room image) is ink on ink
@@ -356,18 +380,7 @@
 }
 
 /* Dims the room behind the sheet; gone once the panel becomes a popover. */
-.presence-scrim {
-  position: fixed;
-  inset: 0;
-  z-index: 25;
-  background-color: color-mix(in oklab, var(--color-ink) 58%, transparent);
-}
-
 @media (min-width: 768px) {
-  .presence-scrim {
-    display: none;
-  }
-
   .presence-sheet {
     position: absolute;
     right: 0;
@@ -388,6 +401,14 @@
    Opacity only — nothing reflows, so a click mid-fade still lands. */
 [data-dim] {
   opacity: 0.34;
+}
+
+/* An open panel is being read, however still the room has been — and it is a
+   large opaque surface, so fading it to a third reads as a fault rather than
+   as the room receding. The hook already holds up for a visible focus ring;
+   this is the same argument for a panel. */
+[data-dim]:has([aria-expanded='true']) {
+  opacity: 1;
 }
 
 .room-grid > *,

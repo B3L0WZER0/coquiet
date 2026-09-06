@@ -35,7 +35,7 @@ export function PresenceLine({
         placement="top"
         align="center"
         offset={12}
-        panelClassName="w-[16rem]"
+        dock
         triggerClassName="dock-trigger"
         panel={<RoomPulse pulse={computePulse(sessions)} />}
       >

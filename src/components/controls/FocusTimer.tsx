@@ -60,6 +60,7 @@ export function FocusTimer({
       revealOnHoverAndFocus={false}
       placement={compact ? 'top' : 'bottom'}
       align="end"
+      dock={compact}
       panelClassName="w-[16rem]"
       triggerClassName={
         compact

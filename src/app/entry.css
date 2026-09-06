@@ -31,26 +31,28 @@
     calc(var(--inset-l) + var(--entry-gutter));
 }
 
-/* Shade poured in from the left edge rather than a pool under a centred block,
-   plus a little weight top and bottom to hold the wordmark and the footer. */
+/* Shade poured in from the left edge rather than a pool under a centred block.
+   It has to stop well short of the right-hand wall — the room's own veil is
+   already over the photograph, and doubling them there put the lit side of the
+   frame in the dark. */
 .entry-scrim {
   background:
     linear-gradient(
       to right,
       color-mix(in oklab, var(--color-ink) 92%, transparent) 0%,
-      color-mix(in oklab, var(--color-ink) 88%, transparent) 22%,
-      color-mix(in oklab, var(--color-ink) 74%, transparent) 38%,
-      color-mix(in oklab, var(--color-ink) 46%, transparent) 53%,
-      color-mix(in oklab, var(--color-ink) 20%, transparent) 68%,
-      color-mix(in oklab, var(--color-ink) 6%, transparent) 82%,
-      transparent 93%
+      color-mix(in oklab, var(--color-ink) 88%, transparent) 20%,
+      color-mix(in oklab, var(--color-ink) 74%, transparent) 36%,
+      color-mix(in oklab, var(--color-ink) 44%, transparent) 48%,
+      color-mix(in oklab, var(--color-ink) 18%, transparent) 58%,
+      color-mix(in oklab, var(--color-ink) 5%, transparent) 68%,
+      transparent 77%
     ),
+    /* Only the foot, and only lightly: the room's own veil already weights the
+       top, and the support link is the one thing out here on the bright side. */
     linear-gradient(
       to bottom,
-      color-mix(in oklab, var(--color-ink) 36%, transparent) 0%,
-      transparent 20%,
-      transparent 66%,
-      color-mix(in oklab, var(--color-ink) 44%, transparent) 100%
+      transparent 72%,
+      color-mix(in oklab, var(--color-ink) 38%, transparent) 100%
     );
 }
 

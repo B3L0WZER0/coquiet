@@ -7,7 +7,7 @@ import {
 } from '@supabase/supabase-js';
 
 import { DEFAULT_CHANNEL, isChannelId } from '@/lib/channels';
-import { HEARTBEAT_MS, live } from '@/lib/presence/aggregate';
+import { EXPIRY_MS, HEARTBEAT_MS, live } from '@/lib/presence/aggregate';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/lib/presence/config';
 import {
   isActivity,
@@ -32,6 +32,13 @@ const RETRY_MAX_MS = 30_000;
  *  the presence line blinked out and back on each reconnect. The sessions it
  *  keeps showing are still the real ones, expired by the shared `live()` rule. */
 const OFFLINE_GRACE_MS = 40_000;
+
+/** How often expired sessions are swept out. The room's own expiry rule is
+ *  only ever applied when something recomputes the snapshot, and a peer who
+ *  vanishes without untracking — a killed tab, a dropped socket, a phone that
+ *  went to sleep — sends nothing to recompute on. Without this the count keeps
+ *  reporting people who have gone. */
+const SWEEP_MS = 5_000;
 
 const SESSION_ID_KEY = 'coquiet:session-id';
 
@@ -116,6 +123,7 @@ export class SupabasePresenceAdapter implements PresenceProvider {
   private retry: number | null = null;
   private retryDelay = RETRY_MIN_MS;
   private graceTimer: number | null = null;
+  private sweep: number | null = null;
   private observing = false;
   private joined = false;
   private connected = false;
@@ -140,6 +148,7 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     if (typeof window === 'undefined') return;
     this.observing = true;
     this.bindVisibility();
+    this.startSweep();
     this.connect();
   }
 
@@ -256,6 +265,7 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     this.joined = true;
 
     this.bindVisibility();
+    this.startSweep();
     this.connect();
     void this.track();
 
@@ -265,6 +275,11 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     window.addEventListener('pagehide', this.onPageHide);
 
     this.publish();
+  }
+
+  private startSweep(): void {
+    if (this.sweep !== null || typeof window === 'undefined') return;
+    this.sweep = window.setInterval(() => this.publish(), SWEEP_MS);
   }
 
   private onPageHide = () => this.leave();
@@ -335,6 +350,11 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     }
     const now = Date.now();
     const others = live([...this.others.values()], now);
+    // Prune as well as report, so a long-lived tab does not accumulate entries
+    // for sessions that ended hours ago.
+    for (const [id, session] of this.others) {
+      if (now - session.lastSeen >= EXPIRY_MS) this.others.delete(id);
+    }
     const sessions = this.joined ? [...others, { ...this.own, lastSeen: now }] : others;
     return { sessions, joined: this.joined, available: true };
   }
@@ -351,6 +371,13 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     this.heartbeat = null;
   }
 
+  /** Only on teardown — leaving the room still leaves an observer watching a
+   *  room that has to keep retiring the people who have gone. */
+  private stopSweep(): void {
+    if (this.sweep !== null) window.clearInterval(this.sweep);
+    this.sweep = null;
+  }
+
   /** Only on teardown — leaving the room still leaves an observer watching. */
   private stopRetry(): void {
     if (this.retry !== null) window.clearTimeout(this.retry);
@@ -361,6 +388,7 @@ export class SupabasePresenceAdapter implements PresenceProvider {
   destroy(): void {
     this.leave();
     this.stopTimers();
+    this.stopSweep();
     this.stopRetry();
     this.clearGraceTimer();
     if (typeof window !== 'undefined') {

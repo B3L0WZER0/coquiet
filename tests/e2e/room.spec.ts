@@ -620,6 +620,40 @@ test.describe('the entry composition', () => {
     await expect(mute).toHaveAttribute('aria-label', 'Mute');
   });
 
+  test('the document commits to no room, and only one is ever fetched', async ({ page }) => {
+    // The page is prerendered once, so any room named in the HTML is the room
+    // of the hour the build ran in — wrong for all but one hour in every 26,
+    // and fetched at high priority before the right one is even known.
+    const html = await (await page.request.get('/')).text();
+    expect(html).not.toMatch(/\/images\/[a-z0-9-]+-\d+\.(avif|webp)/);
+
+    const fetched: string[] = [];
+    page.on('request', (r) => {
+      const m = /\/images\/(.+)-\d+\.(?:avif|webp)$/.exec(r.url());
+      if (m) fetched.push(m[1]);
+    });
+
+    await page.goto('/');
+    await page.waitForTimeout(2500);
+
+    // One room, and it is the one on screen.
+    expect(new Set(fetched).size).toBe(1);
+    const shown = await page.evaluate(
+      () => (document.querySelector('picture img') as HTMLImageElement).currentSrc,
+    );
+    expect(shown).toContain(fetched[0]);
+
+    // Its download was started by the chooser, not by the component — so it was
+    // already in flight while the bundle was still arriving.
+    const preloaded = await page.evaluate(() =>
+      [...document.querySelectorAll('link[rel="preload"][as="image"]')].map(
+        (l) => (l as HTMLLinkElement).imageSrcset,
+      ),
+    );
+    expect(preloaded).toHaveLength(1);
+    expect(preloaded[0]).toContain(fetched[0]);
+  });
+
   test('the room image is cropped to the room\'s own focal point in portrait', async ({
     page,
   }) => {
@@ -628,9 +662,11 @@ test.describe('the entry composition', () => {
         objectPosition: getComputedStyle(document.querySelector('picture img')!).objectPosition,
         backgroundPosition: getComputedStyle(document.querySelector('.room-image-lqip')!)
           .backgroundPosition,
-        focal: (document.querySelector('.room-image-lqip') as HTMLElement).style.getPropertyValue(
-          '--room-focal-x',
-        ),
+        // Computed, not inline: the chooser script sets this on :root before
+        // the document is parsed, and the crop inherits it from there.
+        focal: getComputedStyle(document.querySelector('.room-image-lqip')!)
+          .getPropertyValue('--room-focal-x')
+          .trim(),
       }));
 
     await page.setViewportSize({ width: 1280, height: 720 });

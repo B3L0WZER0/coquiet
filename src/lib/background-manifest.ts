@@ -24,6 +24,20 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAACQBACdASogABIAPu1mq08ppaOiKA1RMB2JZwC7AA3iP+oEJ7zBs36sBx40nzAA/uc5uCsE6srHjR6fYVAj2gUZlb3RY3KPxL2VzddSXuvSpL8ECcD6nspoZCx1rhQ8R6aNnL+95DobrAvGAAA=",
   },
   {
+    id: "architecture-canyon",
+    widths: [640, 1024, 1600],
+    focalX: 73,
+    chrome: "#8c6b51",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAwBACdASogABIAPuVgpE2pJaOiMAwBIByJZQCuHBRcrzDm2g7bsDogN0AA/tS02vRvXYonH//Xopxrpu8CYIr4+gcQVAap6P1aCsGxa6glKv0Wpi+pA8TAf+kR1RXdh/NAOK5iqy7BYAAA",
+  },
+  {
+    id: "architecture-fireplace-lake",
+    widths: [640, 1024, 1600],
+    focalX: 65,
+    chrome: "#715a49",
+    lqip: "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAwBQCdASogABIAPuVio02pJaMiMAwBIByJZQC3uCPSOnHSHXBHYe5LjMyit23I7wCTIAD+s3bnemTIgkIcWw1+FjrsZQtpZcj+5BiG/WK0DI6wJ5oXjw33UVziSv6ypCJbk9wcuM01omSJLssneSgq3DewNJNIhAA=",
+  },
+  {
     id: "cafe-concrete-hall",
     widths: [640, 1024, 1600],
     focalX: 50,
@@ -108,6 +122,20 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwBQCdASogABIAPu1ipU4ppSMiMBgMATAdiWcAwcwL1ILDDkPXKTOrmTGJm2PDxnVvcAD7Izonbx7AD+83aI1fqlul6aq5/JcHzJvp3rs6vF6GCCFML63euSL+H2CUJ7IJMgkwQ6B9nSO8Ocsg1AAA",
   },
   {
+    id: "coffee-lake-mountain-view",
+    widths: [640, 1024, 1600],
+    focalX: 45,
+    chrome: "#4e3423",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAwBQCdASogABIAPu1sqk8ppiOiMBgIATAdiWUApxQPSIUqb98eKA1CbqmY8e+w/7kQAAD+6i6uLXQBEIV17YqN5n2KINtEr32l5EejDBEXqzNr9e7FVgdYUfCl1evlahLVCQztrn7LwAAA",
+  },
+  {
+    id: "coffee-lake-view",
+    widths: [640, 1024, 1600],
+    focalX: 61,
+    chrome: "#5b4737",
+    lqip: "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAACQBQCdASogABIAPuFep02opSOiMAwBEBwJYwCxHwBDTIjRwY7RTvqzYkxNVmPQhOhJF4Yk8AD+6MykvN5HeAJnPqII8RggfRY/Fgbggt2QUM3EoTG3OAuoAuvg1/aA9hRYYhBpSh06a10h3Co11Ue1i3gljAAA",
+  },
+  {
     id: "concrete-cave",
     widths: [640, 1024, 1600],
     focalX: 63,
@@ -120,6 +148,13 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalX: 42,
     chrome: "#867467",
     lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQBACdASogABIAPu1kqE4ppaOiMAgBMB2JZQCw7BjF0g9iJcQzsyX6yfS3uTScgAD+zrWj+dbTX/9pyqvqH6r8kBmEHvpkde0mBTLdkYnaG5pDHCac1maXoM5BWI3AYxX5Rn24HMpRilQA",
+  },
+  {
+    id: "desert-coffee",
+    widths: [640, 1024, 1600],
+    focalX: 68,
+    chrome: "#4e331e",
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAQBQCdASogABIAPuFcqU2opSQiMAwBEBwJYwCo9CHUw8lC5gnQofXLrkZm2VKpfnaAAP7oz67bmWTEzO9a6cPVx8MX4wwG96MUfbRLTc2M0fAloYZz/VqFK0/xhlnmeBloWI/JWDbkNMxksgAAAA==",
   },
   {
     id: "desert-rock-pavilion",
@@ -148,6 +183,20 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalX: 66,
     chrome: "#655f59",
     lqip: "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADQBACdASogABIAPu1mq04ppaQiMAgBMB2JZQC2yCFoUFbAMkzwnCJ0WQSkemlasAD+7ov2KavS/hRIE2QlTnj/CN1NADUWdGs0KtMvxNPj3l2K93YqUdFHqOSfYPzr7+AqZL8dp1PoFZzy/rJpVl7gAAA=",
+  },
+  {
+    id: "library-in-jungle",
+    widths: [640, 1024, 1600],
+    focalX: 80,
+    chrome: "#1e1d10",
+    lqip: "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAABwBACdASogABIAPuVgp02pJaOiMAwBIByJZQDM0B235oIJFV1E999Q/y98AAD7YAVXZHr18U6yTblFMiOu0casOHVxTHLFX+BIK7KQ3B8EEzVQe7wns9gQLPKKAAAA",
+  },
+  {
+    id: "meditating-ocean",
+    widths: [640, 1024, 1600],
+    focalX: 20,
+    chrome: "#322a24",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQBACdASogABIAPuFWpk2opKOiN/qoARAcCWcAyywh1BdxXnjoNsVSavN9kSYRcAD+5FidpR8xOaA0Lg7CPMK4k0qaNR1KViG49bDNlk62wZW7SVK26ohmSKSU4Aq1tK2Q+wa1FjRbQAAA",
   },
   {
     id: "mist-lake-pavilion",
@@ -197,5 +246,12 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalX: 34,
     chrome: "#8f887f",
     lqip: "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAQBQCdASogABIAPu1ssFCppiSiqAqpMB2JZQCw7A9au02rVmK5yB5G00AofxyiuwOgAMyeOhd8Yi6QCoQtpuRXNM1D5MYDPhcn5SHQDttplOY25dnCI/MSuntI1ruM5ZU2+yNeiXhYj2jryqlyYGvxQPtKAAAA",
+  },
+  {
+    id: "work-lake-view",
+    widths: [640, 1024, 1600],
+    focalX: 26,
+    chrome: "#3b291c",
+    lqip: "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAwBQCdASogABIAPu1mqk2ppaQiMAgBMB2JZQDLLBcHg9LeK16BWbfXCQFbU4RKEBSqQAD+2ULfGVvsHiWOkAKlrZ1SLhnzT+c+hBgJioZNmjHWmbmtinnvdleyMUI1zN1Eqlr1reJL71ctmz0y32BEvA3CAAAA",
   },
 ];

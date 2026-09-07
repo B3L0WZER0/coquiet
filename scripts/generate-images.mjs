@@ -36,6 +36,8 @@ const LQIP_HEIGHT = 18;
  */
 const FOCAL_X = {
   'alpine-lake-studio': 68,
+  'architecture-canyon': 73,
+  'architecture-fireplace-lake': 65,
   'cafe-concrete-hall': 50,
   'cafe-garden-door': 68,
   'cafe-windows': 32,
@@ -49,8 +51,13 @@ const FOCAL_X = {
   'cliffside-cafe-focus': 68,
   'coastal-grotto-writer': 60,
   'coastal-observatory': 74,
+  'coffee-lake-mountain-view': 45,
+  'coffee-lake-view': 61,
   'concrete-cave': 63,
   'desert-arches': 42,
+  // Two other figures are further out; the reader in the chair sits next to the
+  // courtyard tree, so framing them keeps the lit doorway in the slice too.
+  'desert-coffee': 68,
   'desert-rock-pavilion': 60,
   // No person in frame; centred on the lit desk.
   'forest-console-invitation': 50,
@@ -59,6 +66,10 @@ const FOCAL_X = {
   // built around. Centred on the view instead; in portrait they fall outside.
   'forest-waterfall-salon': 18,
   'garden-pool': 66,
+  'library-in-jungle': 80,
+  // The figure sits almost against the left edge, as in forest-waterfall-salon,
+  // but here the slice can hold both: just wide enough to keep her and the water.
+  'meditating-ocean': 20,
   'mist-lake-pavilion': 30,
   'mountain-cavern': 55,
   // No person in frame; centred on the desk and chair.
@@ -67,6 +78,8 @@ const FOCAL_X = {
   'open-ocean-reading-room': 16,
   'rain-garden-pavilion': 64,
   'valley-vault': 34,
+  // Off the desk a little, so the slice carries some of the lake it looks at.
+  'work-lake-view': 26,
 };
 
 const entries = await readdir(SOURCE_DIR);

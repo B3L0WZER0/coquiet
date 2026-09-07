@@ -21,3 +21,7 @@ shots/
 
 # Playfair, fetched once so `npm run assets:og` can draw the link preview.
 scripts/.cache/
+
+# Raw music waiting to be taken in by `npm run audio:intake`.
+/audio-inbox/*
+!/audio-inbox/README.md

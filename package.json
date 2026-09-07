@@ -15,6 +15,7 @@
     "assets:images": "node scripts/generate-images.mjs",
     "assets:crops": "node scripts/crop-preview.mjs",
     "assets:audio": "node scripts/generate-audio-manifest.mjs",
+    "audio:intake": "node scripts/audio-intake.mjs",
     "assets:og": "node --experimental-strip-types scripts/generate-og-image.mjs",
     "assets:icons": "node scripts/generate-app-icons.mjs",
     "room": "node scripts/room-peek.mjs"

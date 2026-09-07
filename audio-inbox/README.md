@@ -31,12 +31,42 @@ stereo to match the filed tracks, tags title and artist, names it as the next
 free slot in the channel, moves it into public/audio, and regenerates
 src/lib/audio-manifest.ts. Your raw file stays here, renamed `.filed`.
 
-## Two things --apply does not do
+## Uploading
 
-**Upload to R2.** The manifest builds from local files; playback serves from
-audio.coquiet.app. A track that never reaches the bucket 404s for every listener.
+`--apply` finishes by pushing public/audio to the R2 bucket the room streams
+from. That needs rclone configured once:
 
-**Keep the station clock still.** Adding to a channel changes its cycle length,
-so on deploy every listener's position in the programme jumps once.
+    brew install rclone
+    rclone config
+
+Answer `n` for a new remote, name it `r2`, choose storage `s3`, provider
+`Cloudflare`, and paste the access key and secret from the Cloudflare dashboard
+(R2 -> Manage API tokens). The endpoint is
+`https://<account-id>.r2.cloudflarestorage.com`. Leave region blank.
+
+The prompts mask the secret, which is why this is worth doing interactively
+rather than as one `rclone config create` line that lands in shell history.
+
+If rclone was not ready when a track was filed, nothing is lost — push it later:
+
+    npm run audio:upload
+
+That is `copy`, never `sync`: public/audio is gitignored, so on a fresh clone it
+can be empty, and `sync` would delete the live programme off the bucket. Files
+already in the bucket are skipped, so a routine run never re-pushes the library.
+Re-encoded a track under a name that is already up there? `--force-upload`.
+
+`--no-upload` files a track without pushing it.
+
+## Order matters at the end
+
+Upload, *then* commit `src/lib/audio-manifest.ts`. The manifest is what tells
+every browser the track exists; committing it first deploys a programme that
+404s until the audio catches up.
+
+## One thing nothing can avoid
+
+Adding to a channel changes its cycle length, so on deploy every listener's
+position in that programme jumps once.
 
 Nothing in here is committed except this README.

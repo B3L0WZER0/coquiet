@@ -29,15 +29,35 @@ const AUDIO_DIR = path.join(ROOT, 'public/audio');
 const CACHE = path.join(ROOT, 'scripts/.cache/audio-fingerprints.json');
 
 const CHANNELS = ['still', 'flow', 'momentum'];
+
+/** rclone remote and bucket the room actually streams from. */
+const REMOTE = 'r2';
+const BUCKET = 'coquiet-audio';
+/** A track's name never changes once filed, so it can be cached hard. */
+const CACHE_CONTROL = 'public, max-age=31536000, immutable';
 const AUDIO_RE = /\.(m4a|mp3|wav|flac|aiff?|ogg|opus|wma)$/i;
 /** Matches the tracks already in the programme — see generate-audio-manifest.mjs. */
 const FILED = /^(still|flow|momentum)\s*(\d+)$/i;
 
 const args = process.argv.slice(2);
 const apply = args.includes('--apply');
+const noUpload = args.includes('--no-upload');
+// Filing and uploading come apart whenever rclone was not ready at the time,
+// which strands finished tracks locally unless the push can be run on its own.
+const uploadOnly = args.includes('--upload-only');
+const forceUpload = args.includes('--force-upload');
 const forced = args.find((a) => a.startsWith('--channel='))?.split('=')[1]?.toLowerCase();
 if (forced && !CHANNELS.includes(forced)) {
   throw new Error(`--channel must be one of ${CHANNELS.join(', ')}`);
+}
+
+/** For the upload: long enough that buffering its progress would be useless. */
+function runLive(bin, argv) {
+  return new Promise((resolve, reject) => {
+    const proc = spawn(bin, argv, { stdio: ['ignore', 'inherit', 'inherit'] });
+    proc.on('error', reject);
+    proc.on('close', (code) => (code === 0 ? resolve() : reject(new Error(`${bin} exited ${code}`))));
+  });
 }
 
 function run(bin, argv) {
@@ -169,8 +189,13 @@ try {
   throw new Error(`No ${path.relative(ROOT, INBOX)} folder. Create it and drop music in.`);
 }
 
-if (inbox.length === 0) {
-  console.log(`Nothing in ${path.relative(ROOT, INBOX)}/ — drop music files in and run this again.`);
+if (uploadOnly || inbox.length === 0) {
+  if (!uploadOnly) {
+    console.log(`Nothing in ${path.relative(ROOT, INBOX)}/ — drop music files in and run this again.`);
+    process.exit(0);
+  }
+  // Everything below builds on the inbox; upload-only wants none of it.
+  await upload();
   process.exit(0);
 }
 
@@ -254,4 +279,51 @@ for (const plan of plans) {
 console.log('\nRegenerating the manifest…');
 const { out } = await run('node', [path.join(ROOT, 'scripts/generate-audio-manifest.mjs')]);
 console.log(out);
-console.log('Still to do: upload the new .m4a files to R2, then commit src/lib/audio-manifest.ts.');
+
+// --- upload ---
+
+async function rcloneReady() {
+  try {
+    await run('rclone', ['--version']);
+  } catch {
+    return 'rclone is not installed. `brew install rclone`, then see audio-inbox/README.md.';
+  }
+  const { out } = await run('rclone', ['listremotes']);
+  if (!out.split('\n').some((line) => line.trim() === `${REMOTE}:`)) {
+    return `No "${REMOTE}" remote configured. See audio-inbox/README.md for the six answers rclone asks for.`;
+  }
+  return null;
+}
+
+async function upload() {
+  const notReady = await rcloneReady();
+  if (notReady) {
+    console.log(`\nNOT uploaded: ${notReady}`);
+    console.log('Filed tracks 404 for every listener until they reach the bucket.');
+    console.log('Once rclone is configured: npm run audio:upload');
+    process.exit(1);
+  }
+
+  // copy, never sync: public/audio is gitignored, so on a fresh clone it can be
+  // empty or partial, and `sync` would take the live programme down with it.
+  const rcloneArgs = [
+    'copy', AUDIO_DIR, `${REMOTE}:${BUCKET}`,
+    '--include', '*.m4a',
+    '--header-upload', `Cache-Control: ${CACHE_CONTROL}`,
+    '--progress', '--stats-one-line',
+  ];
+  // Filed names are stable and their content does not change, so skipping what
+  // is already there keeps a routine run from re-pushing the whole library.
+  if (!forceUpload) rcloneArgs.push('--ignore-existing');
+
+  console.log(`\nUploading to ${REMOTE}:${BUCKET}${forceUpload ? ' (--force-upload: overwriting)' : ''}…`);
+  await runLive('rclone', rcloneArgs);
+  console.log('\nDone. Commit src/lib/audio-manifest.ts to put the new programme live.');
+}
+
+if (noUpload) {
+  console.log('\nSkipped the upload (--no-upload). These tracks 404 until they reach R2.');
+  process.exit(0);
+}
+
+await upload();

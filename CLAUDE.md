@@ -25,6 +25,14 @@ Full product detail lives in `SPEC.md`. The build order lives in `PLAN.md`. Read
 - Room photographs → `/design-reference/` — these are not mood board material any more; every file in that folder *is* a room the app shows. See below.
 - Placeholder soundtrack → `/public/audio/placeholder.mp3` — one real file for now. Wire it to all three channels (Still / Flow / Momentum) so the channel-switching UI and crossfade logic are fully real, even though the audio content is identical across channels until final tracks exist. Keep the three channel entries in one small config object so swapping in real files later is a one-line change per channel, not a refactor.
 
+## The logo
+
+`assets/logo.png` and `assets/favicon.ico` are the mark as drawn — the only
+hand-made icons in the repo. `npm run assets:icons` cuts every other size from
+them (tab, Apple touch, the three PWA icons), and `npm run assets:og` puts the
+mark on the share card. Change the mark in `assets/`, re-run both, never edit a
+generated icon by hand.
+
 ## Adding a background
 
 Drop the file in `/design-reference/` — the filename becomes the room's permanent id, so name it for what it shows. Then:

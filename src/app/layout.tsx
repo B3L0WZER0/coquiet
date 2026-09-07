@@ -40,6 +40,10 @@ export const metadata: Metadata = {
     locale: 'en',
   },
   twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
+  // Added to an iPhone's home screen, the room opens without Safari around it.
+  // The translucent bar lets the photograph run up under the clock, which is
+  // what `viewportFit: 'cover'` below was already asking for.
+  appleWebApp: { capable: true, title: 'Coquiet', statusBarStyle: 'black-translucent' },
 };
 
 export const viewport: Viewport = {

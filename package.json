@@ -15,6 +15,7 @@
     "assets:images": "node scripts/generate-images.mjs",
     "assets:crops": "node scripts/crop-preview.mjs",
     "assets:audio": "node scripts/generate-audio-manifest.mjs",
+    "assets:og": "node --experimental-strip-types scripts/generate-og-image.mjs",
     "room": "node scripts/room-peek.mjs"
   },
   "dependencies": {

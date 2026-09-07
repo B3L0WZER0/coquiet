@@ -49,9 +49,11 @@ jobs:
           if [ -n "${{ vars.SITE_CUSTOM_DOMAIN }}" ]; then
             echo "Building for https://${{ vars.SITE_CUSTOM_DOMAIN }}/ (no base path)"
             export NEXT_PUBLIC_BASE_PATH=""
+            export NEXT_PUBLIC_SITE_URL="https://${{ vars.SITE_CUSTOM_DOMAIN }}"
           else
             echo "Building for a github.io project page under /${{ github.event.repository.name }}"
             export NEXT_PUBLIC_BASE_PATH="/${{ github.event.repository.name }}"
+            export NEXT_PUBLIC_SITE_URL="https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}"
           fi
           npm run build
         env:

@@ -18,3 +18,6 @@ shots/
 # The tracks live in R2 and are archived outside the repo; keep a local copy
 # here for `next dev` and the e2e suite, but never commit it again.
 /public/audio/
+
+# Playfair, fetched once so `npm run assets:og` can draw the link preview.
+scripts/.cache/

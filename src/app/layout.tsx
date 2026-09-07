@@ -15,8 +15,11 @@ const displaySerif = Playfair_Display({
 });
 
 const TITLE = 'Coquiet — Focus quietly, together';
+// Plainer than the room's own voice on purpose: this line is read by someone
+// deciding whether to click, in a search result or a pasted link, who has not
+// seen the photograph yet and does not know what "a shared room" means.
 const DESCRIPTION =
-  'Enter a beautiful shared room, choose your music and focus quietly alongside others.';
+  'A quiet online room for deep work and study. Continuous focus music, a focus timer, and quiet company while you work.';
 
 export const metadata: Metadata = {
   // Absolute by the time a crawler reads it: og:image and the canonical link

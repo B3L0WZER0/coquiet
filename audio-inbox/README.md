@@ -31,6 +31,11 @@ stereo to match the filed tracks, tags title and artist, names it as the next
 free slot in the channel, moves it into public/audio, and regenerates
 src/lib/audio-manifest.ts. Your raw file stays here, renamed `.filed`.
 
+Once a track is uploaded and live, its master moves to `archive/` under its
+channel name. Keep them: the filed track is 64k AAC encoded from these, so any
+future re-encode — a new bitrate, a different loudness target, another codec —
+starts here rather than from a download.
+
 ## Uploading
 
 `--apply` finishes by pushing public/audio to the R2 bucket the room streams

@@ -24,29 +24,35 @@ const ROOM = 'cliffside-cafe-focus';
 
 const WIDTH = 1200;
 const HEIGHT = 630;
-// Satori's font parser rejects a variable font, so ask Google for the two
-// static instances the card uses. An ancient user agent is what makes the CSS
-// endpoint answer with .ttf rather than woff2.
-const FONT_CSS =
-  'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500';
 const FONT_CACHE_DIR = join(import.meta.dirname, '.cache');
 const OUT = join(import.meta.dirname, '../src/app/opengraph-image.jpg');
 
-async function playfair() {
-  const cached = [400, 500].map((w) => join(FONT_CACHE_DIR, `PlayfairDisplay-${w}.ttf`));
-  if (!cached.every((f) => existsSync(f))) {
-    const css = await fetch(FONT_CSS, { headers: { 'User-Agent': 'Mozilla/4.0' } });
-    if (!css.ok) throw new Error(`Playfair lookup failed: ${css.status}`);
-    const urls = [...(await css.text()).matchAll(/https:\/\/[^)]+\.ttf/g)].map((m) => m[0]);
-    if (urls.length < 2) throw new Error('Playfair lookup returned no static .ttf files.');
-    await mkdir(FONT_CACHE_DIR, { recursive: true });
-    for (const [i, file] of cached.entries()) {
-      const res = await fetch(urls[i]);
-      if (!res.ok) throw new Error(`Playfair download failed: ${res.status}`);
-      await writeFile(file, Buffer.from(await res.arrayBuffer()));
-    }
-  }
-  return Promise.all(cached.map((f) => readFile(f)));
+/**
+ * A Google font as static .ttf, cached beside this script.
+ *
+ * Satori's parser rejects a variable font, so the weights are asked for one by
+ * one. An ancient user agent is what makes the CSS endpoint answer with .ttf
+ * rather than woff2.
+ */
+async function googleFont(family, weights) {
+  const slug = family.replace(/ /g, '');
+  return Promise.all(
+    weights.map(async (weight) => {
+      const file = join(FONT_CACHE_DIR, `${slug}-${weight}.ttf`);
+      if (!existsSync(file)) {
+        const url = `https://fonts.googleapis.com/css2?family=${family.replace(/ /g, '+')}:wght@${weight}`;
+        const css = await fetch(url, { headers: { 'User-Agent': 'Mozilla/4.0' } });
+        if (!css.ok) throw new Error(`${family} ${weight} lookup failed: ${css.status}`);
+        const ttf = (await css.text()).match(/https:\/\/[^)]+\.ttf/)?.[0];
+        if (!ttf) throw new Error(`${family} ${weight} lookup returned no static .ttf.`);
+        const res = await fetch(ttf);
+        if (!res.ok) throw new Error(`${family} ${weight} download failed: ${res.status}`);
+        await mkdir(FONT_CACHE_DIR, { recursive: true });
+        await writeFile(file, Buffer.from(await res.arrayBuffer()));
+      }
+      return { name: family, data: await readFile(file), weight, style: 'normal' };
+    }),
+  );
 }
 
 const room = BACKGROUND_MANIFEST.find((r) => r.id === ROOM);
@@ -59,7 +65,11 @@ const photo = await sharp(join(import.meta.dirname, `../design-reference/${ROOM}
   .jpeg({ quality: 90 })
   .toBuffer();
 
-const [regular, medium] = await playfair();
+// Playfair for the headline, as on the entry screen. The wordmark is not
+// Playfair: it inherits --font-sans there, so it gets a sans here too — Inter,
+// which the site's own stack names, at the same light weight.
+const display = await googleFont('Playfair Display', [400]);
+const sans = await googleFont('Inter', [300, 400]);
 const e = React.createElement;
 
 const png = await new ImageResponse(
@@ -92,27 +102,40 @@ const png = await new ImageResponse(
           width: '100%',
           height: '100%',
           padding: '56px 64px',
-          color: '#f6f2ec',
+          color: '#f6f1e7',
           fontFamily: 'Playfair Display',
         },
       },
-      e('div', { style: { fontSize: 34, fontWeight: 400, letterSpacing: '0.08em' } }, 'coquiet'),
+      e(
+        'div',
+        {
+          style: {
+            fontFamily: 'Inter',
+            fontSize: 34,
+            fontWeight: 300,
+            letterSpacing: '0.08em',
+          },
+        },
+        'coquiet',
+      ),
       e(
         'div',
         { style: { display: 'flex', flexDirection: 'column' } },
         e(
           'div',
-          { style: { fontSize: 82, fontWeight: 500, lineHeight: 1.05, letterSpacing: '-0.01em' } },
+          { style: { fontSize: 82, fontWeight: 400, lineHeight: 1.06, letterSpacing: '-0.01em' } },
           'Focus quietly, together.',
         ),
         e(
           'div',
           {
             style: {
+              fontFamily: 'Inter',
               marginTop: 18,
               fontSize: 30,
               fontWeight: 400,
-              color: 'rgba(246,242,236,0.82)',
+              // --text-secondary: the cream at 86%.
+              color: 'rgba(246,241,231,0.86)',
             },
           },
           'A shared room. A little music.',
@@ -123,10 +146,7 @@ const png = await new ImageResponse(
   {
     width: WIDTH,
     height: HEIGHT,
-    fonts: [
-      { name: 'Playfair Display', data: regular, weight: 400, style: 'normal' },
-      { name: 'Playfair Display', data: medium, weight: 500, style: 'normal' },
-    ],
+    fonts: [...display, ...sans],
   },
 ).arrayBuffer();
 

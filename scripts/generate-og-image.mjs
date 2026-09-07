@@ -59,11 +59,6 @@ const photo = await sharp(join(import.meta.dirname, `../design-reference/${ROOM}
   .jpeg({ quality: 90 })
   .toBuffer();
 
-const mark = await sharp(join(import.meta.dirname, '../assets/logo.png'))
-  .resize(112, 112)
-  .png()
-  .toBuffer();
-
 const [regular, medium] = await playfair();
 const e = React.createElement;
 
@@ -101,22 +96,7 @@ const png = await new ImageResponse(
           fontFamily: 'Playfair Display',
         },
       },
-      e(
-        'div',
-        { style: { display: 'flex', alignItems: 'center', gap: 20 } },
-        // The same artwork the favicon is cut from, so a shared link and the
-        // tab it opens carry the one logo.
-        e('img', {
-          src: `data:image/png;base64,${mark.toString('base64')}`,
-          width: 56,
-          height: 56,
-        }),
-        e(
-          'div',
-          { style: { fontSize: 34, fontWeight: 400, letterSpacing: '0.08em' } },
-          'coquiet',
-        ),
-      ),
+      e('div', { style: { fontSize: 34, fontWeight: 400, letterSpacing: '0.08em' } }, 'coquiet'),
       e(
         'div',
         { style: { display: 'flex', flexDirection: 'column' } },

@@ -29,9 +29,11 @@ Full product detail lives in `SPEC.md`. The build order lives in `PLAN.md`. Read
 
 `assets/logo.png` and `assets/favicon.ico` are the mark as drawn — the only
 hand-made icons in the repo. `npm run assets:icons` cuts every other size from
-them (tab, Apple touch, the three PWA icons), and `npm run assets:og` puts the
-mark on the share card. Change the mark in `assets/`, re-run both, never edit a
-generated icon by hand.
+them (tab, Apple touch, the three PWA icons). Change the mark in `assets/`,
+re-run that, never edit a generated icon by hand.
+
+The share card is the one place the mark does *not* go: like the in-app
+`Wordmark`, it stays typography over a photograph.
 
 ## Adding a background
 

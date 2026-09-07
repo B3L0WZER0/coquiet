@@ -20,6 +20,8 @@ describe('the rooms', () => {
       expect(room.lqip.startsWith('data:image/webp;base64,')).toBe(true);
       expect(room.focalX).toBeGreaterThanOrEqual(0);
       expect(room.focalX).toBeLessThanOrEqual(100);
+      expect(room.focalY).toBeGreaterThanOrEqual(0);
+      expect(room.focalY).toBeLessThanOrEqual(100);
     }
   });
 

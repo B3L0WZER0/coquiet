@@ -1,86 +1,36 @@
 /**
  * Generates the responsive background sets from /design-reference.
  *
- * Usage: npm run assets:images
+ * Usage: npm run assets:images            only what changed
+ *        npm run assets:images -- --force everything, ignoring timestamps
  *
  * Every image in that folder becomes one room. To add or remove a room, add or
  * remove a file and re-run this; the manifest it writes is the only place the
  * app learns what exists.
  *
  * Name files meaningfully — the filename becomes the room's stable id, and the
- * focal points below are keyed by it. A file called `IMG_4821.png` will work
- * but nobody will be able to maintain its crop.
+ * focal points in focal-points.mjs are keyed by it. A file called `IMG_4821.png`
+ * will work but nobody will be able to maintain its crop.
+ *
+ * Choosing a focal point is a job for `npm run assets:crops`, which renders the
+ * slice a phone will really show. The whole procedure is in CLAUDE.md.
  */
 
-import { mkdir, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readdir, stat, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import sharp from 'sharp';
+
+import { FOCAL_X, FOCAL_Y } from './focal-points.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
 const SOURCE_DIR = path.join(ROOT, 'design-reference');
 const OUT_DIR = path.join(ROOT, 'public/images');
 const MANIFEST = path.join(ROOT, 'src/lib/background-manifest.ts');
 
+const FORCE = process.argv.includes('--force');
+
 const WIDTHS = [640, 1024, 1600];
 const LQIP_HEIGHT = 18;
-
-/**
- * Where to centre the crop when the viewport is portrait.
- *
- * A phone shows a narrow vertical slice of a 16:9 frame, so which part it lands
- * on has to be chosen by eye — there is nothing to derive it from. These were
- * picked by rendering every image at several focal points and choosing the one
- * that keeps the room legible, favouring frames where a person is visible.
- *
- * Anything not listed defaults to the middle, which is rarely right.
- */
-const FOCAL_X = {
-  'alpine-lake-studio': 68,
-  'architecture-canyon': 73,
-  'architecture-fireplace-lake': 65,
-  'cafe-concrete-hall': 50,
-  'cafe-garden-door': 68,
-  'cafe-windows': 32,
-  'calm-ocean-screen': 65,
-  'calm-screen-working': 43,
-  // No person in frame; centred on the lamp and the shelf above the bench.
-  'cave-forest': 70,
-  'cave-working': 65,
-  'circular-window-studio': 65,
-  'cliff-cave': 50,
-  'cliffside-cafe-focus': 68,
-  'coastal-grotto-writer': 60,
-  'coastal-observatory': 74,
-  'coffee-lake-mountain-view': 45,
-  'coffee-lake-view': 61,
-  'concrete-cave': 63,
-  'desert-arches': 42,
-  // Two other figures are further out; the reader in the chair sits next to the
-  // courtyard tree, so framing them keeps the lit doorway in the slice too.
-  'desert-coffee': 68,
-  'desert-rock-pavilion': 60,
-  // No person in frame; centred on the lit desk.
-  'forest-console-invitation': 50,
-  // The exception to favouring a person: the one figure sits so hard against
-  // the left edge that framing them means losing the waterfall the image is
-  // built around. Centred on the view instead; in portrait they fall outside.
-  'forest-waterfall-salon': 18,
-  'garden-pool': 66,
-  'library-in-jungle': 80,
-  // The figure sits almost against the left edge, as in forest-waterfall-salon,
-  // but here the slice can hold both: just wide enough to keep her and the water.
-  'meditating-ocean': 20,
-  'mist-lake-pavilion': 30,
-  'mountain-cavern': 55,
-  // No person in frame; centred on the desk and chair.
-  'ocean-workstation-invitation': 68,
-  'oculus-courtyard': 68,
-  'open-ocean-reading-room': 16,
-  'rain-garden-pavilion': 64,
-  'valley-vault': 34,
-  // Off the desk a little, so the slice carries some of the lake it looks at.
-  'work-lake-view': 26,
-};
 
 const entries = await readdir(SOURCE_DIR);
 const sources = entries.filter((f) => /\.(png|jpe?g|webp|avif|tiff?)$/i.test(f)).sort();
@@ -97,10 +47,30 @@ for (const file of sources) {
   const meta = await sharp(source).metadata();
 
   const widths = WIDTHS.filter((w) => !meta.width || w <= meta.width * 1.05);
-  for (const width of widths) {
-    const base = sharp(source).resize({ width, withoutEnlargement: true });
-    await base.clone().avif({ quality: 58, effort: 6 }).toFile(path.join(OUT_DIR, `${id}-${width}.avif`));
-    await base.clone().webp({ quality: 76 }).toFile(path.join(OUT_DIR, `${id}-${width}.webp`));
+
+  // Re-encoding is the slow part by far — avif at effort 6, six files a room.
+  // The output only depends on the source file, so a room whose files are all
+  // newer than it is already correct. Adding one room to a folder of thirty
+  // should cost one room. `--force` re-encodes everything, for when the
+  // encoder settings above change rather than the photographs.
+  const outputs = widths.flatMap((w) => [`${id}-${w}.avif`, `${id}-${w}.webp`]);
+  const sourceTime = (await stat(source)).mtimeMs;
+  const times = await Promise.all(
+    outputs.map((f) =>
+      stat(path.join(OUT_DIR, f)).then(
+        (s) => s.mtimeMs,
+        () => 0,
+      ),
+    ),
+  );
+  const encoded = !FORCE && times.every((t) => t > sourceTime);
+
+  if (!encoded) {
+    for (const width of widths) {
+      const base = sharp(source).resize({ width, withoutEnlargement: true });
+      await base.clone().avif({ quality: 58, effort: 6 }).toFile(path.join(OUT_DIR, `${id}-${width}.avif`));
+      await base.clone().webp({ quality: 76 }).toFile(path.join(OUT_DIR, `${id}-${width}.webp`));
+    }
   }
 
   // The placeholder must carry the same aspect ratio as the generated images.
@@ -151,12 +121,13 @@ for (const file of sources) {
     id,
     widths,
     focalX: FOCAL_X[id] ?? 50,
+    focalY: FOCAL_Y[id] ?? 50,
     chrome,
     lqip: `data:image/webp;base64,${lqip.toString('base64')}`,
   });
 
   console.log(
-    `  ${id.padEnd(22)} ${widths.join('/')}  focal ${String(FOCAL_X[id] ?? 50).padStart(3)}%  chrome ${chrome}`,
+    `  ${encoded ? '·' : '+'} ${id.padEnd(26)} focal ${String(FOCAL_X[id] ?? 50).padStart(3)}%  chrome ${chrome}`,
   );
 }
 
@@ -165,7 +136,8 @@ const lines = [
   ' * Generated by `npm run assets:images` — do not edit by hand.',
   ' *',
   ' * One entry per image in /design-reference. `focalX` is where the crop',
-  ' * centres when the viewport is portrait; `lqip` is the blurred placeholder,',
+  ' * centres when the viewport is portrait, `focalY` where it centres when the',
+  ' * viewport is wider than the photograph; `lqip` is the blurred placeholder,',
   ' * inlined so the first paint is already warm. `chrome` is the colour along',
   ' * the room\'s bottom edge, handed to the browser to tint its own toolbar.',
   ' */',
@@ -174,6 +146,7 @@ const lines = [
   '  id: string;',
   '  widths: readonly number[];',
   '  focalX: number;',
+  '  focalY: number;',
   '  chrome: string;',
   '  lqip: string;',
   '}',
@@ -186,6 +159,7 @@ for (const room of rooms) {
   lines.push(`    id: ${JSON.stringify(room.id)},`);
   lines.push(`    widths: [${room.widths.join(', ')}],`);
   lines.push(`    focalX: ${room.focalX},`);
+  lines.push(`    focalY: ${room.focalY},`);
   lines.push(`    chrome: ${JSON.stringify(room.chrome)},`);
   lines.push(`    lqip: ${JSON.stringify(room.lqip)},`);
   lines.push('  },');
@@ -198,5 +172,5 @@ console.log(`\nWrote ${path.relative(ROOT, MANIFEST)} — ${rooms.length} rooms`
 if (missingFocal.length > 0) {
   console.log(`\n  No focal point set (defaulting to 50%, which is rarely right):`);
   for (const id of missingFocal) console.log(`    - ${id}`);
-  console.log(`  Add them to FOCAL_X in ${path.relative(ROOT, import.meta.filename)}.`);
+  console.log('  Run `npm run assets:crops` to choose one, then set it in scripts/focal-points.mjs.');
 }

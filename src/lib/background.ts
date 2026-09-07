@@ -82,7 +82,7 @@ export function chosenRoom(): Room {
  * is a mismatch — which it resolves by throwing the attribute away.
  */
 export function roomChooserScript(): string {
-  const rooms = ROOMS.map((r) => [r.id, r.focalX, r.chrome, r.lqip]);
+  const rooms = ROOMS.map((r) => [r.id, r.focalX, r.chrome, r.lqip, r.focalY]);
   const widths = ROOMS[0].widths;
   // Built here rather than in the script: the base path is a build-time
   // setting and does not need to ship as a second copy.
@@ -95,7 +95,7 @@ var i=Math.floor(Date.now()/3600000)%R.length;if(i<0)i+=R.length;var r=R[i];
 ${dev ? `var q=/[?&]room=([^&]*)/.exec(location.search);if(q){var f=R.find(function(x){return x[0]===decodeURIComponent(q[1])});if(f)r=f}` : ''}
 window.__coquietRoom=r[0];
 var y=document.createElement('style');
-y.textContent=':root{--room-lqip:url("'+r[3]+'");--room-focal-x:'+r[1]+'%}';
+y.textContent=':root{--room-lqip:url("'+r[3]+'");--room-focal-x:'+r[1]+'%;--room-focal-y:'+r[4]+'%}';
 document.head.appendChild(y);
 var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=r[2];
 var l=document.createElement('link');l.rel='preload';l.as='image';l.type='image/avif';

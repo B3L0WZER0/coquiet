@@ -2,22 +2,26 @@
 
 /* Landscape shows the composition as photographed. Portrait can only show a
    narrow vertical slice, so it shifts to the arch (per-image focal point,
-   set on the element by Background) instead of the blank wall in the middle. */
+   set on the element by Background) instead of the blank wall in the middle.
+
+   The vertical focal point only bites past 16:9 — narrower than that, and the
+   photograph fills the height exactly with nothing to crop — so it is left in
+   both rules rather than guarded by a width nobody can name. */
 .room-image {
-  object-position: 50% 50%;
+  object-position: 50% var(--room-focal-y, 50%);
 }
 
 .room-image-lqip {
-  background-position: 50% 50%;
+  background-position: 50% var(--room-focal-y, 50%);
 }
 
 @media (orientation: portrait) {
   .room-image {
-    object-position: var(--room-focal-x, 50%) 50%;
+    object-position: var(--room-focal-x, 50%) var(--room-focal-y, 50%);
   }
 
   .room-image-lqip {
-    background-position: var(--room-focal-x, 50%) 50%;
+    background-position: var(--room-focal-x, 50%) var(--room-focal-y, 50%);
   }
 }
 

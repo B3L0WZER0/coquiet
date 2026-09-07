@@ -14,7 +14,8 @@
     "contrast": "node scripts/contrast-check.mjs",
     "assets:images": "node scripts/generate-images.mjs",
     "assets:crops": "node scripts/crop-preview.mjs",
-    "assets:audio": "node scripts/generate-audio-manifest.mjs"
+    "assets:audio": "node scripts/generate-audio-manifest.mjs",
+    "room": "node scripts/room-peek.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.114.0",

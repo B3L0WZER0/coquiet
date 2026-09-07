@@ -69,6 +69,11 @@ jobs:
           # slash, files at the root — and that host must send CORS headers, or
           # iOS loses its sound. Unset, the tracks ship with the site as before.
           NEXT_PUBLIC_AUDIO_BASE_URL: ${{ vars.NEXT_PUBLIC_AUDIO_BASE_URL }}
+          # Cloudflare Web Analytics. The beacon token is public by nature —
+          # it identifies the site, not an account — so it is a variable like
+          # the rest. Unset, the beacon is not on the page at all and nobody
+          # is counted, which is what every local build and fork should get.
+          NEXT_PUBLIC_CF_BEACON_TOKEN: ${{ vars.NEXT_PUBLIC_CF_BEACON_TOKEN }}
 
       - uses: actions/upload-pages-artifact@v3
         with:

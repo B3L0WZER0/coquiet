@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import { Playfair_Display } from 'next/font/google';
 
 import { roomChooserScript } from '@/lib/background';
-import { SITE_URL } from '@/lib/site';
+import { CF_BEACON_TOKEN, SITE_URL } from '@/lib/site';
 
 import './globals.css';
 
@@ -82,6 +82,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}
         />
         {children}
+        {/* Cloudflare Web Analytics: no cookies, no identifier, nothing kept
+            about a person — how many arrived and where they came from, and
+            that is all. Deferred, so it cannot get in front of the room. */}
+        {CF_BEACON_TOKEN && (
+          <script
+            defer
+            src="https://static.cloudflareinsights.com/beacon.min.js"
+            data-cf-beacon={JSON.stringify({ token: CF_BEACON_TOKEN })}
+          />
+        )}
       </body>
     </html>
   );

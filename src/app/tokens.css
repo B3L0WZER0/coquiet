@@ -104,7 +104,15 @@ body {
 :focus-visible {
   outline: 2px solid var(--color-cream);
   outline-offset: 3px;
-  border-radius: 4px;
+}
+
+/* The ring takes the element's own shape. This softens the corners of things
+   that have no radius of their own — in the base layer so a radius set on the
+   element (rounded-full on the circular controls) still wins. */
+@layer base {
+  :focus-visible {
+    border-radius: 4px;
+  }
 }
 
 /* SPEC: no unnecessary movement anywhere. State-only transitions collapse to

@@ -190,12 +190,6 @@
     -webkit-backdrop-filter: none;
   }
 
-  /* The global focus ring squares off whatever it lands on — a 4px radius on
-     a 62px circle. The ring here follows the button instead. */
-  .area-playback button:focus-visible {
-    border-radius: 999px;
-  }
-
   .area-playback button:hover {
     border-color: transparent;
     background-color: color-mix(in oklab, var(--color-stone) 62%, white);

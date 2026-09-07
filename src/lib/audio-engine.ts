@@ -36,6 +36,10 @@ const TAIL_TICK_MS = 500;
  *  the point is that the boundary is never waiting on the network. */
 const TAIL_LEAD_MS = 20_000;
 
+/** How long a segue waits for the next piece before letting the boundary go.
+ *  Comfortably inside the lead, so the plain step still has room to run. */
+const TAIL_LOAD_MS = 10_000;
+
 export type AudioStatus = 'idle' | 'playing' | 'paused' | 'blocked' | 'error';
 
 export interface AudioState {
@@ -80,6 +84,10 @@ export class AudioEngine {
   private tailHandle: number | null = null;
   private segueToken = 0;
   private segueing = false;
+  /** The piece whose boundary a segue already tried and failed to carry. Held
+   *  so the watcher cannot keep re-trying, which would suppress `ended` — the
+   *  fallback — for as long as it kept failing. */
+  private gaveUpOn: string | null = null;
 
   private listeners = new Set<(state: AudioState) => void>();
   private disposed = false;
@@ -281,6 +289,7 @@ export class AudioEngine {
     }
     this.segueToken++;
     this.segueing = false;
+    this.gaveUpOn = null;
   }
 
   // --- volume -------------------------------------------------------------
@@ -439,11 +448,17 @@ export class AudioEngine {
     return (el.duration - el.currentTime) * 1000;
   }
 
+  /** Which piece a deck is holding, as something comparable. */
+  private deckKey(deck: Deck): string | null {
+    return deck.loaded ? `${deck.loaded.channel}:${deck.loaded.trackIndex}` : null;
+  }
+
   private checkTail() {
     if (this.disposed || this.segueing || this.switching) return;
     if (this.status !== 'playing') return;
     const remaining = this.remainingMs(this.active);
     if (remaining === null || remaining > TAIL_LEAD_MS) return;
+    if (this.gaveUpOn !== null && this.gaveUpOn === this.deckKey(this.active)) return;
     void this.segue();
   }
 
@@ -470,8 +485,15 @@ export class AudioEngine {
         offsetSeconds: 0,
       };
 
-      // Load it now, while there is still music playing over the wait.
-      await this.prepare(incoming, channel, next);
+      // Load it now, while there is still music playing over the wait. Give up
+      // if it will not come: `ended` is the fallback for a boundary this misses,
+      // and it stands aside for as long as a segue is in hand. The watcher will
+      // try again on its next tick.
+      const ready = await withTimeout(this.prepare(incoming, channel, next), TAIL_LOAD_MS);
+      if (!ready) {
+        this.gaveUpOn = this.deckKey(outgoing);
+        return;
+      }
       if (!mine()) return;
 
       const untilFade = (this.remainingMs(outgoing) ?? 0) - FADE.trackOut;
@@ -759,6 +781,21 @@ export class AudioEngine {
 
 function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
+}
+
+/** True if the promise settled in time, false if it is still outstanding. */
+function withTimeout(promise: Promise<unknown>, ms: number): Promise<boolean> {
+  return new Promise((resolve) => {
+    let settled = false;
+    const finish = (value: boolean) => {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(handle);
+      resolve(value);
+    };
+    const handle = window.setTimeout(() => finish(false), ms);
+    void promise.then(() => finish(true));
+  });
 }
 
 function clamp01(v: number): number {

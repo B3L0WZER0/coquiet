@@ -353,6 +353,28 @@ describe('audio engine state', () => {
     expect(engine.snapshot().status).toBe('playing');
   });
 
+  it('lets a piece that will not load go, rather than holding the boundary', async () => {
+    await runFade(engine.enter(), FADE.entry);
+    const flow = getChannel('flow');
+    const audible = decks(engine).find((el) => !el.paused)!;
+    const waiting = decks(engine).find((el) => el !== audible)!;
+    // The next piece never reports its metadata, so the segue cannot open it.
+    Object.defineProperty(waiting, 'readyState', { get: () => 0, configurable: true });
+
+    playFrom(audible, flow.tracks[0].durationSeconds, flow.tracks[0].durationSeconds - 15);
+    await vi.advanceTimersByTimeAsync(15_000);
+
+    // Having given up, the plain step at the end of the file still runs — the
+    // room carries on rather than falling silent for good.
+    expect(waiting.paused).toBe(true);
+    vi.setSystemTime(flow.epochMs + (flow.tracks[0].durationSeconds + 5) * 1000);
+    audible.dispatchEvent(new Event('ended'));
+    await vi.advanceTimersByTimeAsync(50);
+    expect(audible.getAttribute('src')).toBe(flow.tracks[1].src);
+    expect(audible.paused).toBe(false);
+    expect(engine.snapshot().status).toBe('playing');
+  });
+
   it('ignores a deck ending while it is not the one being listened to', async () => {
     await runFade(engine.enter(), FADE.entry);
     await runFade(engine.pause(), FADE.playPause);

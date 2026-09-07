@@ -37,10 +37,25 @@ const SERVER_STATE: AudioState = {
 /** The page's one audio engine. */
 let engine: AudioEngine | null = null;
 
+/** Where a hot reload can find the engine the previous module left running.
+ *  Development only — the export never hot-reloads. */
+const HOT_ENGINE = '__coquietEngine';
+
 function getEngine(): AudioEngine | null {
   if (typeof window === 'undefined') return null;
   if (engine === null) {
+    const hot =
+      process.env.NODE_ENV !== 'production'
+        ? (window as unknown as Record<string, AudioEngine | undefined>)
+        : null;
+    // A hot reload replaces this module and the engine below with it, but the
+    // old engine's audio element carries on playing — now deaf to every
+    // control, since pause, volume, channel and the fades around a chime all
+    // reach the new one. Stop it before taking over, so what the room sounds
+    // like and what it shows cannot disagree.
+    hot?.[HOT_ENGINE]?.destroy();
     engine = new AudioEngine(storedChannel(), storedVolume());
+    if (hot) hot[HOT_ENGINE] = engine;
     // Let the chime ring through the room's own audio session where there is
     // one, rather than opening a second context iOS will not keep alive.
     setChimeContextSource(() => engine?.sharedContext() ?? null);

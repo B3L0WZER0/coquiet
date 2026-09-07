@@ -19,6 +19,23 @@ function supported(): boolean {
   return typeof window !== 'undefined' && 'Notification' in window;
 }
 
+/**
+ * Whether the visitor is somewhere other than this room.
+ *
+ * Not the same question as "is the tab hidden". Chrome and Edge keep a tab
+ * `visible` for as long as it is the front tab of a window that isn't
+ * minimised — including while the whole browser sits behind whatever the
+ * visitor actually went off to do. Asking about visibility alone therefore
+ * stays quiet in precisely the case the notification exists for. Focus is the
+ * honest signal: the room can be on screen and still not be the thing being
+ * looked at.
+ */
+function away(): boolean {
+  if (typeof document === 'undefined') return true;
+  if (document.visibilityState !== 'visible') return true;
+  return typeof document.hasFocus === 'function' && !document.hasFocus();
+}
+
 /** Ask once, at the only moment it makes sense to. */
 export async function requestOnDeliberateStart(): Promise<void> {
   if (!supported()) return;
@@ -44,7 +61,7 @@ function dismiss(): void {
 export function notify(title: string, body: string): void {
   if (!supported()) return;
   if (Notification.permission !== 'granted') return;
-  if (typeof document !== 'undefined' && document.visibilityState === 'visible') return;
+  if (!away()) return;
 
   dismiss();
   try {
@@ -62,14 +79,20 @@ export function notify(title: string, body: string): void {
     };
 
     // Coming back under your own steam answers the message just as well as
-    // clicking it. Leaving it behind in Notification Center would not.
-    const onVisible = () => {
-      if (document.visibilityState === 'visible') dismiss();
+    // clicking it. Leaving it behind in Notification Center would not. Both
+    // events matter: returning to the tab, and returning to the window that
+    // never stopped showing it.
+    const onReturn = () => {
+      if (!away()) dismiss();
     };
-    document.addEventListener('visibilitychange', onVisible);
+    document.addEventListener('visibilitychange', onReturn);
+    window.addEventListener('focus', onReturn);
     showing = {
       note,
-      stop: () => document.removeEventListener('visibilitychange', onVisible),
+      stop: () => {
+        document.removeEventListener('visibilitychange', onReturn);
+        window.removeEventListener('focus', onReturn);
+      },
     };
   } catch {
     // Notification construction throws on some mobile browsers; ignore.

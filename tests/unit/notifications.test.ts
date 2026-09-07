@@ -37,6 +37,8 @@ describe('timer notifications', () => {
     FakeNotification.permission = 'granted';
     vi.stubGlobal('Notification', FakeNotification);
     vi.spyOn(window, 'focus').mockImplementation(() => {});
+    // jsdom reports an unfocused document; a visitor at the room has focus.
+    vi.spyOn(document, 'hasFocus').mockReturnValue(true);
     look('hidden');
   });
 
@@ -82,6 +84,26 @@ describe('timer notifications', () => {
     look('visible');
     notify('Time for a break', 'Take ten.');
     expect(FakeNotification.shown).toHaveLength(0);
+  });
+
+  it('speaks up when the room is on screen but the visitor is elsewhere', () => {
+    // Chrome and Edge keep a front tab `visible` while the whole browser sits
+    // behind another application — the case this notification is for.
+    look('visible');
+    vi.mocked(document.hasFocus).mockReturnValue(false);
+    notify('Time for a break', 'Take ten.');
+    expect(FakeNotification.shown).toHaveLength(1);
+  });
+
+  it('clears itself when the visitor returns to a window that never hid', () => {
+    look('visible');
+    vi.mocked(document.hasFocus).mockReturnValue(false);
+    notify('Time for a break', 'Take ten.');
+    const [note] = FakeNotification.shown;
+
+    vi.mocked(document.hasFocus).mockReturnValue(true);
+    window.dispatchEvent(new Event('focus'));
+    expect(note.closed).toBe(true);
   });
 
   it('says nothing without permission', () => {

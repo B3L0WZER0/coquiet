@@ -306,7 +306,7 @@ export function Room() {
 
           {/* The rest of the room. Only in the bar on mobile; on desktop this
               lives bottom-left as `.area-presence` above, so this copy hides. */}
-          <div className="only-mobile">
+          <div className="only-mobile" data-dim={dimmed || undefined}>
             <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} dock />
           </div>
 

@@ -141,6 +141,23 @@ function stubMedia() {
 }
 
 /** The <audio> elements the engine created, in creation order. */
+/**
+ * Give an element a real duration and a currentTime that moves with the fake
+ * clock, so the engine can see a piece running out.
+ */
+function playFrom(el: HTMLMediaElement, durationSeconds: number, atSeconds: number) {
+  const started = Date.now();
+  let seeked = atSeconds;
+  Object.defineProperty(el, 'duration', { value: durationSeconds, configurable: true });
+  Object.defineProperty(el, 'currentTime', {
+    get: () => seeked + (Date.now() - started) / 1000,
+    set: (v: number) => {
+      seeked = v - (Date.now() - started) / 1000;
+    },
+    configurable: true,
+  });
+}
+
 function decks(engine: AudioEngine): HTMLAudioElement[] {
   return (engine as unknown as { decks: { el: HTMLAudioElement }[] }).decks.map((d) => d.el);
 }
@@ -300,6 +317,39 @@ describe('audio engine state', () => {
     expect(audible.paused).toBe(false);
     // It continues at the level it had — this is not a fresh entry.
     expect(audible.volume).toBeCloseTo(levelBefore, 3);
+    expect(engine.snapshot().status).toBe('playing');
+  });
+
+  it('eases one piece into the next instead of cutting', async () => {
+    await runFade(engine.enter(), FADE.entry);
+    const flow = getChannel('flow');
+    const audible = decks(engine).find((el) => !el.paused)!;
+    const waiting = decks(engine).find((el) => el !== audible)!;
+    expect(audible.getAttribute('src')).toBe(flow.tracks[0].src);
+
+    // Ten seconds from the end of the piece.
+    playFrom(audible, flow.tracks[0].durationSeconds, flow.tracks[0].durationSeconds - 10);
+    await vi.advanceTimersByTimeAsync(600);
+
+    // The next piece is already loaded, and silent.
+    expect(waiting.getAttribute('src')).toBe(flow.tracks[1].src);
+    expect(waiting.paused).toBe(true);
+    expect(audible.volume).toBeCloseTo(0.6, 3);
+
+    // Inside the last seconds, the ending piece is receding.
+    await vi.advanceTimersByTimeAsync(6000);
+    expect(audible.volume).toBeLessThan(0.6);
+    expect(audible.volume).toBeGreaterThan(0);
+
+    // Past the boundary the next piece is playing, and opening from silence.
+    await vi.advanceTimersByTimeAsync(4500);
+    expect(waiting.paused).toBe(false);
+    expect(waiting.volume).toBeLessThan(0.6);
+    expect(audible.paused).toBe(true);
+    expect(audible.getAttribute('src')).toBeNull();
+
+    await vi.advanceTimersByTimeAsync(FADE.trackIn + 200);
+    expect(waiting.volume).toBeCloseTo(0.6, 3);
     expect(engine.snapshot().status).toBe('playing');
   });
 

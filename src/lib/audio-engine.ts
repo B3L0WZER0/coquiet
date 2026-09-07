@@ -1,7 +1,13 @@
 /** The audio engine. */
 
 import { audioIsOffOrigin } from '@/lib/asset-path';
-import { getChannel, stationPosition, type Channel, type ChannelId } from '@/lib/channels';
+import {
+  getChannel,
+  stationPosition,
+  type Channel,
+  type ChannelId,
+  type StationPosition,
+} from '@/lib/channels';
 
 export const FADE = {
   /** First sound after entering the room. */
@@ -13,9 +19,22 @@ export const FADE = {
   channelIn: 1600,
   /** How much of the outgoing tail the incoming piece shares. */
   channelOverlap: 350,
+  /** One piece giving way to the next inside a channel. The pieces cannot
+   *  overlap without the room drifting off the shared clock, so the ending
+   *  recedes and the next one emerges either side of the programme's own
+   *  boundary. */
+  trackOut: 6000,
+  trackIn: 5000,
   /** Lowering and restoring music around a break. */
   duck: 1500,
 } as const;
+
+/** How often the audible deck's remaining time is checked. */
+const TAIL_TICK_MS = 500;
+
+/** How far before the end of a piece the next one starts loading. Generous:
+ *  the point is that the boundary is never waiting on the network. */
+const TAIL_LEAD_MS = 20_000;
 
 export type AudioStatus = 'idle' | 'playing' | 'paused' | 'blocked' | 'error';
 
@@ -55,6 +74,12 @@ export class AudioEngine {
   private status: AudioStatus = 'idle';
   private channelId: ChannelId;
   private switching = false;
+
+  /** The tail watcher, and a token that anything taking a deck over bumps so
+   *  a segue already in flight knows to let go. */
+  private tailHandle: number | null = null;
+  private segueToken = 0;
+  private segueing = false;
 
   private listeners = new Set<(state: AudioState) => void>();
   private disposed = false;
@@ -108,6 +133,9 @@ export class AudioEngine {
         // deck that stalled or drifted from compounding the error.
         if (this.decks[this.activeIndex]?.el !== el) return;
         if (this.status !== 'playing') return;
+        // A segue is already carrying this boundary, gently. Only a piece that
+        // ran out unattended — a stall, or a file too short to watch — lands here.
+        if (this.segueing) return;
         void this.advance();
       });
     }
@@ -239,7 +267,20 @@ export class AudioEngine {
   private setStatus(status: AudioStatus) {
     if (this.status === status) return;
     this.status = status;
+    if (status === 'playing') this.watchTail();
+    else this.releaseDecks();
     this.emit();
+  }
+
+  /** Stop watching for the end of a piece, and tell any segue in flight that
+   *  something else now owns the decks. */
+  private releaseDecks() {
+    if (this.tailHandle !== null) {
+      window.clearInterval(this.tailHandle);
+      this.tailHandle = null;
+    }
+    this.segueToken++;
+    this.segueing = false;
   }
 
   // --- volume -------------------------------------------------------------
@@ -317,12 +358,13 @@ export class AudioEngine {
     return this.decks[this.activeIndex === 0 ? 1 : 0];
   }
 
-  /** Point a deck at a channel and move it to the channel's current shared position. */
-  private prepare(deck: Deck, channel: Channel): Promise<void> {
+  /** Point a deck at a channel and move it to the channel's current shared
+   *  position — or, when `target` is given, to that exact spot instead. */
+  private prepare(deck: Deck, channel: Channel, target?: StationPosition): Promise<void> {
     const el = deck.el;
     if (!(el instanceof HTMLAudioElement)) return Promise.resolve();
 
-    const at = stationPosition(channel);
+    const at = target ?? stationPosition(channel);
 
     if (deck.loaded?.channel !== channel.id || deck.loaded.trackIndex !== at.trackIndex) {
       el.src = at.track.src;
@@ -335,6 +377,10 @@ export class AudioEngine {
       // Always recompute: the station has moved on while we were loading, and
       // may even have crossed into the next piece.
       try {
+        if (target) {
+          el.currentTime = target.offsetSeconds;
+          return;
+        }
         const now = stationPosition(channel);
         el.currentTime = now.trackIndex === at.trackIndex ? now.offsetSeconds : at.offsetSeconds;
       } catch {
@@ -374,6 +420,127 @@ export class AudioEngine {
       await deck.el.play();
     } catch {
       this.setStatus('blocked');
+    }
+  }
+
+  // --- segue --------------------------------------------------------------
+
+  /** Keep an eye on how much of the audible piece is left. */
+  private watchTail() {
+    if (this.tailHandle !== null || typeof window === 'undefined') return;
+    this.tailHandle = window.setInterval(() => this.checkTail(), TAIL_TICK_MS);
+  }
+
+  private remainingMs(deck: Deck): number | null {
+    const el = deck.el;
+    if (!(el instanceof HTMLAudioElement)) return null;
+    // Unknown until metadata arrives, and infinite for a stream.
+    if (!Number.isFinite(el.duration) || el.duration <= 0) return null;
+    return (el.duration - el.currentTime) * 1000;
+  }
+
+  private checkTail() {
+    if (this.disposed || this.segueing || this.switching) return;
+    if (this.status !== 'playing') return;
+    const remaining = this.remainingMs(this.active);
+    if (remaining === null || remaining > TAIL_LEAD_MS) return;
+    void this.segue();
+  }
+
+  /**
+   * Carry the programme across a boundary. The ending piece recedes over its
+   * last seconds and the next one opens from silence — the switch itself still
+   * happens where the station clock says it does, so a long listen never drifts
+   * away from someone who has just walked in.
+   */
+  private async segue(): Promise<void> {
+    const token = ++this.segueToken;
+    this.segueing = true;
+    const mine = () => !this.disposed && this.segueToken === token && this.status === 'playing';
+
+    try {
+      const outgoing = this.active;
+      const incoming = this.idle;
+      const channel = getChannel(this.channelId);
+      const index = outgoing.loaded?.trackIndex ?? stationPosition(channel).trackIndex;
+      const nextIndex = (index + 1) % channel.tracks.length;
+      const next: StationPosition = {
+        trackIndex: nextIndex,
+        track: channel.tracks[nextIndex],
+        offsetSeconds: 0,
+      };
+
+      // Load it now, while there is still music playing over the wait.
+      await this.prepare(incoming, channel, next);
+      if (!mine()) return;
+
+      const untilFade = (this.remainingMs(outgoing) ?? 0) - FADE.trackOut;
+      if (untilFade > 0) await sleep(untilFade);
+      if (!mine()) return;
+
+      const outFrom = outgoing.fade;
+      const outPromise = this.fadeDeck(
+        outgoing,
+        0,
+        FADE.trackOut,
+        (t) => outFrom * (1 - t) ** 1.5,
+      );
+
+      const untilBoundary = this.remainingMs(outgoing) ?? 0;
+      if (untilBoundary > 0) await sleep(untilBoundary);
+      if (!mine()) return;
+
+      // The file's own end and the station's boundary should be the same
+      // instant; where the manifest and the encode disagree slightly, follow
+      // the station, which is what everyone else is following.
+      const now = stationPosition(channel);
+      if (now.trackIndex === nextIndex && now.offsetSeconds < 2) {
+        try {
+          incoming.el.currentTime = now.offsetSeconds;
+        } catch {
+          // Not seekable yet; offset 0 is close enough to the boundary.
+        }
+      }
+
+      this.route(incoming);
+      incoming.fade = 0;
+      this.apply(incoming);
+
+      try {
+        await incoming.el.play();
+      } catch {
+        // The next piece would not start. Fall back to the plain step, which
+        // re-asks the station on the deck already in hand.
+        this.segueing = false;
+        await this.advance();
+        return;
+      }
+      if (!mine()) {
+        // Paused, or taken over, in the instant it took to start. Don't leave a
+        // silent deck running.
+        incoming.el.pause();
+        return;
+      }
+
+      this.activeIndex = this.activeIndex === 0 ? 1 : 0;
+      const inPromise = this.fadeDeck(incoming, 1, FADE.trackIn, (t) => t * t * (3 - 2 * t));
+
+      const outDone = await outPromise;
+      if (this.disposed) return;
+      if (outDone && outgoing.el instanceof HTMLAudioElement) {
+        // Release the finished deck: stopped, silent, and holding no source,
+        // so it stops buffering and is ready to be prepared afresh.
+        outgoing.el.pause();
+        outgoing.el.removeAttribute('src');
+        outgoing.el.load();
+        outgoing.el.preload = 'none';
+        outgoing.loaded = null;
+        outgoing.fade = 0;
+      }
+
+      await inPromise;
+    } finally {
+      if (this.segueToken === token) this.segueing = false;
     }
   }
 
@@ -482,6 +649,11 @@ export class AudioEngine {
       return;
     }
 
+    // A segue may be mid-flight on the very deck we are about to take; tell it
+    // to let go before we touch anything.
+    this.segueToken++;
+    this.segueing = false;
+
     const outgoing = this.active;
     const incoming = this.idle;
     const channel = getChannel(next);
@@ -559,6 +731,7 @@ export class AudioEngine {
 
   destroy() {
     this.disposed = true;
+    this.releaseDecks();
     this.duckCancel?.();
     for (const deck of this.decks) {
       deck.cancel?.();

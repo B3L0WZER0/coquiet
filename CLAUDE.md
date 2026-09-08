@@ -37,9 +37,11 @@ The share card is the one place the mark does *not* go: like the in-app
 
 ## Adding a background
 
-Drop the file in `/design-reference/` — the filename becomes the room's permanent id, so name it for what it shows. Then:
+Drop the file in `/design-reference/` — the filename becomes the room's permanent id, so name it for what it shows. One flat folder, no "done" subfolder: the folder *is* the room list, and which images are still undecided is derived from `FOCAL_X`, not from where they sit. An image with no focal point is not encoded and not put in the manifest, so dropping files there is safe and costs nothing until you get to them.
 
-1. `npm run assets:crops` — renders a sheet per image with no focal point yet, into `/crops`. Each tile is the slice the CSS will really take on a tall phone, with the entry copy's own footprint shaded on top.
+Then:
+
+1. `npm run assets:crops` — renders a sheet per image with no focal point yet, into `/crops`. That is exactly the set you just dropped, so this is also how you ask "what's new?". Each tile is the slice the CSS will really take on a tall phone, with the entry copy's own footprint shaded on top.
 2. Pick the tile that keeps the room legible and put its number in `FOCAL_X` in `scripts/focal-points.mjs`. Favour a frame where a person is visible, and prefer one who is *not* in the shaded band — the headline sits over the bottom half of a phone screen. Leave a comment when the choice is a compromise.
 3. `npm run assets:images` — encodes the sizes and rewrites `src/lib/background-manifest.ts`. It skips rooms whose files are already newer than their source, so this costs about three seconds per new room; `--force` re-encodes everything, for when the encoder settings change.
 4. `npm run contrast` (needs a dev server) — the text sits over the photograph, so a new room can fail AA on its own. Every element must pass.

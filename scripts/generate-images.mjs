@@ -44,6 +44,17 @@ const missingFocal = [];
 for (const file of sources) {
   const id = file.replace(/\.[^.]+$/, '');
   const source = path.join(SOURCE_DIR, file);
+
+  // A photograph nobody has chosen a crop for is not a room yet. It used to
+  // ship at 50%, which is rarely right, so dropping files in the folder and
+  // running this shipped rooms cropped down the middle. Now the folder is
+  // safe to drop into: an undecided image costs nothing and shows nobody
+  // anything until it has a focal point.
+  if (!(id in FOCAL_X)) {
+    missingFocal.push(id);
+    continue;
+  }
+
   const meta = await sharp(source).metadata();
 
   const widths = WIDTHS.filter((w) => !meta.width || w <= meta.width * 1.05);
@@ -94,15 +105,13 @@ for (const file of sources) {
     .webp({ quality: 40 })
     .toBuffer();
 
-  if (!(id in FOCAL_X)) missingFocal.push(id);
-
   // The colour iOS Safari should tint its own toolbar with. The browser will
   // only take a flat colour there — no image reaches behind browser chrome —
   // so the next best thing is the colour the room already is along its bottom
   // edge, which turns a black bar into something the room appears to continue
   // into. Sampled from the focal window, since that is the strip a phone
   // actually shows, and only the bottom eighth, where the bar meets the room.
-  const focal = (FOCAL_X[id] ?? 50) / 100;
+  const focal = FOCAL_X[id] / 100;
   const sw = Math.max(1, Math.round(meta.width * 0.3));
   const chromeRaw = await sharp(source)
     .extract({
@@ -120,14 +129,14 @@ for (const file of sources) {
   rooms.push({
     id,
     widths,
-    focalX: FOCAL_X[id] ?? 50,
+    focalX: FOCAL_X[id],
     focalY: FOCAL_Y[id] ?? 50,
     chrome,
     lqip: `data:image/webp;base64,${lqip.toString('base64')}`,
   });
 
   console.log(
-    `  ${encoded ? '·' : '+'} ${id.padEnd(26)} focal ${String(FOCAL_X[id] ?? 50).padStart(3)}%  chrome ${chrome}`,
+    `  ${encoded ? '·' : '+'} ${id.padEnd(26)} focal ${String(FOCAL_X[id]).padStart(3)}%  chrome ${chrome}`,
   );
 }
 
@@ -170,7 +179,7 @@ await writeFile(MANIFEST, lines.join('\n'), 'utf8');
 
 console.log(`\nWrote ${path.relative(ROOT, MANIFEST)} — ${rooms.length} rooms`);
 if (missingFocal.length > 0) {
-  console.log(`\n  No focal point set (defaulting to 50%, which is rarely right):`);
+  console.log(`\n  Waiting on a focal point, so not encoded and not in the manifest:`);
   for (const id of missingFocal) console.log(`    - ${id}`);
   console.log('  Run `npm run assets:crops` to choose one, then set it in scripts/focal-points.mjs.');
 }

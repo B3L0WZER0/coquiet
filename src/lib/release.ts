@@ -41,6 +41,5 @@ export const RELEASES: Release[] = [
 /** Named, not dated: these are intentions, not promises. */
 export const COMING_SOON: { title: string; hint: string }[] = [
   { title: 'New music genres', hint: 'Rain, maybe. Piano, definitely.' },
-  { title: 'iPhone app', hint: 'The same room, minus the browser.' },
   { title: 'More presence selections', hint: 'More than working, studying, reading, creating.' },
 ];

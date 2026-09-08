@@ -986,7 +986,6 @@ test.describe('the version chip', () => {
 
     await expect(panel.locator('.version-soon-title')).toHaveText([
       'New music genres',
-      'iPhone app',
       'More presence selections',
     ]);
 

@@ -195,6 +195,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRmYAAABXRUJQVlA4IFoAAACwBACdASogABIAPuFcqU2opSQiMAwBEBwJZQC/7CHe1zKdh/cLa0lbQ73yS7cIAP7o6HTL6VqBdhLP2QfCQkEpGRvyBD+pRTWWQ+ZESvLP88bx5Yks2OHAAAA=",
   },
   {
+    id: "forest-river-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 50,
+    focalY: 50,
+    chrome: "#2f1f11",
+    lqip: "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAADQAwCdASogABIAPtlgo02oJiMiN/qoAQAbCWdpH1XWkdxvY0zTDUAA/vBcmuEGecwC4B/A48tLd8a/TirNsQ/i9GnLCH21S7a5ZfYk3X7v/yEE/yIZsw3S6UzWAA==",
+  },
+  {
     id: "forest-waterfall-salon",
     widths: [640, 1024, 1600],
     focalX: 18,
@@ -225,6 +233,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#322a24",
     lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQBACdASogABIAPuFWpk2opKOiN/qoARAcCWcAyywh1BdxXnjoNsVSavN9kSYRcAD+5FidpR8xOaA0Lg7CPMK4k0qaNR1KViG49bDNlk62wZW7SVK26ohmSKSU4Aq1tK2Q+wa1FjRbQAAA",
+  },
+  {
+    id: "mediterranean-terrace-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 30,
+    focalY: 50,
+    chrome: "#6e5946",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAQBQCdASogABIAPu1iqE2ppaOiMAgBMB2JYwC/OBFENUaKD+4TUKuDbTapZWv+rJHAAMkxQD4EFz3a4ZvJdEz4epE7IjDRqEz88bxpJkkSoy+HB1sqHS+YOkpxaqGxIXZFL3JSILBe8AAA",
   },
   {
     id: "mist-lake-pavilion",
@@ -273,6 +289,22 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#44452b",
     lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQBACdASogABIAPu1kqE2ppaOiMAgBMB2JYwDCgB5e8rW4/agZydfRiOAT3eg0MAD+2X+VcMDmgnZh+nTwf8TNFLlGjmmbuy9WKOisrQwPTarsFZk6q0YPu9h28HDP101nHZqE20AAAA==",
+  },
+  {
+    id: "rice-terrace-focus-pavilion",
+    widths: [640, 1024, 1600],
+    focalX: 20,
+    focalY: 50,
+    chrome: "#715a41",
+    lqip: "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAwBQCdASogABIAPu1krVAppSQisBgIATAdiWMAACkQOhSv1+kQF/FZrjzG21orgBfeAAD+z0o2gI7d4QyaT5PYZtLosay8v3J+l77LSMbLGa8G3sC83L2aIFQC9IezqOHjmpjG2mP63kFSQOwEkFsD1fFcAAAA",
+  },
+  {
+    id: "snow-valley-monastery-study",
+    widths: [640, 1024, 1600],
+    focalX: 40,
+    focalY: 50,
+    chrome: "#3f3833",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQBACdASogABIAPt1apU2opSOiN/qoARAbiWcAxkAej5NAayXzI87OTHFmGClGAAD+7yZ9S/OTMyUwJiBH69s342y706ETq61jkChcht3kTz1bPQVbND9x8TK2iCGiCGiA7CEC4VGegAAA",
   },
   {
     id: "valley-vault",

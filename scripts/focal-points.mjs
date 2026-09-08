@@ -40,6 +40,9 @@ export const FOCAL_X = {
   'desert-rock-pavilion': 60,
   // No person in frame; centred on the lit desk.
   'forest-console-invitation': 50,
+  // The woman at the far table, who lands just above the copy. The man in the
+  // near chair is larger but sits under it, back to the room.
+  'forest-river-cafe': 50,
   // The exception to favouring a person: the one figure sits so hard against
   // the left edge that framing them means losing the waterfall the image is
   // built around. Centred on the view instead; in portrait they fall outside.
@@ -49,6 +52,10 @@ export const FOCAL_X = {
   // The figure sits almost against the left edge, as in forest-waterfall-salon,
   // but here the slice can hold both: just wide enough to keep her and the water.
   'meditating-ocean': 20,
+  // The barista at the counter. The reader on the terrace sits low enough in
+  // the frame that no horizontal framing lifts him clear of the headline, and
+  // the sea only appears as a sliver beside him; it keeps the landscape view.
+  'mediterranean-terrace-cafe': 30,
   'mist-lake-pavilion': 30,
   'mountain-cavern': 55,
   // No person in frame; centred on the desk and chair.
@@ -56,6 +63,12 @@ export const FOCAL_X = {
   'oculus-courtyard': 68,
   'open-ocean-reading-room': 16,
   'rain-garden-pavilion': 64,
+  // The terraces the room is named for barely survive a portrait slice; this
+  // keeps the woman at her desk instead, and the valley to the landscape view.
+  'rice-terrace-focus-pavilion': 20,
+  // The desk and its lamp. The arched window is the better photograph, but it
+  // is the only frame here with anyone in it.
+  'snow-valley-monastery-study': 40,
   'valley-vault': 34,
   // Off the desk a little, so the slice carries some of the lake it looks at.
   'work-lake-view': 26,

@@ -14,7 +14,9 @@ export function EntryLayer({
   presenceLine: string | null;
   /** True while the layer dissolves; it is removed from the DOM after. */
   leaving: boolean;
-  onEnter: () => void;
+  /** `byKeyboard` says whether the door was opened with Enter or Space, so the
+      room knows whether moving focus would be a help or a stray highlight. */
+  onEnter: (byKeyboard: boolean) => void;
 }) {
 
   return (
@@ -73,7 +75,12 @@ export function EntryLayer({
           {/* One row: the door, and — on a phone, where there is no footer to
               put it in — the coffee beside it. */}
           <div className="entry-actions">
-            <button type="button" onClick={onEnter} className="coquiet-cta">
+            <button
+              type="button"
+              // A click from the keyboard reports no pointer coordinates.
+              onClick={(e) => onEnter(e.detail === 0)}
+              className="coquiet-cta"
+            >
               Enter the room
               <svg
                 aria-hidden="true"

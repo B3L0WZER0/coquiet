@@ -51,6 +51,7 @@ export function Room() {
   const note = useFocusNote(entered);
   const dimmed = useIdleDim(entered);
   const playButtonRef = useRef<HTMLDivElement>(null);
+  const focusOnEnterRef = useRef(false);
 
   const presence = usePresence(entered, audio.state.channel);
 
@@ -146,7 +147,8 @@ export function Room() {
     };
   }, [endsAt, beginChimeDuck, setDuck, restingDuck]);
 
-  const handleEnter = useCallback(() => {
+  const handleEnter = useCallback((byKeyboard: boolean) => {
+    focusOnEnterRef.current = byKeyboard;
     // Start the audio inside the click handler itself, so the browser sees an
     // unbroken user gesture. This is the first moment sound is allowed at all.
     void audio.enter();
@@ -166,8 +168,14 @@ export function Room() {
   // of the document. This has to wait for the render that clears `inert` —
   // focusing an inert subtree silently does nothing. Both the mobile bar and
   // the desktop spread render a play button; focus whichever one is on screen.
+  // A finger gets no focus at all: it would only leave the play button lit as
+  // though it had been chosen.
   useEffect(() => {
     if (!entered) return;
+    if (!focusOnEnterRef.current) {
+      note.show();
+      return;
+    }
     const plays = playButtonRef.current?.querySelectorAll<HTMLButtonElement>(
       'button[aria-label="Play music"], button[aria-label="Pause music"]',
     );

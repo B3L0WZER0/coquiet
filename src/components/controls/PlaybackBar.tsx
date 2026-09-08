@@ -29,8 +29,17 @@ export function PlaybackBar({
 
 function PlayGlyph() {
   return (
-    <svg width="15" height="17" viewBox="0 0 15 17" aria-hidden="true" fill="currentColor">
-      {/* Nudged right by a hair so it reads as optically centred in the circle. */}
+    // A triangle's weight sits at its flat edge, so a bounding box centred in
+    // the circle reads as leaning left. The nudge is a share of the glyph's own
+    // width, which keeps it right at both sizes the button is drawn at.
+    <svg
+      width="15"
+      height="17"
+      viewBox="0 0 15 17"
+      aria-hidden="true"
+      fill="currentColor"
+      style={{ transform: 'translateX(8%)' }}
+    >
       <path d="M14 7.634a1 1 0 0 1 0 1.732L2 16.294a1 1 0 0 1-1.5-.866V1.572A1 1 0 0 1 2 .706z" />
     </svg>
   );

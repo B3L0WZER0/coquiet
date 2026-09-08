@@ -129,9 +129,14 @@
     background-color var(--duration-control) var(--ease-quiet),
     color var(--duration-control) var(--ease-quiet);
 }
-.dock-trigger:hover {
-  color: var(--text-primary);
-  background-color: var(--surface);
+/* Hover only where a pointer can actually hover. On a phone the browser leaves
+   the state on whatever was last touched, so entering the room paints a dock
+   trigger as if it were open. */
+@media (hover: hover) {
+  .dock-trigger:hover {
+    color: var(--text-primary);
+    background-color: var(--surface);
+  }
 }
 .dock-trigger[aria-expanded='true'] {
   color: var(--text-primary);
@@ -190,9 +195,11 @@
     -webkit-backdrop-filter: none;
   }
 
-  .area-playback button:hover {
-    border-color: transparent;
-    background-color: color-mix(in oklab, var(--color-stone) 62%, white);
+  @media (hover: hover) {
+    .area-playback button:hover {
+      border-color: transparent;
+      background-color: color-mix(in oklab, var(--color-stone) 62%, white);
+    }
   }
 
   .area-playback svg {
@@ -353,9 +360,11 @@
   color: var(--text-muted);
 }
 
-.chip-select:hover {
-  border-color: var(--hairline-strong);
-  color: var(--text-secondary);
+@media (hover: hover) {
+  .chip-select:hover {
+    border-color: var(--hairline-strong);
+    color: var(--text-secondary);
+  }
 }
 
 .chip-select[aria-pressed='true'],

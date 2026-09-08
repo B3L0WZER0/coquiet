@@ -159,9 +159,11 @@
   box-shadow: 0 1px 24px color-mix(in oklab, var(--color-ink) 45%, transparent);
 }
 
-.coquiet-cta:hover {
-  background-color: color-mix(in oklab, var(--color-stone) 62%, white);
-  box-shadow: 0 4px 30px color-mix(in oklab, var(--color-ink) 55%, transparent);
+@media (hover: hover) {
+  .coquiet-cta:hover {
+    background-color: color-mix(in oklab, var(--color-stone) 62%, white);
+    box-shadow: 0 4px 30px color-mix(in oklab, var(--color-ink) 55%, transparent);
+  }
 }
 
 /* The arrow leans towards the door on hover — the one bit of movement here. */
@@ -169,7 +171,7 @@
   transition: transform var(--duration-control) var(--ease-quiet);
 }
 
-@media (prefers-reduced-motion: no-preference) {
+@media (prefers-reduced-motion: no-preference) and (hover: hover) {
   .coquiet-cta:hover {
     transform: translateY(-1px);
   }
@@ -222,9 +224,11 @@
   display: none;
 }
 
-.coquiet-support:hover {
-  color: var(--text-primary);
-  text-decoration-color: color-mix(in oklab, var(--color-cream) 65%, transparent);
+@media (hover: hover) {
+  .coquiet-support:hover {
+    color: var(--text-primary);
+    text-decoration-color: color-mix(in oklab, var(--color-cream) 65%, transparent);
+  }
 }
 
 .coquiet-support:focus-visible {

@@ -3,6 +3,7 @@
 import { Wordmark } from '@/components/Wordmark';
 import { CoffeeMarkInline, CoffeeMarkSteaming } from '@/components/icons/DrinkMarks';
 import { LiveDot } from '@/components/ui/LiveDot';
+import { VersionBadge } from '@/components/VersionBadge';
 import { SUPPORT_LABEL, SUPPORT_URL } from '@/lib/support';
 
 /** The composition shown before the room is entered. */
@@ -33,9 +34,13 @@ export function EntryLayer({
 
       <div className="entry-frame">
         {/* Wrapped so the phone can set it as a small mark in the corner
-            without touching the size it has inside the room. */}
-        <div className="entry-wordmark">
-          <Wordmark />
+            without touching the size it has inside the room. The version sits
+            beside it, where a visitor already looks to find out what this is. */}
+        <div className="entry-topline">
+          <div className="entry-wordmark">
+            <Wordmark />
+          </div>
+          <VersionBadge />
         </div>
 
         {/* One column, ranged left: the name, what it is, then what to do. */}

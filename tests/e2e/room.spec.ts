@@ -179,6 +179,10 @@ test('starting a timer counts down and survives a refresh', async ({ page }) => 
 });
 
 test('the whole critical path is reachable by keyboard alone', async ({ page }) => {
+  // The version chip is the corner's own control and takes the first stop, as
+  // it does visually; the door is one behind it.
+  await page.keyboard.press('Tab');
+  await expect(page.getByRole('button', { name: /^Version / })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Enter the room' })).toBeFocused();
   await page.keyboard.press('Enter');
@@ -569,7 +573,8 @@ test.describe('the entry composition', () => {
     // The door still gets the room's width, less the cup.
     expect(c.width).toBeGreaterThan(390 * 0.6);
 
-    // And the way in is still one tap, still reachable by keyboard first.
+    // And the way in is still one tap, and still one stop past the corner.
+    await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     await expect(cta).toBeFocused();
   });
@@ -586,6 +591,7 @@ test.describe('the entry composition', () => {
     expect(await bg(), 'hover should lift the fill').not.toBe('rgb(242, 236, 225)');
 
     await page.mouse.move(0, 0);
+    await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     await expect(cta).toBeFocused();
     const focusRing = await cta.evaluate((el) => {
@@ -893,6 +899,7 @@ test.describe('the support link', () => {
   });
 
   test('is reachable by keyboard and shows a focus ring', async ({ page }) => {
+    await page.keyboard.press('Tab'); // the version chip
     await page.keyboard.press('Tab');
     await expect(page.getByRole('button', { name: 'Enter the room' })).toBeFocused();
     await page.keyboard.press('Tab');
@@ -946,4 +953,76 @@ test('the room never moves, however long the page has been open', async ({ page 
   await page.waitForTimeout(1200);
   expect(await framing()).toEqual(onLoad);
   expect(onLoad.transform).toBe('none');
+});
+
+test.describe('the version chip', () => {
+  const chip = (page: Page) => page.getByRole('button', { name: /^Version / });
+
+  test('says the version and stays shut until it is asked', async ({ page }) => {
+    await expect(chip(page)).toHaveText(/Version \d+\.\d+\.\d+/);
+    await expect(chip(page)).toHaveAttribute('aria-expanded', 'false');
+
+    // A hover must not open it: it covers the headline, and nobody asked.
+    await chip(page).hover();
+    await page.waitForTimeout(400);
+    await expect(page.locator('.version-panel')).toHaveCount(0);
+
+    await chip(page).click();
+    await expect(page.locator('.version-panel')).toBeVisible();
+  });
+
+  test('shows the last two releases, what is coming, and a way to ask', async ({ page }) => {
+    await chip(page).click();
+    const panel = page.locator('.version-panel');
+
+    await expect(panel.locator('.version-release')).toHaveCount(2);
+    // Newest first, and every release carries notes rather than a bare number.
+    const numbers = await panel.locator('.version-release-no').allTextContents();
+    expect(numbers).toHaveLength(2);
+    expect(numbers[0]).not.toBe(numbers[1]);
+    for (let i = 0; i < 2; i++) {
+      expect(await panel.locator('.version-release-list li').nth(i).innerText()).not.toBe('');
+    }
+
+    await expect(panel.locator('.version-soon-title')).toHaveText([
+      'New music genres',
+      'iPhone app',
+      'More presence selections',
+    ]);
+
+    const ask = panel.locator('.version-request');
+    await expect(ask).toHaveText(/Request a feature/);
+    await expect(ask).toHaveAttribute('target', '_blank');
+    await expect(ask).toHaveAttribute('rel', /noopener/);
+    expect(await ask.getAttribute('href')).toMatch(/^https:\/\//);
+
+    // Nothing is cut off: the panel fits what it holds, or scrolls it.
+    const fits = await panel.evaluate((el) => ({
+      bottom: el.getBoundingClientRect().bottom,
+      viewport: window.innerHeight,
+      scrollable: el.scrollHeight <= el.clientHeight || getComputedStyle(el).overflowY === 'auto',
+    }));
+    expect(fits.bottom).toBeLessThanOrEqual(fits.viewport);
+    expect(fits.scrollable).toBe(true);
+  });
+
+  test('closes on Escape and hands focus back', async ({ page }) => {
+    await chip(page).focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('.version-panel')).toBeVisible();
+
+    // The one link inside is the next stop, not somewhere behind the panel.
+    await page.keyboard.press('Tab');
+    await expect(page.locator('.version-request')).toBeFocused();
+
+    await page.keyboard.press('Escape');
+    await expect(page.locator('.version-panel')).toHaveCount(0);
+    await expect(chip(page)).toBeFocused();
+  });
+
+  test('is not carried into the room', async ({ page }) => {
+    await page.locator('.coquiet-cta').click();
+    await page.waitForTimeout(1600);
+    await expect(chip(page)).toHaveCount(0);
+  });
 });

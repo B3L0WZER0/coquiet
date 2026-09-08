@@ -35,6 +35,13 @@ re-run that, never edit a generated icon by hand.
 The share card is the one place the mark does *not* go: like the in-app
 `Wordmark`, it stays typography over a photograph.
 
+## The version chip
+
+`src/lib/release.ts` is the whole feature: the number on the entry screen, the
+two releases the panel lists, the three things under "coming soon", and where
+"Request a feature" points. Keep `RELEASES` at two — the panel is a chip, not a
+changelog page — and keep `VERSION` in step with `package.json`.
+
 ## Adding a background
 
 Drop the file in `/design-reference/` — the filename becomes the room's permanent id, so name it for what it shows. One flat folder, no "done" subfolder: the folder *is* the room list, and which images are still undecided is derived from `FOCAL_X`, not from where they sit. An image with no focal point is not encoded and not put in the manifest, so dropping files there is safe and costs nothing until you get to them.

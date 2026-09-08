@@ -23,18 +23,17 @@ export const RELEASES: Release[] = [
     version: '0.2.0',
     date: 'September 2026',
     notes: [
-      'Twelve new rooms opened. No rent was paid.',
-      'Tracks hand over to each other instead of stopping mid-thought.',
-      'A new mark, on every surface that shows one.',
+      'Optimized for mobile, so Coquiet feels comfortable on a smaller screen.',
+      'A custom timer is here. Choose a session length that works for you.',
+      'Music now transitions with gentle fades, so changes feel smooth and natural.',
     ],
   },
   {
     version: '0.1.0',
     date: 'August 2026',
     notes: [
-      'A room, some music, a timer. That was the whole pitch.',
-      'Presence counts real people. Zero is allowed to be zero.',
-      'No chat, no cameras, no streaks. On purpose.',
+      'Coquiet is now live for family and friends. We’re happy to share this quiet space with you.',
+      'Find your focus with three music options: Still, Flow, and Momentum.',
     ],
   },
 ];

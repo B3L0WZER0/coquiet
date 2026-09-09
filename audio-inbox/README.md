@@ -36,6 +36,15 @@ channel name. Keep them: the filed track is 64k AAC encoded from these, so any
 future re-encode — a new bitrate, a different loudness target, another codec —
 starts here rather than from a download.
 
+**Then copy the master out to `~/coquiet-audio-archive/mp3-320k-masters/`,
+named for the slot it was filed as.** Nothing here is committed and this whole
+folder is gitignored, so until you do, that master exists in exactly one place
+and a `git clean -xdf` takes it. Three tracks sat like that for days before
+anyone noticed — the intake script files and uploads, but it does not archive,
+and nothing warns you. While you are there, copy the filed `.m4a` from
+`public/audio` into `m4a-64k-live/`, so the archive covers what is actually
+playing rather than only what was there when it was made.
+
 ## Uploading
 
 `--apply` finishes by pushing public/audio to the R2 bucket the room streams

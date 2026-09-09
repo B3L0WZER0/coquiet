@@ -27,6 +27,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAACQBACdASogABIAPu1mq08ppaOiKA1RMB2JZwC7AA3iP+oEJ7zBs36sBx40nzAA/uc5uCsE6srHjR6fYVAj2gUZlb3RY3KPxL2VzddSXuvSpL8ECcD6nspoZCx1rhQ8R6aNnL+95DobrAvGAAA=",
   },
   {
+    id: "alpine-meadow-workspace",
+    widths: [640, 1024, 1600],
+    focalX: 72,
+    focalY: 50,
+    chrome: "#918986",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBQCdASogABIAPu1oqk4ppiQiMAgBMB2JZQC7MxgC/GpB7GBSn2cq/5cJX2K8anUXXAD+nsuXOLJeW0hGHamE9Z80WLHNklvlhID8v+7vSjgDsqvC0bRLGGQpOQMnIi9aHUZeD0AAAA==",
+  },
+  {
     id: "architecture-canyon",
     widths: [640, 1024, 1600],
     focalX: 73,
@@ -81,6 +89,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#ad9275",
     lqip: "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADwBACdASogABIAPu1mqk2ppaQiMAgBMB2JYwC06BHoW1uR3q32PKMnaJLwWyEcEOgAeMMLZBp5WmF+9TwJrbEKaaeh0LAPqsfGai7WRjuakn4jVlP+y3ootueJaLvIU5b+LeuiooDAswCYAAA=",
+  },
+  {
+    id: "canyon-reading-room",
+    widths: [640, 1024, 1600],
+    focalX: 25,
+    focalY: 50,
+    chrome: "#473321",
+    lqip: "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAAAwBQCdASogABIAPu1mqk2ppaQiMAgBMB2JYwCdG1/AVhfMRGXgzP4zbgDCmH+QHuYs0AD+nnz/DE7EnCry2IgtGEx3aU24q6y732yZXEFgTm8x+sFKLXBGwBkE7NgAPtW9v/Pm3ueXnKuUQJp1GHcggtoAAA==",
   },
   {
     id: "cave-forest",
@@ -227,6 +243,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAABwBACdASogABIAPuVgp02pJaOiMAwBIByJZQDM0B235oIJFV1E999Q/y98AAD7YAVXZHr18U6yTblFMiOu0casOHVxTHLFX+BIK7KQ3B8EEzVQe7wns9gQLPKKAAAA",
   },
   {
+    id: "maple-garden-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 62,
+    focalY: 50,
+    chrome: "#7f6856",
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAQBQCdASogABIAPu1urFGppiQiqAqpMB2JZQDIx8CA1qVfDW7CDU1g4bApg5vy8E/AAP7cYG3/DxlVi99mPt4ZZpTiCqSheNIqALs4tFKMBED4VFi9ZIqLPVw5tYkw5irwO5aXW2VKxNUXEngAAA==",
+  },
+  {
     id: "meditating-ocean",
     widths: [640, 1024, 1600],
     focalX: 20,
@@ -259,6 +283,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADQBACdASogABIAPu1ip02ppaMiMBgMATAdiWcAyNQNE3O6IRgKqJQihMwwhuLk8AD+2VkZEEU5siKmNAbEQE6obJKoPqAelcic6AQtOJUehPdHP6MbZGHjJoW/tgVDb6gAAAAA",
   },
   {
+    id: "nordic-fjord-study",
+    widths: [640, 1024, 1600],
+    focalX: 12,
+    focalY: 50,
+    chrome: "#6d6256",
+    lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADQBACdASogABIAPu1kqk2ppaQiMAgBMB2JZQC2yBtkJfjkH4P/3AWBcSzaEMdP4AD+f6OlZIMH58JuecPQ1KVics5fafIW0PA99nrCccm+7IACOn+8tYE/DErvh42IuPzAAA==",
+  },
+  {
     id: "ocean-workstation-invitation",
     widths: [640, 1024, 1600],
     focalX: 68,
@@ -273,6 +305,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#332418",
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABwBQCdASogABIAPu1ip02ppaMiMBgMATAdiWUAxnwPSmd1vXJX3nryfOzxjpD9HhMJvRZQAP7Qw6CaVY6VsLxOnmTeBtlJmBQHQeGa3v1SmmW+yXRWjmFkkLiYTLB9wSEMkpHpV8d7EC+flEp5wAAA",
+  },
+  {
+    id: "olive-orangery-library",
+    widths: [640, 1024, 1600],
+    focalX: 40,
+    focalY: 50,
+    chrome: "#684a30",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAACwBACdASogABIAPu1srlCppiQiqAqpMB2JZQAAKNKpzYi33LTkvT2gj8c1QfcAAP5Hu4aflUa4AhZQcA/5uHkJSX5WqiXozD56p+tEV7p5Ai3AADloHK+N/44KbV3seU7590oB7aK0SAAA",
   },
   {
     id: "open-ocean-reading-room",

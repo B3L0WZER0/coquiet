@@ -487,10 +487,10 @@ async function runFade(promise: Promise<unknown>, durationMs: number) {
 
 /**
  * jsdom has no Web Audio, so the tests above exercise the `el.volume` fallback.
- * On iOS `el.volume` is read-only and that path is silent, so the engine routes
- * each deck through a GainNode instead — but only where it detects the lock.
- * Below, `el.volume` is pinned like iOS pins it, and a stub context stands in
- * for the graph, just enough to prove the fade lands on the gain.
+ * On a phone `el.volume` is read-only and that path is silent, so the engine
+ * routes each deck through a GainNode instead — wherever it detects the lock.
+ * Below, `el.volume` is pinned the way a phone pins it, and a stub context
+ * stands in for the graph, just enough to prove the fade lands on the gain.
  */
 class FakeParam {
   value = 1;
@@ -517,6 +517,73 @@ class FakeAudioContext {
   }
   async close() {}
 }
+
+/** A phone that is not an iPhone. The volume lock is not an Apple quirk, and
+ *  gating the gain path on an iOS user agent left Android with no fades. */
+describe('audio engine on a phone that is not an iPhone', () => {
+  let engine: AudioEngine;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(getChannel('flow').epochMs + 60_000);
+    stubMedia();
+    vi.spyOn(navigator, 'userAgent', 'get').mockReturnValue(
+      'Mozilla/5.0 (Linux; Android 14; Pixel 8) AppleWebKit/537.36 Chrome/120.0.0.0 Mobile',
+    );
+    vi.spyOn(HTMLMediaElement.prototype, 'volume', 'set').mockImplementation(() => {});
+    vi.spyOn(HTMLMediaElement.prototype, 'volume', 'get').mockReturnValue(1);
+    vi.stubGlobal('AudioContext', FakeAudioContext);
+    engine = new AudioEngine('flow', 0.6);
+  });
+
+  afterEach(() => {
+    engine.destroy();
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it('fades in on entry through the gain, not the pinned element', async () => {
+    const promise = engine.enter();
+    await vi.advanceTimersByTimeAsync(0);
+
+    const audible = decks(engine).find((el) => !el.paused)!;
+    const gain = () =>
+      (
+        engine as unknown as { decks: { el: HTMLAudioElement; gain: FakeNode | null }[] }
+      ).decks.find((d) => d.el === audible)!.gain!.gain.value;
+    expect(gain()).toBe(0);
+
+    await vi.advanceTimersByTimeAsync(FADE.entry / 2);
+    expect(gain()).toBeGreaterThan(0.1);
+    expect(gain()).toBeLessThan(0.6);
+
+    await vi.advanceTimersByTimeAsync(FADE.entry);
+    await promise;
+    expect(gain()).toBeCloseTo(0.6, 3);
+  });
+
+  it('fades out on pause rather than cutting', async () => {
+    await runFade(engine.enter(), FADE.entry);
+    const audible = decks(engine).find((el) => !el.paused)!;
+    const gain = () =>
+      (
+        engine as unknown as { decks: { el: HTMLAudioElement; gain: FakeNode | null }[] }
+      ).decks.find((d) => d.el === audible)!.gain!.gain.value;
+    expect(gain()).toBeCloseTo(0.6, 3);
+
+    const promise = engine.pause();
+    await vi.advanceTimersByTimeAsync(FADE.playPause / 2);
+    // Half way down, and still playing — a cut would already be silent here.
+    expect(gain()).toBeGreaterThan(0);
+    expect(gain()).toBeLessThan(0.6);
+    expect(audible.paused).toBe(false);
+
+    await runFade(promise, FADE.playPause);
+    expect(gain()).toBe(0);
+    expect(audible.paused).toBe(true);
+  });
+});
 
 describe('audio engine with Web Audio available', () => {
   let engine: AudioEngine;

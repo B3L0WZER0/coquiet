@@ -122,12 +122,15 @@ export class AudioEngine {
     if (el instanceof HTMLAudioElement) {
       // Nothing is fetched until a source is assigned and load() is called.
       el.preload = 'none';
+      // Ask this element, once, whether its volume can be set at all — the
+      // answer decides both the fade path and the CORS below.
+      if (this.gainPathCache === null) this.gainPathCache = this.volumeIsLocked(el);
       // Only where the graph would otherwise be tainted: an off-origin file on
-      // iOS, which routes each deck through createMediaElementSource and would
+      // a browser that routes through createMediaElementSource, which would
       // yield silence with no error anywhere. Everyone else stays on el.volume,
       // never touches the graph, and gains nothing from CORS — while a work
       // proxy that drops the header turns it into a hard, silent load failure.
-      if (audioIsOffOrigin && this.looksLikeIOS()) el.crossOrigin = 'anonymous';
+      if (audioIsOffOrigin && this.gainPathCache) el.crossOrigin = 'anonymous';
       el.volume = 0;
       el.addEventListener('error', () => {
         // A deck failing is only fatal if it is the one we are listening to.
@@ -153,31 +156,23 @@ export class AudioEngine {
   // --- web audio ---------------------------------------------------------
 
   /**
-   * Whether to route through a GainNode instead of `el.volume`. Only iOS needs
-   * this — it is the one place `HTMLMediaElement.volume` is read-only — so the
-   * gate is deliberately narrow: an iOS user agent *and* a probe confirming the
-   * property really is stuck. Every other browser, desktop Safari included,
-   * keeps its plain, well-worn `el.volume` path completely untouched.
+   * Whether to route through a GainNode instead of `el.volume`.
+   *
+   * `HTMLMediaElement.volume` is read-only wherever the hardware keys own the
+   * level — iOS, but Android too — and a browser that ignores it does so
+   * silently: the fade runs, every step is written, and the room still cuts.
+   * This used to be gated on an iOS user agent as well, which is exactly how
+   * every Android phone ended up with no fades at all. Whether *this* element's
+   * volume actually moves when set is the only question worth asking, so it is
+   * now the whole gate. Desktop answers no and never touches the graph.
    */
   private needsGainPath(): boolean {
     if (this.gainPathCache !== null) return this.gainPathCache;
-    this.gainPathCache = this.looksLikeIOS() && this.volumeIsLocked();
+    this.gainPathCache = this.volumeIsLocked(this.decks[0]?.el);
     return this.gainPathCache;
   }
 
-  private looksLikeIOS(): boolean {
-    if (typeof navigator === 'undefined') return false;
-    const ua = navigator.userAgent;
-    // iPhone/iPod are unambiguous; an iPad has reported as "Macintosh" since
-    // iPadOS 13, so a Mac UA with touch points is one too.
-    return (
-      /iPad|iPhone|iPod/.test(ua) ||
-      (/Macintosh/.test(ua) && typeof navigator.maxTouchPoints === 'number' && navigator.maxTouchPoints > 1)
-    );
-  }
-
-  private volumeIsLocked(): boolean {
-    const el = this.decks[0].el;
+  private volumeIsLocked(el: HTMLAudioElement | undefined): boolean {
     if (!(el instanceof HTMLAudioElement)) return false;
     try {
       const restore = el.volume;

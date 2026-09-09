@@ -37,10 +37,16 @@ The share card is the one place the mark does *not* go: like the in-app
 
 ## The version chip
 
-`src/lib/release.ts` is the whole feature: the number on the entry screen, the
-two releases the panel lists, the three things under "coming soon", and where
-"Request a feature" points. Keep `RELEASES` at two — the panel is a chip, not a
-changelog page — and keep `VERSION` in step with `package.json`.
+`src/lib/release.ts` is the whole feature: the number in the entry screen's
+corner, the two releases the panel lists, what is under "coming soon", and the
+address a request is drafted to. Keep `RELEASES` at two — the panel is a line
+in a corner, not a changelog page — and keep `VERSION` in step with
+`package.json`.
+
+The panel has two faces and shows one at a time, because stacking them made it
+taller than the space above the corner it opens from. "Request a feature"
+composes a `mailto:` draft in the visitor's own mail app: nothing is posted
+anywhere, nothing is stored, and no backend is involved.
 
 ## Adding a background
 

@@ -303,7 +303,7 @@
   border-radius: 999px;
   color: var(--text-secondary);
   font-size: 0.75rem;
-  text-decoration: none;
+  cursor: pointer;
   transition:
     color var(--duration-control) var(--ease-quiet),
     border-color var(--duration-control) var(--ease-quiet),
@@ -315,6 +315,126 @@
     border-color: var(--hairline-strong);
     background-color: color-mix(in oklab, var(--color-cream) 8%, transparent);
     color: var(--text-primary);
+  }
+}
+
+/* ---- The request form ---------------------------------------------------
+   The panel's other face. Two fields and a button; nothing leaves the page. */
+.version-form {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.version-form > .label-quiet {
+  margin: 0.75rem 0 0.9rem;
+}
+
+/* The way back, and the only thing above the heading. */
+.version-back {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: color var(--duration-control) var(--ease-quiet);
+}
+
+@media (hover: hover) {
+  .version-back:hover {
+    color: var(--text-primary);
+  }
+}
+
+.version-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.version-field + .version-field {
+  margin-top: 0.75rem;
+}
+
+.version-field > span {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+/* Wells, not raised boxes: the same darker-than-its-neighbour treatment the
+   room's selected control uses, so a field reads as somewhere to put words. */
+.version-field input,
+.version-field textarea {
+  width: 100%;
+  padding: 0.5rem 0.65rem;
+  border: 1px solid var(--hairline);
+  border-radius: 0.5rem;
+  background-color: color-mix(in oklab, var(--color-ink) 55%, transparent);
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  transition:
+    border-color var(--duration-control) var(--ease-quiet),
+    background-color var(--duration-control) var(--ease-quiet);
+}
+
+.version-field textarea {
+  resize: vertical;
+  min-height: 4.5rem;
+}
+
+/* A placeholder is not a text node, so the contrast audit never samples it.
+   Given the token, though, it needs no sampling: the same colour clears AA on
+   the panel (the soon hints are audited there), and the well behind this is
+   darker still, which can only help light type. */
+.version-field input::placeholder,
+.version-field textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.version-field input:focus,
+.version-field textarea:focus {
+  border-color: var(--hairline-strong);
+  background-color: color-mix(in oklab, var(--color-ink) 68%, transparent);
+}
+
+.version-form-foot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin-top: 0.9rem;
+}
+
+.version-form-foot p {
+  margin: 0;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: var(--text-muted);
+}
+
+/* The one filled thing in the panel, and much quieter than the door outside:
+   this is the end of a small errand, not the way into the room. */
+.version-send {
+  align-self: flex-start;
+  padding: 0.45rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background-color: color-mix(in oklab, var(--color-cream) 88%, var(--color-sand));
+  color: var(--color-ink);
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color var(--duration-control) var(--ease-quiet);
+}
+
+@media (hover: hover) {
+  .version-send:hover {
+    background-color: var(--color-cream);
   }
 }
 

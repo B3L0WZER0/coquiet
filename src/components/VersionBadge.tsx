@@ -1,7 +1,9 @@
 'use client';
 
+import { useState } from 'react';
+
 import { Popover } from '@/components/ui/Popover';
-import { COMING_SOON, FEATURE_REQUEST_URL, RELEASES, VERSION } from '@/lib/release';
+import { COMING_SOON, featureRequestDraft, RELEASES, VERSION } from '@/lib/release';
 
 /** The version line in the entry screen's corner: press it for what's new. */
 export function VersionBadge() {
@@ -18,7 +20,7 @@ export function VersionBadge() {
       className="version-badge"
       triggerClassName="version-chip"
       panelClassName="version-panel"
-      panel={<Notes />}
+      panel={<Panel />}
     >
       <span>Version {VERSION}</span>
       <Chevron />
@@ -26,7 +28,15 @@ export function VersionBadge() {
   );
 }
 
-function Notes() {
+/** Two faces, one at a time: the notes are read, the form is written. Stacking
+ *  them made a panel taller than the space above the corner it opens from.
+ *  State lives here rather than in the badge so closing the panel forgets it. */
+function Panel() {
+  const [writing, setWriting] = useState(false);
+  return writing ? <RequestForm onBack={() => setWriting(false)} /> : <Notes onWrite={() => setWriting(true)} />;
+}
+
+function Notes({ onWrite }: { onWrite: () => void }) {
   return (
     <div className="version-notes">
       <p className="label-quiet">What&rsquo;s new</p>
@@ -62,24 +72,69 @@ function Notes() {
         </ul>
       </div>
 
-      <a
-        href={FEATURE_REQUEST_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="version-request"
-      >
+      <button type="button" onClick={onWrite} className="version-request">
         Request a feature
-        <svg aria-hidden="true" width="11" height="11" viewBox="0 0 11 11" fill="none">
-          <path
-            d="M3.1 7.9 7.9 3.1M4.2 3.1h3.7v3.7"
-            stroke="currentColor"
-            strokeWidth="1.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
-      </a>
+      </button>
     </div>
+  );
+}
+
+/** Composes a mail draft. Nothing is sent from here and nothing is stored —
+ *  the visitor's own mail app gets the message, and they press send. */
+function RequestForm({ onBack }: { onBack: () => void }) {
+  const [summary, setSummary] = useState('');
+  const [detail, setDetail] = useState('');
+  const [opened, setOpened] = useState(false);
+
+  return (
+    <form
+      className="version-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        window.location.href = featureRequestDraft(summary, detail);
+        setOpened(true);
+      }}
+    >
+      <button type="button" onClick={onBack} className="version-back">
+        <BackMark />
+        What&rsquo;s new
+      </button>
+
+      <p className="label-quiet">Request a feature</p>
+
+      <label className="version-field">
+        <span>In a few words</span>
+        <input
+          type="text"
+          value={summary}
+          maxLength={80}
+          onChange={(e) => setSummary(e.target.value)}
+          placeholder="A longer break timer"
+        />
+      </label>
+
+      <label className="version-field">
+        <span>What would make Coquiet better?</span>
+        <textarea
+          rows={3}
+          required
+          value={detail}
+          maxLength={1200}
+          onChange={(e) => setDetail(e.target.value)}
+        />
+      </label>
+
+      <div className="version-form-foot">
+        <button type="submit" className="version-send">
+          Write the email
+        </button>
+        <p>
+          {opened
+            ? 'Your mail app should be opening — the message is ready to send.'
+            : 'Opens your own mail app. Nothing is sent from this page.'}
+        </p>
+      </div>
+    </form>
   );
 }
 
@@ -110,6 +165,20 @@ function SoonMark() {
   return (
     <svg aria-hidden="true" width="9" height="9" viewBox="0 0 9 9" fill="none">
       <circle cx="4.5" cy="4.5" r="3.4" stroke="currentColor" strokeWidth="1.1" opacity="0.75" />
+    </svg>
+  );
+}
+
+function BackMark() {
+  return (
+    <svg aria-hidden="true" width="11" height="9" viewBox="0 0 11 9" fill="none">
+      <path
+        d="M10 4.5H1.6m3.3-3.4L1.4 4.5l3.5 3.4"
+        stroke="currentColor"
+        strokeWidth="1.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }

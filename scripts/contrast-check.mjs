@@ -205,6 +205,13 @@ for (const roomId of ROOM_IDS) {
   await page.getByRole('button', { name: /^Version / }).click();
   await page.waitForTimeout(400);
   await audit(`${roomId} · version panel`);
+
+  // Its other face: two fields and a button, none of which the pass above
+  // sees, because one face is shown at a time.
+  await page.getByRole('button', { name: 'Request a feature' }).click();
+  await page.waitForTimeout(300);
+  await audit(`${roomId} · version form`);
+
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 

@@ -1003,11 +1003,7 @@ test.describe('the version chip', () => {
       'More presence selections',
     ]);
 
-    const ask = panel.locator('.version-request');
-    await expect(ask).toHaveText(/Request a feature/);
-    await expect(ask).toHaveAttribute('target', '_blank');
-    await expect(ask).toHaveAttribute('rel', /noopener/);
-    expect(await ask.getAttribute('href')).toMatch(/^https:\/\//);
+    await expect(panel.locator('.version-request')).toHaveText(/Request a feature/);
 
     // Rises out of the corner, and its right edge is the corner's own margin.
     const fits = await panel.evaluate((el) => {
@@ -1038,6 +1034,37 @@ test.describe('the version chip', () => {
     await page.keyboard.press('Escape');
     await expect(page.locator('.version-panel')).toHaveCount(0);
     await expect(chip(page)).toBeFocused();
+  });
+
+  test('the request form is the other face of the panel, and forgets itself', async ({ page }) => {
+    await chip(page).click();
+    const panel = page.locator('.version-panel');
+    await panel.locator('.version-request').click();
+
+    // One face at a time: the notes give way rather than being pushed down
+    // out of a panel that has nowhere to grow.
+    await expect(panel.locator('.version-form')).toBeVisible();
+    await expect(panel.locator('.version-release')).toHaveCount(0);
+
+    // Two fields. The summary is optional; the request itself is not.
+    const summary = panel.locator('.version-field input');
+    const detail = panel.locator('.version-field textarea');
+    await expect(summary).toBeVisible();
+    await expect(detail).toHaveAttribute('required', '');
+    expect(await summary.getAttribute('required')).toBeNull();
+
+    // It says where the words are going before anyone types them.
+    await expect(panel.locator('.version-form-foot p')).toContainText(/mail app/i);
+
+    await summary.fill('A longer break');
+    await panel.locator('.version-back').click();
+    await expect(panel.locator('.version-release')).toHaveCount(2);
+
+    // Closing the panel forgets the draft rather than keeping a stale one.
+    await page.keyboard.press('Escape');
+    await chip(page).click();
+    await panel.locator('.version-request').click();
+    await expect(panel.locator('.version-field input')).toHaveValue('');
   });
 
   test('is not carried into the room', async ({ page }) => {

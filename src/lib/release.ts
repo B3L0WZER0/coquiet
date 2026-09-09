@@ -7,9 +7,27 @@
 
 export const VERSION = '0.2.0';
 
-/** Where "Request a feature" goes. Issues are on; the title is prefilled. */
-export const FEATURE_REQUEST_URL =
-  'https://github.com/B3L0WZER0/coquiet/issues/new?labels=feature+request&title=Feature+request%3A+';
+/** Where a request goes. A dedicated inbox, not a personal one — the address
+ *  is in the page source of a public site, so it will be scraped. */
+export const FEATURE_REQUEST_EMAIL = 'coquiet.app@gmail.com';
+
+/** Used when someone leaves the summary field empty. */
+export const FEATURE_REQUEST_SUBJECT = 'Feature request';
+
+/**
+ * The mail draft the request form hands to the visitor's own mail app.
+ *
+ * `URLSearchParams` encodes a space as `+`, which some clients paste in
+ * literally; mailto wants it percent-encoded. A `+` the visitor actually typed
+ * is already `%2B` by then, so swapping the bare ones is safe.
+ */
+export function featureRequestDraft(summary: string, detail: string): string {
+  const params = new URLSearchParams({
+    subject: summary.trim() || FEATURE_REQUEST_SUBJECT,
+    body: detail.trim(),
+  });
+  return `mailto:${FEATURE_REQUEST_EMAIL}?${params.toString().replace(/\+/g, '%20')}`;
+}
 
 export interface Release {
   version: string;

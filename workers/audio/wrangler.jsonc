@@ -8,6 +8,11 @@
   // must not pick up the year-long cache the tracks get.
   "routes": [{ "pattern": "coquiet.app/audio/*", "zone_name": "coquiet.app" }],
 
+  // The route is the only way in. A workers.dev URL would be a second door to
+  // the bucket on a hostname of its own — the exact thing this Worker exists
+  // to get rid of.
+  "workers_dev": false,
+
   "r2_buckets": [{ "binding": "AUDIO", "bucket_name": "coquiet-audio" }],
 
   "observability": { "enabled": true }

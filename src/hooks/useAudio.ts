@@ -80,6 +80,7 @@ export function useAudio() {
 
   const enter = useCallback(() => getEngine()?.enter(), []);
   const toggle = useCallback(() => getEngine()?.toggle(), []);
+  const retry = useCallback(() => getEngine()?.retry(), []);
 
   const setChannel = useCallback((id: ChannelId) => {
     writeStored(STORAGE_KEYS.channel, id);
@@ -98,5 +99,5 @@ export function useAudio() {
   // promises on the way in.
   const toggleMuted = useCallback(() => getEngine()?.toggleMuted(), []);
 
-  return { state, enter, toggle, setChannel, setVolume, setDuck, toggleMuted };
+  return { state, enter, toggle, retry, setChannel, setVolume, setDuck, toggleMuted };
 }

@@ -1073,3 +1073,48 @@ test.describe('the version chip', () => {
     await expect(chip(page)).toHaveCount(0);
   });
 });
+
+/**
+ * A filtered network — the office kind — does not fail the request. It answers
+ * it, with a block page, and the media element reports that the same way it
+ * reports a missing file. This was silent until the room learned to say so:
+ * the engine set its `error` status and no component read it, so the visitor
+ * got a play control that did nothing.
+ */
+test('a network that answers with a page instead of audio says so, and can be retried', async ({
+  page,
+}) => {
+  let blocking = true;
+  await page.route(/\.m4a(\?|$)/, async (route) => {
+    if (!blocking) return route.continue();
+    await route.fulfill({
+      status: 403,
+      contentType: 'text/html',
+      body: '<html><body>Blocked by network policy</body></html>',
+    });
+  });
+
+  await page.getByRole('button', { name: 'Enter the room' }).click();
+
+  // Wait out the dissolve: until it finishes the room is still `inert`, and an
+  // inert control is one Playwright will report as visible but refuse to focus.
+  await expect(page.getByRole('button', { name: 'Enter the room' })).toHaveCount(0);
+
+  await expect(page.getByText('The music won’t load here.')).toBeVisible();
+  await expect(page.getByText(/Networks at work and school/)).toBeVisible();
+
+  // The room itself is not broken — only the sound is missing.
+  await expect(page.getByRole('radio', { name: 'Flow' })).toBeVisible();
+
+  // Reachable and operable from the keyboard, like every other control here.
+  const retry = page.getByRole('button', { name: 'Try again' });
+  await retry.focus();
+  await expect(retry).toBeFocused();
+
+  // Let the file through and ask again: the message goes and the music starts.
+  blocking = false;
+  await retry.press('Enter');
+
+  await expect(page.getByText('The music won’t load here.')).toHaveCount(0);
+  await expect.poll(async () => (await deckState(page)).some((d) => !d.paused)).toBe(true);
+});

@@ -178,8 +178,27 @@ async function audit(label) {
   });
 }
 
+/** What a filtered network does: answer the request, with a page. */
+const BLOCKED_AUDIO = /\.m4a(\?|$)/;
+const blockWithPage = (route) =>
+  route.fulfill({ status: 403, contentType: 'text/html', body: '<html>blocked</html>' });
+
+async function goto(target) {
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    const response = await page.goto(target).catch(() => null);
+    if (response?.ok()) return;
+    if (attempt === 3) {
+      throw new Error(`${target} would not load (${response?.status() ?? 'no response'}). Is the dev server still up?`);
+    }
+    await page.waitForTimeout(1000);
+  }
+}
+
 for (const roomId of ROOM_IDS) {
-  await page.goto(`${URL}/?room=${roomId}`);
+  // A dropped request used to be audited like any other page: the browser's own
+  // error screen scores 1.00:1 and got reported as the room failing AA. Insist
+  // on a real response, and say so plainly when there isn't one.
+  await goto(`${URL}/?room=${roomId}`);
   await page.evaluate(() => {
     localStorage.clear();
     sessionStorage.clear();
@@ -216,7 +235,11 @@ for (const roomId of ROOM_IDS) {
   await page.waitForTimeout(300);
 
   await page.getByRole('button', { name: 'Enter the room' }).click();
-  await page.waitForTimeout(2500);
+  // The entry layer is removed once it has dissolved, so wait for that rather
+  // than for a number: on a loaded machine the fixed wait ran out while the
+  // layer was still over the room, and the next click hit it instead.
+  await page.locator('.entry-layer').waitFor({ state: 'detached', timeout: 15000 });
+  await page.waitForTimeout(600);
 
   // The focus note is chosen from the clock, so which one is on screen depends
   // on the hour the audit happens to run in. Force the longest, which wraps
@@ -251,6 +274,25 @@ for (const roomId of ROOM_IDS) {
   await page.waitForTimeout(400);
   await audit(`${roomId} · presence panel`);
   await page.keyboard.press('Escape');
+
+  // The room with its music blocked. A filtered network answers the audio
+  // request with a page rather than refusing it, and what the room says about
+  // that is three more lines of type over the photograph — in the middle of
+  // the frame, where the veil is thinnest. It needs the request to actually
+  // fail, so it cannot ride along with the passes above.
+  await page.route(BLOCKED_AUDIO, blockWithPage);
+  await goto(`${URL}/?room=${roomId}`);
+  await page.getByRole('button', { name: 'Enter the room' }).click();
+  await page.locator('.entry-layer').waitFor({ state: 'detached', timeout: 15000 });
+  await page.waitForTimeout(600);
+  await audit(`${roomId} · music blocked`);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.waitForTimeout(400);
+  await audit(`${roomId} · music blocked phone`);
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.waitForTimeout(400);
+  await page.unroute(BLOCKED_AUDIO, blockWithPage);
 }
 
 await browser.close();

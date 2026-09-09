@@ -435,3 +435,58 @@
     font-size: 16px;
   }
 }
+
+/* The one control the room offers when the music will not load. It reads as a
+   link, like the support line on the way in, but takes no position of its own:
+   that one is pinned to the entry screen's corner, and this sits in the note. */
+.room-retry {
+  color: var(--text-secondary);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in oklab, var(--color-cream) 30%, transparent);
+  text-underline-offset: 0.28em;
+  text-decoration-thickness: 1px;
+  text-shadow: var(--shadow-legible);
+  transition:
+    color var(--duration-control) var(--ease-quiet),
+    text-decoration-color var(--duration-control) var(--ease-quiet);
+}
+
+@media (hover: hover) {
+  .room-retry:hover {
+    color: var(--text-primary);
+    text-decoration-color: color-mix(in oklab, var(--color-cream) 65%, transparent);
+  }
+}
+
+/* The sound message carries its own pool of shade rather than the focus
+   note's. The note's is cut for one or two centred lines; this is three plus a
+   control, and under `--note-pool` the outer lines sat past the falloff on
+   bare photograph — on the phone, where the type is small enough to need
+   4.5:1 rather than 3:1, that failed AA in most rooms. So: the note's
+   footprint, near enough, but the dense part held out far enough to cover
+   every line rather than just the middle one. The pool spans the room, as the
+   note's does, so these are shares of the viewport and not of the text. */
+.room-sound {
+  --sound-pool: 120% 32%;
+}
+
+@media (min-width: 768px) {
+  .room-sound {
+    --sound-pool: 52% 42%;
+  }
+}
+
+.room-sound-veil {
+  position: absolute;
+  inset: 0;
+  z-index: -10;
+  background: radial-gradient(
+    var(--sound-pool) at 50% 50%,
+    color-mix(in oklab, var(--color-ink) 76%, transparent) 0%,
+    color-mix(in oklab, var(--color-ink) 74%, transparent) 55%,
+    color-mix(in oklab, var(--color-ink) 58%, transparent) 72%,
+    color-mix(in oklab, var(--color-ink) 32%, transparent) 86%,
+    color-mix(in oklab, var(--color-ink) 10%, transparent) 94%,
+    transparent 100%
+  );
+}

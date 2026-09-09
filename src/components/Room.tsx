@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { BreakLayer } from '@/components/BreakLayer';
 import { EntryLayer } from '@/components/EntryLayer';
 import { FocusNote } from '@/components/FocusNote';
+import { SoundUnavailable } from '@/components/SoundUnavailable';
 import { Wordmark } from '@/components/Wordmark';
 import { ChannelInfo } from '@/components/controls/ChannelInfo';
 import { FocusTimer } from '@/components/controls/FocusTimer';
@@ -194,6 +195,7 @@ export function Room() {
   }, [timer, note]);
 
   const playing = audio.state.status === 'playing';
+  const soundFailed = audio.state.status === 'error';
   const onBreak = timer.session.phase === 'break' || timer.session.phase === 'break-ended';
   onBreakRef.current = onBreak;
 
@@ -230,8 +232,12 @@ export function Room() {
           <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} />
         </div>
 
+        {/* A break outranks a note; music that would not load outranks both,
+            because it is the one thing here the visitor may need to act on. */}
         <div className="area-note">
-          {onBreak ? (
+          {soundFailed ? (
+            <SoundUnavailable onRetry={() => void audio.retry()} />
+          ) : onBreak ? (
             <BreakLayer
               phase={timer.session.phase === 'break' ? 'break' : 'break-ended'}
               remainingMs={timer.remainingMs}

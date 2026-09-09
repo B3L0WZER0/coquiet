@@ -64,10 +64,12 @@ jobs:
           # falls back to presence across tabs of one browser.
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-          # Where the music is served from, when it has outgrown Pages. Set it
-          # to the bucket's own origin — https://audio.example.com, no trailing
-          # slash, files at the root — and that host must send CORS headers, or
-          # iOS loses its sound. Unset, the tracks ship with the site as before.
+          # Where the music is served from. Leave this UNSET in production: the
+          # tracks answer at coquiet.app/audio/* from workers/audio, on the
+          # site's own origin, so no proxy can strip CORS off them and silence
+          # the room. Set it to a bucket's own origin — https://audio.example.com,
+          # no trailing slash, files at the root, CORS headers required — only to
+          # go back to serving the music from a hostname of its own.
           NEXT_PUBLIC_AUDIO_BASE_URL: ${{ vars.NEXT_PUBLIC_AUDIO_BASE_URL }}
           # Cloudflare Web Analytics. The beacon token is public by nature —
           # it identifies the site, not an account — so it is a variable like

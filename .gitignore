@@ -25,3 +25,6 @@ scripts/.cache/
 # Raw music waiting to be taken in by `npm run audio:intake`.
 /audio-inbox/*
 !/audio-inbox/README.md
+
+# Local bucket and build state from `wrangler dev` in workers/.
+.wrangler/

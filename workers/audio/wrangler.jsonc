@@ -1,0 +1,14 @@
+{
+  "name": "coquiet-audio",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-09",
+
+  // Only this path is taken off GitHub Pages. Everything else on the zone —
+  // the HTML, the photographs, the icons — still goes straight to Pages, and
+  // must not pick up the year-long cache the tracks get.
+  "routes": [{ "pattern": "coquiet.app/audio/*", "zone_name": "coquiet.app" }],
+
+  "r2_buckets": [{ "binding": "AUDIO", "bucket_name": "coquiet-audio" }],
+
+  "observability": { "enabled": true }
+}

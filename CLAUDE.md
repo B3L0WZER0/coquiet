@@ -62,6 +62,21 @@ Then:
 
 `FOCAL_Y` exists but is almost never worth setting: a 16:9 photograph fills the height exactly on a phone and on any window narrower than 16:9, so nothing is cropped vertically there. It only bites past 16:9 — an ultrawide 2560×1080 loses about a fifth of the height. `npm run assets:crops -- --wide` sweeps that axis.
 
+## Where the music comes from
+
+The tracks are not in the repo. They live in the `coquiet-audio` R2 bucket, and
+`workers/audio` serves them at `coquiet.app/audio/*` — **the same origin as the
+page**, which is the whole point. The graph reads the samples to shape the fade,
+so a cross-origin track has to be fetched with CORS, and an office proxy that
+strips that header leaves a room that opens, starts its timer, and never makes a
+sound. Same origin, nothing to strip.
+
+So `NEXT_PUBLIC_AUDIO_BASE_URL` stays unset in production. It is still wired
+(`audioPath()` in `src/lib/asset-path.ts`) as the way back to a bucket on its own
+hostname. Range requests are load-bearing, not a nicety — the room seeks into the
+middle of a piece to land everyone at the same point in the programme. Runbook
+and the two traps are in `workers/audio/README.md`.
+
 ## Presence (v1) — no Supabase, no external service
 
 Build presence behind a `PresenceProvider` interface with exactly one implementation for now: a **local adapter** using the browser's `BroadcastChannel` API to sync state across tabs open in the same browser. This gives real, honest multi-tab presence (open two tabs, watch the count and pulse panel update) with zero backend setup.

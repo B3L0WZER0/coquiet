@@ -41,7 +41,20 @@ export default {
     if (!key || key.includes('/')) return notFound();
 
     const rangeHeader = request.headers.get('range');
-    const object = await env.AUDIO.get(key, { range: request.headers });
+
+    let object;
+    try {
+      object = await env.AUDIO.get(key, { range: request.headers });
+    } catch (err) {
+      // A range past the end of a track. R2 itself refuses it by throwing —
+      // which, left alone, reaches the deck as a 500 — while the local emulator
+      // clamps and hands back the whole file instead. The two disagree, so both
+      // are handled: this, and the guard further down.
+      if (!rangeHeader) throw err;
+      const head = await env.AUDIO.head(key);
+      if (!head) return notFound();
+      return rangeNotSatisfiable(head.size);
+    }
     if (object === null) return notFound();
 
     const headers = new Headers();
@@ -58,13 +71,7 @@ export default {
     if (rangeHeader) {
       const part = readRange(object.range, object.size);
       if (part === null || startsPastTheEnd(rangeHeader, object.size)) {
-        return new Response(null, {
-          status: 416,
-          headers: {
-            'content-range': `bytes */${object.size}`,
-            'accept-ranges': 'bytes',
-          },
-        });
+        return rangeNotSatisfiable(object.size);
       }
       const last = part.offset + part.length - 1;
       headers.set('content-range', `bytes ${part.offset}-${last}/${object.size}`);
@@ -79,6 +86,13 @@ export default {
 
 function notFound() {
   return new Response('Not found', { status: 404 });
+}
+
+function rangeNotSatisfiable(size) {
+  return new Response(null, {
+    status: 416,
+    headers: { 'content-range': `bytes */${size}`, 'accept-ranges': 'bytes' },
+  });
 }
 
 /**

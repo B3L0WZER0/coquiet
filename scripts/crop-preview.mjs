@@ -109,7 +109,7 @@ for (const id of targets) {
       : `<rect x="0" y="${Math.round(tileH * COPY_TOP)}" width="${TILE}" height="${
           tileH - Math.round(tileH * COPY_TOP)
         }" fill="black" opacity="0.45"/>
-         <text x="10" y="${Math.round(tileH * COPY_TOP) + 22} " font-family="sans-serif"
+         <text x="10" y="${Math.round(tileH * COPY_TOP) + 22}" font-family="sans-serif"
            font-size="13" fill="white" opacity="0.8">under the copy</text>`;
     tiles.push(
       await sharp(image)

@@ -1,6 +1,9 @@
 /**
  * Renders every icon the site ships from `assets/logo.png`, the mark as it was
- * drawn. That file and `assets/favicon.ico` are the only hand-made icons in the
+ * drawn.
+ *
+ * Usage: npm run assets:icons
+ * That file and `assets/favicon.ico` are the only hand-made icons in the
  * repo; everything below is derived, so the mark is never edited twice.
  *
  * The mark is a rounded square, and each platform wants that differently:
@@ -18,7 +21,6 @@
  * - `favicon.ico` is copied, not rendered: the hand-made one is hinted for the
  *   sizes a tab actually draws, which a downscale of the full mark is not.
  *
- *   node scripts/generate-app-icons.mjs
  */
 import { copyFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';

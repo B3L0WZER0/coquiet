@@ -32,7 +32,9 @@ const CHANNELS = ['still', 'flow', 'momentum'];
 
 const NAME = /^(still|flow|momentum)\s*(\d+)$/i;
 
-const entries = await readdir(AUDIO_DIR);
+// Sorted: the tracks are ordered by their number below, but what this prints —
+// and what it ignores — should not depend on the order the filesystem answers in.
+const entries = (await readdir(AUDIO_DIR)).sort();
 const audioFiles = entries.filter((f) => /\.(mp3|m4a|ogg|opus|wav)$/i.test(f));
 
 const tracks = [];

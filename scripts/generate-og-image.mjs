@@ -59,9 +59,26 @@ const room = BACKGROUND_MANIFEST.find((r) => r.id === ROOM);
 if (!room) throw new Error(`No room "${ROOM}" in the manifest.`);
 
 // Crop to the card's 1.91:1 through the room's own focal point, so the card
-// frames the photograph the way the site does.
-const photo = await sharp(join(import.meta.dirname, `../design-reference/${ROOM}.png`))
-  .resize(WIDTH, HEIGHT, { fit: 'cover', position: sharp.strategy.attention })
+// frames the photograph the way the site does. Which axis that is depends on
+// the shapes: a 16:9 photograph in a wider card loses height, so it is focalY
+// that decides — the same rule the CSS follows, rather than sharp's saliency
+// guess, which framed the card by its own opinion of what mattered.
+const SOURCE = join(import.meta.dirname, `../design-reference/${ROOM}.png`);
+const meta = await sharp(SOURCE).metadata();
+const region =
+  meta.width / meta.height > WIDTH / HEIGHT
+    ? (() => {
+        const width = Math.round(meta.height * (WIDTH / HEIGHT));
+        return { left: Math.round((room.focalX / 100) * (meta.width - width)), top: 0, width, height: meta.height };
+      })()
+    : (() => {
+        const height = Math.round(meta.width / (WIDTH / HEIGHT));
+        return { left: 0, top: Math.round((room.focalY / 100) * (meta.height - height)), width: meta.width, height };
+      })();
+
+const photo = await sharp(SOURCE)
+  .extract(region)
+  .resize(WIDTH, HEIGHT)
   .jpeg({ quality: 90 })
   .toBuffer();
 

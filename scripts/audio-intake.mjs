@@ -18,8 +18,7 @@
  * trying not to be interrupted.
  */
 
-import { readdir, mkdir, readFile, writeFile, rename } from 'node:fs/promises';
-import { stat } from 'node:fs/promises';
+import { mkdir, readdir, readFile, rename, stat, writeFile } from 'node:fs/promises';
 import { spawn } from 'node:child_process';
 import path from 'node:path';
 
@@ -139,34 +138,47 @@ async function fingerprint(file) {
   return { lufs, lra, centroid, drive, seconds };
 }
 
-/** Fingerprints of the filed tracks, recomputed only when a file changes. */
-async function referenceSet() {
-  let cache = {};
-  try { cache = JSON.parse(await readFile(CACHE, 'utf8')); } catch { /* first run */ }
+/**
+ * Measuring is four passes of ffmpeg over the whole track, so it is kept by
+ * name, size and mtime. The inbox is measured through here too: the ordinary
+ * way to use this script is a dry run, a look at the numbers, then --apply, and
+ * that used to measure the same hour of music twice.
+ */
+let cache = {};
+let dirty = false;
+try { cache = JSON.parse(await readFile(CACHE, 'utf8')); } catch { /* first run */ }
 
+async function measured(dir, file) {
+  const { size, mtimeMs } = await stat(path.join(dir, file));
+  const key = `${file}:${size}:${Math.round(mtimeMs)}`;
+  if (!cache[key]) {
+    process.stderr.write(`  measuring ${file}\n`);
+    cache[key] = await fingerprint(path.join(dir, file));
+    dirty = true;
+  }
+  return cache[key];
+}
+
+/** Keep only what is still on disk, so the cache cannot grow forever. */
+async function saveCache(known) {
+  if (!dirty) return;
+  await mkdir(path.dirname(CACHE), { recursive: true });
+  const live = Object.fromEntries(
+    Object.entries(cache).filter(([k]) => known.some((f) => k.startsWith(`${f}:`))),
+  );
+  await writeFile(CACHE, JSON.stringify(live, null, 2), 'utf8');
+}
+
+/** The filed tracks, as the programme a new one has to sit inside. */
+async function referenceSet() {
   const files = (await readdir(AUDIO_DIR)).filter((f) => AUDIO_RE.test(f) && FILED.test(f.replace(/\.[^.]+$/, '')));
   const refs = [];
-  let changed = false;
-
   for (const file of files.sort()) {
-    const full = path.join(AUDIO_DIR, file);
-    const { size, mtimeMs } = await stat(full);
-    const key = `${file}:${size}:${Math.round(mtimeMs)}`;
-    if (!cache[key]) {
-      process.stderr.write(`  measuring ${file}\n`);
-      cache[key] = await fingerprint(full);
-      changed = true;
-    }
-    refs.push({ file, channel: FILED.exec(file.replace(/\.[^.]+$/, ''))[1].toLowerCase(), ...cache[key] });
-  }
-
-  if (changed) {
-    await mkdir(path.dirname(CACHE), { recursive: true });
-    // Drop entries for files that no longer exist, so the cache cannot grow forever.
-    const live = Object.fromEntries(
-      Object.entries(cache).filter(([k]) => refs.some((r) => k.startsWith(`${r.file}:`))),
-    );
-    await writeFile(CACHE, JSON.stringify(live, null, 2), 'utf8');
+    refs.push({
+      file,
+      channel: FILED.exec(file.replace(/\.[^.]+$/, ''))[1].toLowerCase(),
+      ...(await measured(AUDIO_DIR, file)),
+    });
   }
   return refs;
 }
@@ -227,7 +239,7 @@ for (const file of inbox.sort()) {
   const chosen = forced ?? prefix ?? null;
 
   console.log(`${file}`);
-  const fp = await fingerprint(full);
+  const fp = await measured(INBOX, file);
   const gain = target - fp.lufs;
 
   console.log(`  ${mmss(fp.seconds)}  ${fp.lufs.toFixed(1)} LUFS → ${gain >= 0 ? '+' : ''}${gain.toFixed(1)} dB`);
@@ -239,6 +251,8 @@ for (const file of inbox.sort()) {
   if (!chosen) undecided.push(file);
   plans.push({ file, full, fp, channel: chosen });
 }
+
+await saveCache([...refs.map((r) => r.file), ...inbox]);
 
 if (undecided.length > 0) {
   console.log('These measurements do not decide the channel — they overlap too much between the three. Pick one:');

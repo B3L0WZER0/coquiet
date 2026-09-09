@@ -3,17 +3,18 @@
 import { Popover } from '@/components/ui/Popover';
 import { COMING_SOON, FEATURE_REQUEST_URL, RELEASES, VERSION } from '@/lib/release';
 
-/** The version chip beside the wordmark: press it for the last two releases. */
+/** The version line in the entry screen's corner: press it for what's new. */
 export function VersionBadge() {
   return (
     <Popover
       label={`Version ${VERSION} — what's new`}
       // A press, not a hover: this is something to read, and a panel that
-      // opened on the way past would land over the headline unasked.
+      // opened on the way past would cover the composition unasked.
+      // Opens upward, out of the corner it sits in.
       revealOnHoverAndFocus={false}
-      placement="bottom"
-      align="start"
-      offset={10}
+      placement="top"
+      align="end"
+      offset={12}
       className="version-badge"
       triggerClassName="version-chip"
       panelClassName="version-panel"
@@ -82,7 +83,7 @@ function Notes() {
   );
 }
 
-/** Turns over when the panel is open; the button carries the state. */
+/** The only sign this line is pressable; turns over when the panel is open. */
 function Chevron() {
   return (
     <svg
@@ -94,7 +95,7 @@ function Chevron() {
       className="version-chip-chevron"
     >
       <path
-        d="M1 1.4 4.5 4.9 8 1.4"
+        d="M1 4.6 4.5 1.1 8 4.6"
         stroke="currentColor"
         strokeWidth="1.3"
         strokeLinecap="round"

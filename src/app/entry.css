@@ -133,54 +133,35 @@
   text-shadow: var(--shadow-legible);
 }
 
-/* ---- The version chip ---------------------------------------------------
-   Beside the wordmark, where someone already looks to find out what this is.
-   Quiet enough that it is not the second thing read on the screen. */
-.entry-topline {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
+/* ---- The version line ---------------------------------------------------
+   The quietest thing on the screen, in the corner under the support link.
+   Not drawn as a control: same size and colour as the footer it belongs to,
+   with the chevron doing the whole job of saying it can be pressed. */
 .version-badge {
-  /* The chip's own line, not the wordmark's: the mark has its optical baseline
-     and this would ride high if it shared one. */
-  align-self: center;
-  margin-top: 0.15em;
+  position: absolute;
+  right: calc(var(--inset-r) + var(--entry-gutter));
+  /* One line above the support link, which is anchored to the same foot. */
+  bottom: calc(var(--inset-b) + clamp(1.5rem, 3.5vh, 2.75rem) + 1.75rem);
 }
 
 .version-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.3rem 0.65rem 0.3rem 0.7rem;
-  border: 1px solid color-mix(in oklab, var(--color-cream) 26%, transparent);
-  border-radius: 999px;
-  background-color: color-mix(in oklab, var(--color-ink) 42%, transparent);
-  backdrop-filter: blur(var(--blur-control));
-  -webkit-backdrop-filter: blur(var(--blur-control));
-  color: var(--text-secondary);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
+  color: var(--text-muted);
+  font-size: clamp(0.8125rem, calc(0.72rem + 0.2vw), 0.9375rem);
+  text-shadow: var(--shadow-legible);
   cursor: pointer;
-  transition:
-    color var(--duration-control) var(--ease-quiet),
-    border-color var(--duration-control) var(--ease-quiet),
-    background-color var(--duration-control) var(--ease-quiet);
+  transition: color var(--duration-control) var(--ease-quiet);
 }
 
 @media (hover: hover) {
   .version-chip:hover {
-    border-color: color-mix(in oklab, var(--color-cream) 45%, transparent);
-    color: var(--text-primary);
+    color: var(--text-secondary);
   }
 }
 
 .version-chip[aria-expanded='true'] {
-  border-color: color-mix(in oklab, var(--color-cream) 45%, transparent);
-  background-color: var(--surface-strong);
   color: var(--text-primary);
 }
 
@@ -551,5 +532,13 @@
   .entry-reassurance,
   .entry-footnote {
     display: none;
+  }
+
+  /* The footer it sat under is gone here, so it takes the empty right half of
+     the presence line instead — still the last thing in the corner, still one
+     line above the row of actions. */
+  .version-badge {
+    right: var(--entry-gutter);
+    bottom: calc(var(--inset-b) + 7.65rem);
   }
 }

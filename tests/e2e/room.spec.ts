@@ -179,10 +179,6 @@ test('starting a timer counts down and survives a refresh', async ({ page }) => 
 });
 
 test('the whole critical path is reachable by keyboard alone', async ({ page }) => {
-  // The version chip is the corner's own control and takes the first stop, as
-  // it does visually; the door is one behind it.
-  await page.keyboard.press('Tab');
-  await expect(page.getByRole('button', { name: /^Version / })).toBeFocused();
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Enter the room' })).toBeFocused();
   await page.keyboard.press('Enter');
@@ -573,8 +569,7 @@ test.describe('the entry composition', () => {
     // The door still gets the room's width, less the cup.
     expect(c.width).toBeGreaterThan(390 * 0.6);
 
-    // And the way in is still one tap, and still one stop past the corner.
-    await page.keyboard.press('Tab');
+    // And the way in is still one tap, still reachable by keyboard first.
     await page.keyboard.press('Tab');
     await expect(cta).toBeFocused();
   });
@@ -591,7 +586,6 @@ test.describe('the entry composition', () => {
     expect(await bg(), 'hover should lift the fill').not.toBe('rgb(242, 236, 225)');
 
     await page.mouse.move(0, 0);
-    await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     await expect(cta).toBeFocused();
     const focusRing = await cta.evaluate((el) => {
@@ -899,7 +893,6 @@ test.describe('the support link', () => {
   });
 
   test('is reachable by keyboard and shows a focus ring', async ({ page }) => {
-    await page.keyboard.press('Tab'); // the version chip
     await page.keyboard.press('Tab');
     await expect(page.getByRole('button', { name: 'Enter the room' })).toBeFocused();
     await page.keyboard.press('Tab');
@@ -962,6 +955,27 @@ test.describe('the version chip', () => {
     await expect(chip(page)).toHaveText(/Version \d+\.\d+\.\d+/);
     await expect(chip(page)).toHaveAttribute('aria-expanded', 'false');
 
+    // Last in the corner and last in the tab cycle: the door and the cup both
+    // come first, because both matter more than what build this is.
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await expect(chip(page)).toBeFocused();
+
+    // Drawn as the footer it belongs to, not as a control: no fill, no border.
+    const drawing = await chip(page).evaluate((el) => {
+      const c = getComputedStyle(el);
+      const foot = getComputedStyle(document.querySelector('.entry-footnote')!);
+      return {
+        background: c.backgroundColor,
+        border: c.borderTopWidth,
+        matchesFooter: c.fontSize === foot.fontSize,
+      };
+    });
+    expect(drawing.background).toBe('rgba(0, 0, 0, 0)');
+    expect(parseFloat(drawing.border)).toBe(0);
+    expect(drawing.matchesFooter).toBe(true);
+
     // A hover must not open it: it covers the headline, and nobody asked.
     await chip(page).hover();
     await page.waitForTimeout(400);
@@ -995,13 +1009,20 @@ test.describe('the version chip', () => {
     await expect(ask).toHaveAttribute('rel', /noopener/);
     expect(await ask.getAttribute('href')).toMatch(/^https:\/\//);
 
-    // Nothing is cut off: the panel fits what it holds, or scrolls it.
-    const fits = await panel.evaluate((el) => ({
-      bottom: el.getBoundingClientRect().bottom,
-      viewport: window.innerHeight,
-      scrollable: el.scrollHeight <= el.clientHeight || getComputedStyle(el).overflowY === 'auto',
-    }));
-    expect(fits.bottom).toBeLessThanOrEqual(fits.viewport);
+    // Rises out of the corner, and its right edge is the corner's own margin.
+    const fits = await panel.evaluate((el) => {
+      const p = el.getBoundingClientRect();
+      const trigger = document.querySelector('.version-chip')!.getBoundingClientRect();
+      return {
+        top: p.top,
+        aboveTrigger: trigger.top - p.bottom,
+        rightOffBy: Math.abs(p.right - trigger.right),
+        scrollable: el.scrollHeight <= el.clientHeight || getComputedStyle(el).overflowY === 'auto',
+      };
+    });
+    expect(fits.top).toBeGreaterThanOrEqual(0);
+    expect(fits.aboveTrigger).toBeGreaterThan(0);
+    expect(fits.rightOffBy).toBeLessThan(1);
     expect(fits.scrollable).toBe(true);
   });
 

@@ -199,15 +199,12 @@ for (const roomId of ROOM_IDS) {
   await page.waitForTimeout(400);
 
   // The release notes: small type over a panel that still sits on the
-  // photograph, so it is audited like the room's own panels are. The copy it
-  // opens over is hidden for the pass — the audit samples what is behind a
-  // glyph, and behind the headline here is the panel covering it, which is
-  // text nobody is being asked to read.
+  // photograph, so it is audited like the room's own panels are. It rises out
+  // of the corner into the lit side of the frame, which is the half the entry
+  // scrim deliberately leaves alone.
   await page.getByRole('button', { name: /^Version / }).click();
   await page.waitForTimeout(400);
-  const covered = await page.addStyleTag({ content: '.entry-copy { visibility: hidden }' });
   await audit(`${roomId} · version panel`);
-  await covered.evaluate((el) => el.remove());
   await page.keyboard.press('Escape');
   await page.waitForTimeout(300);
 

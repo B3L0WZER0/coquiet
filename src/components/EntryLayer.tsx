@@ -34,13 +34,9 @@ export function EntryLayer({
 
       <div className="entry-frame">
         {/* Wrapped so the phone can set it as a small mark in the corner
-            without touching the size it has inside the room. The version sits
-            beside it, where a visitor already looks to find out what this is. */}
-        <div className="entry-topline">
-          <div className="entry-wordmark">
-            <Wordmark />
-          </div>
-          <VersionBadge />
+            without touching the size it has inside the room. */}
+        <div className="entry-wordmark">
+          <Wordmark />
         </div>
 
         {/* One column, ranged left: the name, what it is, then what to do. */}
@@ -132,6 +128,10 @@ export function EntryLayer({
 
       {/* Pinned to the bottom edge on a desktop; the phone has no room for it. */}
       <p className="entry-footnote">Ambient sound fades in. Mute anytime.</p>
+
+      {/* Out of flow, in the corner under the support link — the quietest thing
+          on the screen, and the last one anybody needs. */}
+      <VersionBadge />
 
     </div>
   );

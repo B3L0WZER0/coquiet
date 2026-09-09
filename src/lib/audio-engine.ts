@@ -639,7 +639,14 @@ export class AudioEngine {
     // part of the fade on silence and deliver a shorter one than it promises.
     await this.whenAudible(deck);
     if (this.disposed || this.status !== 'playing') return;
-    await this.fadeDeck(deck, 1, fadeMs);
+    // Curved, because hearing is not linear. A straight ramp up spends its
+    // first tenth climbing from silence to −20dB and is perceptually most of
+    // the way there by a third of the way through — it arrives sooner than the
+    // clock says, however long the clock is set to. Squaring holds the early
+    // part down so the room comes up evenly across the whole duration. The way
+    // out needs no such help: the same straight line falls through its last
+    // 20dB at the very end, which is what makes it sound unhurried.
+    await this.fadeDeck(deck, 1, fadeMs, (t) => t * t);
   }
 
   /** Settle until the deck is really making sound. Capped, because a deck that

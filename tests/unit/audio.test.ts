@@ -409,6 +409,23 @@ describe('audio engine state', () => {
     expect(audible.volume).toBeCloseTo(0.6, 3);
   });
 
+  it('comes back up on a curve, over the same clock as it went down', async () => {
+    await runFade(engine.enter(), FADE.entry);
+    const audible = decks(engine).find((el) => !el.paused)!;
+    await runFade(engine.pause(), FADE.playPause);
+
+    const promise = engine.play();
+    await vi.advanceTimersByTimeAsync(FADE.playPause / 2);
+    // Half way through by the clock, but nowhere near half way up: a straight
+    // ramp would sit at 0.30 here and arrive perceptually long before the end.
+    expect(audible.volume).toBeGreaterThan(0);
+    expect(audible.volume).toBeLessThan(0.6 * 0.5 * 0.8);
+
+    await runFade(promise, FADE.playPause);
+    // Same duration as the fade out, which is the part that already sounded right.
+    expect(audible.volume).toBeCloseTo(0.6, 3);
+  });
+
   it('ignores a deck ending while it is not the one being listened to', async () => {
     await runFade(engine.enter(), FADE.entry);
     await runFade(engine.pause(), FADE.playPause);

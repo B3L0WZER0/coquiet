@@ -33,7 +33,7 @@ audio is first allowed to exist.
 | `npm run typecheck` | `tsc --noEmit` |
 | `npm test` | Vitest — timer, audio engine, presence |
 | `npm run test:e2e` | Playwright — the entry → play → switch → timer path |
-| `npm run contrast` | WCAG AA audit across every room (dev server must be running) |
+| `npm run contrast` | WCAG AA audit of every room that has changed (dev server must be running) |
 | `npm run assets:images` | Regenerate the responsive background set |
 | `npm run assets:audio` | Rebuild the audio manifest from `public/audio` |
 
@@ -75,13 +75,16 @@ Two things the script cannot work out for you:
 
 - **The portrait focal point.** A phone shows a narrow vertical slice of a 16:9
   frame, and which part it lands on has to be chosen by eye. Set it in `FOCAL_X`
-  in [`scripts/generate-images.mjs`](scripts/generate-images.mjs); anything
+  in [`scripts/focal-points.mjs`](scripts/focal-points.mjs); anything
   missing defaults to the middle, which is rarely right, and the script says so.
   To choose one, render the image at several focal points and pick.
 - **Whether the veil still works.** The rooms differ enormously in brightness,
   and a veil tuned on a dim one fails over a sunlit one — two of these rooms
   have a bright window exactly where the wordmark sits, which dropped it to
-  2.25:1. `npm run contrast` audits **every room**, so run it after adding one.
+  2.25:1. `npm run contrast` audits every room whose look could have moved
+  since it last passed, so adding one photograph costs one room and changing
+  the veil costs all of them. Name ids to audit exactly those, `--force` for
+  everything, `--jobs=N` for how many run at once.
 
 In development, `?room=<id>` picks one deliberately — useful for reviewing a
 single room. It is ignored in production, where the hour decides and nothing
@@ -370,8 +373,9 @@ adapter was verified working across devices; rebuild it behind the same
   covered by Playwright tests.
 - Contrast is measured, not estimated. `npm run contrast` resolves each text
   element's colour, hides the text, screenshots what is actually behind it, and
-  compares against the **lightest pixel** in the text's own line boxes. All 81
-  text elements across five states pass AA, the tightest at 5.19:1.
+  compares against the **lightest pixel** in the text's own line boxes. All
+  6,063 text elements — eleven states across all 43 rooms — pass AA, the
+  tightest at 3.39:1 against the 3.0 large-text threshold.
 - Controls dim after 8s idle and return instantly on any input — but never while
   a control is showing a keyboard focus ring.
 - 44px minimum touch targets; works from 320px up; the room never scrolls on

@@ -633,7 +633,31 @@ export class AudioEngine {
     }
 
     this.setStatus('playing');
+    // `play()` resolving means the request was accepted, not that anything is
+    // audible yet — on a phone reaching a long file over the network, the first
+    // sound can be most of a second later. Starting the ramp there would spend
+    // part of the fade on silence and deliver a shorter one than it promises.
+    await this.whenAudible(deck);
+    if (this.disposed || this.status !== 'playing') return;
     await this.fadeDeck(deck, 1, fadeMs);
+  }
+
+  /** Settle until the deck is really making sound. Capped, because a deck that
+   *  never reports itself should still fade in rather than sit at silence. */
+  private whenAudible(deck: Deck, capMs = 1200): Promise<void> {
+    const el = deck.el;
+    if (!(el instanceof HTMLAudioElement)) return Promise.resolve();
+    // HAVE_FUTURE_DATA and running: sound is already coming out.
+    if (el.readyState >= 3 && !el.paused) return Promise.resolve();
+    return new Promise((resolve) => {
+      const done = () => {
+        window.clearTimeout(timer);
+        el.removeEventListener('playing', done);
+        resolve();
+      };
+      const timer = window.setTimeout(done, capMs);
+      el.addEventListener('playing', done);
+    });
   }
 
   /** Fade down over ~1s, then stop. */

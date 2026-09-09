@@ -126,6 +126,9 @@ function stubMedia() {
     this: HTMLMediaElement,
   ) {
     Object.defineProperty(this, 'paused', { value: false, configurable: true, writable: true });
+    // A real element announces that sound has started; the engine waits for it
+    // so a fade is not partly spent on silence.
+    this.dispatchEvent(new Event('playing'));
     return Promise.resolve();
   });
   vi.spyOn(HTMLMediaElement.prototype, 'pause').mockImplementation(function (
@@ -134,8 +137,9 @@ function stubMedia() {
     Object.defineProperty(this, 'paused', { value: true, configurable: true, writable: true });
   });
   vi.spyOn(HTMLMediaElement.prototype, 'load').mockImplementation(() => {});
+  // HAVE_ENOUGH_DATA: the stub stands in for a file that is ready to play.
   Object.defineProperty(HTMLMediaElement.prototype, 'readyState', {
-    get: () => 1,
+    get: () => 4,
     configurable: true,
   });
 }
@@ -373,6 +377,36 @@ describe('audio engine state', () => {
     expect(audible.getAttribute('src')).toBe(flow.tracks[1].src);
     expect(audible.paused).toBe(false);
     expect(engine.snapshot().status).toBe('playing');
+  });
+
+  it('waits for sound before spending the fade on it', async () => {
+    // A phone reaching a long file over the network: play() is accepted, but
+    // nothing is audible until the element says so.
+    // HAVE_METADATA: enough to seek into, not enough to be making sound.
+    for (const el of decks(engine)) {
+      Object.defineProperty(el, 'readyState', { get: () => 1, configurable: true });
+    }
+    vi.mocked(HTMLMediaElement.prototype.play).mockImplementation(function (
+      this: HTMLMediaElement,
+    ) {
+      Object.defineProperty(this, 'paused', { value: false, configurable: true, writable: true });
+      return Promise.resolve(); // No 'playing' event yet.
+    });
+
+    const promise = engine.enter();
+    await vi.advanceTimersByTimeAsync(50);
+    const audible = decks(engine).find((el) => !el.paused)!;
+    // Sound has not started, so the ramp has not either — still silent.
+    await vi.advanceTimersByTimeAsync(1000);
+    expect(audible.volume).toBe(0);
+
+    // The file starts.
+    audible.dispatchEvent(new Event('playing'));
+    await vi.advanceTimersByTimeAsync(FADE.entry / 2);
+    expect(audible.volume).toBeGreaterThan(0.1);
+
+    await runFade(promise, FADE.entry);
+    expect(audible.volume).toBeCloseTo(0.6, 3);
   });
 
   it('ignores a deck ending while it is not the one being listened to', async () => {

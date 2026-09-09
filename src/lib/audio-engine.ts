@@ -92,10 +92,8 @@ export class AudioEngine {
   private listeners = new Set<(state: AudioState) => void>();
   private disposed = false;
 
-  /** One context for both decks, built the first time sound is asked for — and
-   *  only on a browser whose `el.volume` is locked (see volumeLocked). */
+  /** One context for both decks, built the first time sound is asked for. */
   private ctx: AudioContext | null = null;
-  private gainPathCache: boolean | null = null;
 
   /** Cached immutable view of the state above. */
   private cached: AudioState;
@@ -122,15 +120,11 @@ export class AudioEngine {
     if (el instanceof HTMLAudioElement) {
       // Nothing is fetched until a source is assigned and load() is called.
       el.preload = 'none';
-      // Ask this element, once, whether its volume can be set at all — the
-      // answer decides both the fade path and the CORS below.
-      if (this.gainPathCache === null) this.gainPathCache = this.volumeIsLocked(el);
-      // Only where the graph would otherwise be tainted: an off-origin file on
-      // a browser that routes through createMediaElementSource, which would
-      // yield silence with no error anywhere. Everyone else stays on el.volume,
-      // never touches the graph, and gains nothing from CORS — while a work
-      // proxy that drops the header turns it into a hard, silent load failure.
-      if (audioIsOffOrigin && this.gainPathCache) el.crossOrigin = 'anonymous';
+      // The graph is where the level is shaped, so an off-origin file has to be
+      // fetched in a form the graph may read. Without this it is tainted and
+      // plays silence with no error anywhere; with it, a proxy that strips the
+      // header fails loudly instead, as a load error the room can report.
+      if (audioIsOffOrigin && hasWebAudio()) el.crossOrigin = 'anonymous';
       el.volume = 0;
       el.addEventListener('error', () => {
         // A deck failing is only fatal if it is the one we are listening to.
@@ -156,41 +150,20 @@ export class AudioEngine {
   // --- web audio ---------------------------------------------------------
 
   /**
-   * Whether to route through a GainNode instead of `el.volume`.
+   * Build the context, which is where every level in the room is shaped.
    *
-   * `HTMLMediaElement.volume` is read-only wherever the hardware keys own the
-   * level — iOS, but Android too — and a browser that ignores it does so
-   * silently: the fade runs, every step is written, and the room still cuts.
-   * This used to be gated on an iOS user agent as well, which is exactly how
-   * every Android phone ended up with no fades at all. Whether *this* element's
-   * volume actually moves when set is the only question worth asking, so it is
-   * now the whole gate. Desktop answers no and never touches the graph.
+   * There is no detection here on purpose. `HTMLMediaElement.volume` is a
+   * request the browser may ignore, and a phone that ignores it does so in the
+   * worst possible way: the setter accepts the value, the getter reads it back,
+   * and the output never moves. Two gates were tried — an iOS user agent, then
+   * a probe that set the property and read it back — and a phone sailed through
+   * both while still cutting. Nothing observable distinguishes that phone from
+   * a desktop, so the room stops guessing and shapes the level in the graph
+   * everywhere. `el.volume` survives only as the fallback below, for a browser
+   * with no Web Audio at all.
    */
-  private needsGainPath(): boolean {
-    if (this.gainPathCache !== null) return this.gainPathCache;
-    this.gainPathCache = this.volumeIsLocked(this.decks[0]?.el);
-    return this.gainPathCache;
-  }
-
-  private volumeIsLocked(el: HTMLAudioElement | undefined): boolean {
-    if (!(el instanceof HTMLAudioElement)) return false;
-    try {
-      const restore = el.volume;
-      el.volume = 0.5;
-      const locked = Math.abs(el.volume - 0.5) > 0.01;
-      el.volume = restore;
-      return locked;
-    } catch {
-      // A throwing setter is exactly the browser that needs the gain path.
-      return true;
-    }
-  }
-
-  /** Build the context. Left until the first sound, and only where the gain
-   *  path is actually needed. */
   private ensureContext(): void {
     if (this.ctx || typeof window === 'undefined') return;
-    if (!this.needsGainPath()) return; // Desktop: nothing to do, stay on el.volume.
     const Ctor =
       window.AudioContext ??
       (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext ??
@@ -364,9 +337,9 @@ export class AudioEngine {
 
   /** Point a deck at a channel and move it to the channel's current shared
    *  position — or, when `target` is given, to that exact spot instead. */
-  private prepare(deck: Deck, channel: Channel, target?: StationPosition): Promise<void> {
+  private prepare(deck: Deck, channel: Channel, target?: StationPosition): Promise<boolean> {
     const el = deck.el;
-    if (!(el instanceof HTMLAudioElement)) return Promise.resolve();
+    if (!(el instanceof HTMLAudioElement)) return Promise.resolve(true);
 
     const at = target ?? stationPosition(channel);
 
@@ -395,18 +368,24 @@ export class AudioEngine {
 
     if (el.readyState >= 1 /* HAVE_METADATA */) {
       seek();
-      return Promise.resolve();
+      return Promise.resolve(true);
     }
 
-    return new Promise<void>((resolve) => {
-      const done = () => {
-        el.removeEventListener('loadedmetadata', done);
-        el.removeEventListener('error', done);
-        seek();
-        resolve();
+    // Whether the file actually arrived. A network that filters this origin
+    // answers with a page instead of audio, and the element reports that the
+    // same way it reports a missing file — so the caller has to be told, or
+    // the room goes quiet with nothing to show for it.
+    return new Promise<boolean>((resolve) => {
+      const settle = (ok: boolean) => () => {
+        el.removeEventListener('loadedmetadata', onLoaded);
+        el.removeEventListener('error', onFailed);
+        if (ok) seek();
+        resolve(ok);
       };
-      el.addEventListener('loadedmetadata', done);
-      el.addEventListener('error', done);
+      const onLoaded = settle(true);
+      const onFailed = settle(false);
+      el.addEventListener('loadedmetadata', onLoaded);
+      el.addEventListener('error', onFailed);
     });
   }
 
@@ -416,8 +395,14 @@ export class AudioEngine {
     const deck = this.active;
     const channel = getChannel(this.channelId);
 
-    await this.prepare(deck, channel);
+    const loaded = await this.prepare(deck, channel);
     if (this.disposed || this.status !== 'playing') return;
+    // The piece that was playing has ended and its successor will not load.
+    // Silence either way; say which kind it is.
+    if (!loaded) {
+      this.setStatus('error');
+      return;
+    }
 
     this.route(deck);
     try {
@@ -608,6 +593,17 @@ export class AudioEngine {
     await this.start(FADE.playPause);
   }
 
+  /** Ask for the music again after a failed load. The deck is holding a piece
+   *  that never arrived, so drop that and let `prepare` assign the source
+   *  afresh — and go back to idle first, or a second identical failure would
+   *  not be a change of status and the room would say nothing. */
+  async retry(): Promise<void> {
+    if (this.disposed) return;
+    this.active.loaded = null;
+    this.setStatus('idle');
+    await this.start(FADE.playPause);
+  }
+
   private async start(fadeMs: number): Promise<void> {
     if (this.disposed) return;
     // Both callers are inside a click: bring the context up now, while the
@@ -616,8 +612,12 @@ export class AudioEngine {
     const deck = this.active;
     const channel = getChannel(this.channelId);
 
-    await this.prepare(deck, channel);
+    const loaded = await this.prepare(deck, channel);
     if (this.disposed) return;
+    if (!loaded) {
+      this.setStatus('error');
+      return;
+    }
 
     this.route(deck);
     deck.fade = 0;
@@ -681,8 +681,16 @@ export class AudioEngine {
     // Load the new piece while the old one is still playing normally. Starting
     // the fade first would mean a slow network turning the handover into a
     // silence of unpredictable length.
-    await this.prepare(incoming, channel);
+    const loaded = await this.prepare(incoming, channel);
     if (this.disposed) return;
+    // The new channel will not load. Nothing has faded yet, so the piece in
+    // hand keeps playing and only the switch is abandoned.
+    if (!loaded) {
+      this.channelId = outgoing.loaded?.channel ?? this.channelId;
+      this.switching = false;
+      this.emit();
+      return;
+    }
 
     // The old piece leaves, quickly and on a curve that drops away early.
     const outFrom = outgoing.fade;
@@ -778,7 +786,8 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => window.setTimeout(resolve, ms));
 }
 
-/** True if the promise settled in time, false if it is still outstanding. */
+/** True if the promise settled in time — and, when it carries a boolean of its
+ *  own, said yes. False if it is still outstanding, or reported failure. */
 function withTimeout(promise: Promise<unknown>, ms: number): Promise<boolean> {
   return new Promise((resolve) => {
     let settled = false;
@@ -789,8 +798,17 @@ function withTimeout(promise: Promise<unknown>, ms: number): Promise<boolean> {
       resolve(value);
     };
     const handle = window.setTimeout(() => finish(false), ms);
-    void promise.then(() => finish(true));
+    void promise.then((value) => finish(value !== false));
   });
+}
+
+/** Whether the graph is available at all. Decided before any deck has a source,
+ *  because it settles whether that source needs to be fetched CORS-clean. */
+function hasWebAudio(): boolean {
+  if (typeof window === 'undefined') return false;
+  return Boolean(
+    window.AudioContext ?? (window as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext,
+  );
 }
 
 function clamp01(v: number): number {

@@ -585,6 +585,88 @@ describe('audio engine on a phone that is not an iPhone', () => {
   });
 });
 
+/** The phone that defeated both earlier gates: its `volume` setter is accepted
+ *  and its getter reads the value straight back, so nothing observable says the
+ *  output never moves. The room must not need to know. */
+describe('audio engine on a device that lies about its volume', () => {
+  let engine: AudioEngine;
+
+  let realVolume: PropertyDescriptor | undefined;
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(getChannel('flow').epochMs + 60_000);
+    stubMedia();
+    // The phone's actual behaviour, per the device probe: each element stores
+    // what you set and hands it straight back, while the output never moves.
+    // Nothing here is pinned, so no gate could tell this from a desktop.
+    realVolume = Object.getOwnPropertyDescriptor(HTMLMediaElement.prototype, 'volume');
+    const levels = new WeakMap<HTMLMediaElement, number>();
+    Object.defineProperty(HTMLMediaElement.prototype, 'volume', {
+      get(this: HTMLMediaElement) {
+        return levels.get(this) ?? 1;
+      },
+      set(this: HTMLMediaElement, v: number) {
+        levels.set(this, v);
+      },
+      configurable: true,
+    });
+    vi.stubGlobal('AudioContext', FakeAudioContext);
+    engine = new AudioEngine('flow', 0.6);
+  });
+
+  afterEach(() => {
+    engine.destroy();
+    if (realVolume) Object.defineProperty(HTMLMediaElement.prototype, 'volume', realVolume);
+    vi.unstubAllGlobals();
+    vi.useRealTimers();
+    vi.restoreAllMocks();
+  });
+
+  it('still shapes the fade in the graph, having stopped guessing', async () => {
+    const probe = new Audio();
+    probe.volume = 0.5;
+    expect(probe.volume).toBe(0.5); // Reports settable, like the phone does.
+
+    const promise = engine.enter();
+    await vi.advanceTimersByTimeAsync(0);
+    const audible = decks(engine).find((el) => !el.paused)!;
+    const deck = (
+      engine as unknown as { decks: { el: HTMLAudioElement; gain: FakeNode | null }[] }
+    ).decks.find((d) => d.el === audible)!;
+
+    expect(deck.gain).not.toBeNull();
+    expect(deck.gain!.gain.value).toBe(0);
+    // The element is left wide open; the graph owns the level.
+    expect(audible.volume).toBe(1);
+
+    await vi.advanceTimersByTimeAsync(FADE.entry / 2);
+    expect(deck.gain!.gain.value).toBeGreaterThan(0.1);
+    expect(deck.gain!.gain.value).toBeLessThan(0.6);
+
+    await vi.advanceTimersByTimeAsync(FADE.entry);
+    await promise;
+    expect(deck.gain!.gain.value).toBeCloseTo(0.6, 3);
+  });
+
+  it('fades out on pause through the graph', async () => {
+    await runFade(engine.enter(), FADE.entry);
+    const audible = decks(engine).find((el) => !el.paused)!;
+    const deck = (
+      engine as unknown as { decks: { el: HTMLAudioElement; gain: FakeNode | null }[] }
+    ).decks.find((d) => d.el === audible)!;
+
+    const promise = engine.pause();
+    await vi.advanceTimersByTimeAsync(FADE.playPause / 2);
+    expect(deck.gain!.gain.value).toBeGreaterThan(0);
+    expect(deck.gain!.gain.value).toBeLessThan(0.6);
+
+    await runFade(promise, FADE.playPause);
+    expect(deck.gain!.gain.value).toBe(0);
+    expect(audible.paused).toBe(true);
+  });
+});
+
 describe('audio engine with Web Audio available', () => {
   let engine: AudioEngine;
 

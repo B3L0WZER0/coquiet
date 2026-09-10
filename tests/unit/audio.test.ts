@@ -812,4 +812,32 @@ describe('audio engine with Web Audio available', () => {
     await runFade(engine.enter(), FADE.entry);
     expect(ctx()?.state).toBe('running');
   });
+
+  it('declares the session as playback, so the phone keeps it in the background', async () => {
+    const session = { type: 'auto' };
+    Object.defineProperty(navigator, 'audioSession', { value: session, configurable: true });
+    try {
+      await runFade(engine.enter(), FADE.entry);
+      expect(session.type).toBe('playback');
+    } finally {
+      Reflect.deleteProperty(navigator, 'audioSession');
+    }
+  });
+
+  it('resumes a graph the phone suspended while the room was off screen', async () => {
+    await runFade(engine.enter(), FADE.entry);
+    const ctx = (engine as unknown as { ctx: FakeAudioContext }).ctx;
+    // What backgrounding does on a browser that will not keep the graph alive.
+    ctx.state = 'suspended';
+
+    const visibility = vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+    document.dispatchEvent(new Event('visibilitychange'));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(ctx.state).toBe('suspended');
+
+    visibility.mockReturnValue('visible');
+    document.dispatchEvent(new Event('visibilitychange'));
+    await vi.advanceTimersByTimeAsync(0);
+    expect(ctx.state).toBe('running');
+  });
 });

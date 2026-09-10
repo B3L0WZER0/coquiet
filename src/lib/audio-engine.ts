@@ -103,7 +103,19 @@ export class AudioEngine {
     this.base = clamp01(volume);
     this.decks = [this.createDeck(), this.createDeck()];
     this.cached = this.build();
+    if (typeof document !== 'undefined') {
+      document.addEventListener('visibilitychange', this.onVisibility);
+    }
   }
+
+  /** Coming back to the room. A browser that suspended the graph while we were
+   *  away leaves it suspended — resume() only lands once the page is on screen
+   *  again, so here is the first moment it can. */
+  private onVisibility = () => {
+    if (this.disposed || document.visibilityState !== 'visible') return;
+    if (this.status !== 'playing') return;
+    if (this.ctx?.state === 'suspended') void this.ctx.resume().catch(() => {});
+  };
 
   private build(): AudioState {
     return {
@@ -174,6 +186,7 @@ export class AudioEngine {
     } catch {
       this.ctx = null;
     }
+    if (this.ctx) declarePlayback();
   }
 
   /** Get the context running. Must be reached from inside a user gesture —
@@ -787,6 +800,9 @@ export class AudioEngine {
 
   destroy() {
     this.disposed = true;
+    if (typeof document !== 'undefined') {
+      document.removeEventListener('visibilitychange', this.onVisibility);
+    }
     this.releaseDecks();
     this.duckCancel?.();
     for (const deck of this.decks) {
@@ -835,6 +851,30 @@ function withTimeout(promise: Promise<unknown>, ms: number): Promise<boolean> {
 
 /** Whether the graph is available at all. Decided before any deck has a source,
  *  because it settles whether that source needs to be fetched CORS-clean. */
+/** Tell the browser this is long-form playback rather than a UI sound.
+ *
+ *  Everything the room plays now goes through the graph, and a graph is the
+ *  one thing Safari suspends the moment the app leaves the screen: the music
+ *  stops mid-phrase, with the click of a cable being pulled, and comes back
+ *  silent. An element playing on its own was never treated that way, which is
+ *  why the room used to survive a switch to another app and stopped surviving
+ *  it the day the fades moved into the graph.
+ *
+ *  Declaring the session is what buys the old behaviour back. Only Safari has
+ *  this API, and only Safari needs it — elsewhere the graph keeps running in
+ *  the background on its own.
+ */
+function declarePlayback(): void {
+  const session = (navigator as { audioSession?: { type: string } }).audioSession;
+  if (!session) return;
+  try {
+    session.type = 'playback';
+  } catch {
+    // Not settable here; the graph still plays, it just may not survive
+    // backgrounding on this browser.
+  }
+}
+
 function hasWebAudio(): boolean {
   if (typeof window === 'undefined') return false;
   return Boolean(

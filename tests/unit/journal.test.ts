@@ -75,6 +75,6 @@ describe('journal posts', () => {
   it('refuses a post whose room does not exist', () => {
     const src =
       '---\ntitle: T\ndescription: D\nsummary: S\ncategory: C\ndate: 2026-01-01\nroom: nowhere\nalt: A\n---\nBody';
-    expect(() => parsePost('01-x.md', src)).toThrow(/no room/);
+    expect(() => parsePost('01-x.md', src)).toThrow(/no room/i);
   });
 });

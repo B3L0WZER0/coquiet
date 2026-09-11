@@ -2,10 +2,10 @@
 title: Why instrumental music helps you focus (and lyrics often don't)
 description: Some music makes focus easier; some quietly gets in the way. How to choose music for work and study, and why instrumental music is so often the answer.
 date: 2026-09-11
-room: garden-pool
+image: music-for-focus
 category: Sound
 summary: How to choose music that keeps you company without asking for attention.
-alt: A person working at a long wooden desk beside a quiet courtyard garden with a still pool.
+alt: Black headphones and a speckled mug on a sunlit wooden table.
 keywords: music for focus, focus music, music for studying, instrumental music, deep work music
 ---
 

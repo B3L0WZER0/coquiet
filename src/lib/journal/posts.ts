@@ -8,8 +8,8 @@ import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
 import { BASE_PATH } from '@/lib/asset-path';
-import { ROOMS } from '@/lib/background';
 import { readingMinutes, renderMarkdown, splitTitle } from '@/lib/journal/markdown';
+import { journalPhoto, roomPhoto, type Photo } from '@/lib/journal/photos';
 
 export interface Post {
   slug: string;
@@ -24,8 +24,11 @@ export interface Post {
   category: string;
   /** YYYY-MM-DD */
   date: string;
-  /** A room id from the background manifest — the post's photograph. */
-  room: string;
+  /** For cards and the index. */
+  photo: Photo;
+  /** Across the top of the post; the card photo unless `hero:` names another. */
+  hero: Photo;
+  /** Describes the hero. */
   alt: string;
   keywords: string[];
   minutes: number;
@@ -35,7 +38,7 @@ export interface Post {
 }
 
 const DIR = path.join(process.cwd(), 'content/journal');
-const REQUIRED = ['title', 'description', 'summary', 'category', 'date', 'room', 'alt'] as const;
+const REQUIRED = ['title', 'description', 'summary', 'category', 'date', 'alt'] as const;
 
 export function parsePost(file: string, source: string): Post {
   const match = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/.exec(source.replace(/\r\n/g, '\n'));
@@ -50,7 +53,16 @@ export function parsePost(file: string, source: string): Post {
     if (!meta[key]) throw new Error(`${file}: front matter needs "${key}"`);
   }
   if (!/^\d{4}-\d{2}-\d{2}$/.test(meta.date)) throw new Error(`${file}: date must be YYYY-MM-DD`);
-  if (!ROOMS.some((r) => r.id === meta.room)) throw new Error(`${file}: no room "${meta.room}"`);
+
+  // A photograph of its own (`image:`), or one of the room's (`room:`).
+  let photo: Photo;
+  try {
+    if (meta.image) photo = journalPhoto(meta.image);
+    else if (meta.room) photo = roomPhoto(meta.room);
+    else throw new Error('front matter needs "image" or "room"');
+  } catch (e) {
+    throw new Error(`${file}: ${(e as Error).message}`);
+  }
 
   const body = match[2];
   const { head, sub } = splitTitle(meta.title);
@@ -63,7 +75,8 @@ export function parsePost(file: string, source: string): Post {
     summary: meta.summary,
     category: meta.category,
     date: meta.date,
-    room: meta.room,
+    photo,
+    hero: meta.hero ? journalPhoto(meta.hero) : photo,
     alt: meta.alt,
     keywords: (meta.keywords ?? '').split(',').map((k) => k.trim()).filter(Boolean),
     minutes: readingMinutes(body),

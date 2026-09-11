@@ -264,7 +264,7 @@ body:has(.journal) {
 }
 
 .journal-lead-photo .journal-picture {
-  aspect-ratio: 1.58;
+  aspect-ratio: 3 / 2;
 }
 
 @media (min-width: 48rem) {
@@ -505,7 +505,7 @@ body:has(.journal) {
 
 @media (min-width: 48rem) {
   .journal .journal-hero {
-    aspect-ratio: 2.85;
+    aspect-ratio: 2.75;
   }
 }
 

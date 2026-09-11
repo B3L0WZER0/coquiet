@@ -2,10 +2,10 @@
 title: The Pomodoro Technique, gently: why 25 minutes works
 description: The Pomodoro Technique isn't about squeezing more out of your day. It's about making hard work feel approachable. Here's how to use it kindly.
 date: 2026-09-11
-room: calm-screen-working
+image: pomodoro-technique-gently
 category: Focus
 summary: A timer that makes starting feel smaller, and rest part of the plan.
-alt: A person working at a desk in a calm, plant-filled studio with tall windows onto a green forest.
+alt: A wooden desk with a laptop, a mug and a notebook by large windows onto a sunlit forest.
 keywords: pomodoro technique, pomodoro timer, focus timer, how to focus, procrastination
 ---
 

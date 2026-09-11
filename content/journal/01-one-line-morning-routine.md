@@ -2,10 +2,11 @@
 title: The one-line morning: a gentle way to build a routine
 description: Struggling to stick to a morning routine? Start with a coffee and one handwritten line. Here's why something this small works, and how to let it grow.
 date: 2026-09-11
-room: coffee-lake-view
+image: one-line-morning-routine
+hero: one-line-morning-routine-hero
 category: Rituals
 summary: A cup of coffee, a pen, and one sentence — a routine small enough to keep.
-alt: A stone café with tall arched windows, looking out over a mountain lake in soft morning light.
+alt: A speckled mug and an open handwritten notebook on a café table, looking out over a lake and mountains.
 keywords: morning routine, how to start a morning routine, journaling, small habits, handwriting
 ---
 

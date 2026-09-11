@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 import { ArrowUpRight } from '@/components/journal/Arrows';
 import { JournalInvite } from '@/components/journal/JournalInvite';
-import { RoomPicture } from '@/components/journal/RoomPicture';
+import { Picture } from '@/components/journal/Picture';
 import { Unbroken } from '@/components/journal/Unbroken';
 import { getPosts, type Post } from '@/lib/journal/posts';
 import { SITE_URL } from '@/lib/site';
@@ -60,7 +60,7 @@ export default function JournalIndex() {
       {lead && (
         <article className="journal-lead">
           <Link href={`/journal/${lead.slug}/`} className="journal-lead-photo" tabIndex={-1} aria-hidden="true">
-            <RoomPicture roomId={lead.room} alt="" sizes="(min-width: 48rem) 36rem, 100vw" priority />
+            <Picture photo={lead.photo} alt="" sizes="(min-width: 48rem) 36rem, 100vw" priority />
           </Link>
           <div className="journal-lead-text">
             <Kicker post={lead} />
@@ -87,7 +87,7 @@ export default function JournalIndex() {
             {grid.map((p) => (
               <li key={p.slug}>
                 <Link href={`/journal/${p.slug}/`} className="journal-card">
-                  <RoomPicture roomId={p.room} alt="" sizes="(min-width: 40rem) 31rem, 100vw" className="journal-card-photo" />
+                  <Picture photo={p.photo} alt="" sizes="(min-width: 40rem) 31rem, 100vw" className="journal-card-photo" />
                   <Kicker post={p} />
                   <h3>
                     <Unbroken text={p.head} />

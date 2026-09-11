@@ -5,7 +5,7 @@ import { notFound } from 'next/navigation';
 import { ArrowLeft } from '@/components/journal/Arrows';
 import { JournalInvite } from '@/components/journal/JournalInvite';
 import { PostActions } from '@/components/journal/PostActions';
-import { RoomPicture } from '@/components/journal/RoomPicture';
+import { Picture } from '@/components/journal/Picture';
 import { Unbroken } from '@/components/journal/Unbroken';
 import { cardPath } from '@/lib/journal/config';
 import { formatDate, getPost, getPosts } from '@/lib/journal/posts';
@@ -87,8 +87,8 @@ export default async function PostPage({ params }: Props) {
         </p>
       </header>
 
-      <RoomPicture
-        roomId={post.room}
+      <Picture
+        photo={post.hero}
         alt={post.alt}
         sizes="(min-width: 64rem) 64rem, 100vw"
         priority

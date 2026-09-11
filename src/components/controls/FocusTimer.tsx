@@ -92,7 +92,7 @@ export function FocusTimer({
       ) : (
         <>
           <span className="label-quiet" style={{ textShadow: 'var(--shadow-legible)' }}>
-            {idle ? 'Start Timer' : hint}
+            {idle ? 'Timer' : hint}
           </span>
           <span
             className="text-[0.9375rem]"

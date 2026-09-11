@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { BookMark } from '@/components/icons/BookMark';
 import { ArrowUpRight } from '@/components/journal/Arrows';
 import { assetPath } from '@/lib/asset-path';
 import { JOURNAL_PUBLIC } from '@/lib/journal/config';
@@ -26,6 +27,7 @@ export default function JournalLayout({ children }: { children: React.ReactNode 
           </a>
           <span className="journal-divider" aria-hidden="true" />
           <Link href="/journal/" className="journal-section">
+            <BookMark />
             Journal
           </Link>
         </div>

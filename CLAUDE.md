@@ -62,6 +62,12 @@ Then:
 
 `FOCAL_Y` exists but is almost never worth setting: a 16:9 photograph fills the height exactly on a phone and on any window narrower than 16:9, so nothing is cropped vertically there. It only bites past 16:9 — an ultrawide 2560×1080 loses about a fifth of the height. `npm run assets:crops -- --wide` sweeps that axis.
 
+## The journal
+
+`/journal/` — short reads on focus, rest and small habits, for people and for search. Indexed and in the sitemap, but not linked from the room yet (`JOURNAL_PUBLIC` in `src/lib/journal/config.ts`). Share is the only action on a post: no votes, likes or comments.
+
+A post is `content/journal/NN-slug.md`. The slug is its permanent URL. Front matter: `title` (split at its colon into title and subtitle), `description` (the search snippet, 70–165 characters), `summary` (one line for cards), `category`, `date`, `alt`, and either `image` (a photo in `content/journal/images/`, with an optional wider `hero`) or `room`. In the body, `>` makes the "try this" box, with a leading `**Label:**` as its heading, and `>>` makes a pull quote. After adding a post or photo, run `npm run assets:journal` to encode the photos and render the preview cards, then `npm test`.
+
 ## Where the music comes from
 
 The tracks are not in the repo. They live in the `coquiet-audio` R2 bucket, and

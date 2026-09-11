@@ -129,11 +129,7 @@ const fonts = [await googleFont('Playfair Display', 400), await googleFont('Inte
 const e = React.createElement;
 await mkdir(CARD_OUT, { recursive: true });
 
-for (const file of (await readdir(CONTENT)).filter((f) => f.endsWith('.md'))) {
-  const slug = file.replace(/^\d+-/, '').replace(/\.md$/, '');
-  const meta = frontMatter(await readFile(join(CONTENT, file), 'utf8'));
-  const photo = await crop(meta);
-
+async function renderCard(photo, title, out) {
   const png = await new ImageResponse(
     e(
       'div',
@@ -167,13 +163,23 @@ for (const file of (await readdir(CONTENT)).filter((f) => f.endsWith('.md'))) {
           },
         },
         e('div', { style: { fontFamily: 'Inter', fontSize: 30, fontWeight: 300, letterSpacing: '0.08em' } }, 'coquiet · journal'),
-        e('div', { style: { fontFamily: 'Playfair Display', fontSize: meta.title.length > 48 ? 58 : 68, lineHeight: 1.1, maxWidth: 1000 } }, meta.title),
+        e('div', { style: { fontFamily: 'Playfair Display', fontSize: title.length > 48 ? 58 : 68, lineHeight: 1.1, maxWidth: 1000 } }, title),
       ),
     ),
     { width: WIDTH, height: HEIGHT, fonts },
   ).arrayBuffer();
 
   const jpeg = await sharp(Buffer.from(png)).jpeg({ quality: 82, mozjpeg: true }).toBuffer();
-  await writeFile(join(CARD_OUT, `${slug}.jpg`), jpeg);
-  console.log(`card ${slug}.jpg  ${(jpeg.length / 1024).toFixed(0)} KB`);
+  await writeFile(join(CARD_OUT, out), jpeg);
+  console.log(`card ${out}  ${(jpeg.length / 1024).toFixed(0)} KB`);
 }
+
+const posts = [];
+for (const file of (await readdir(CONTENT)).filter((f) => f.endsWith('.md')).sort()) {
+  const meta = frontMatter(await readFile(join(CONTENT, file), 'utf8'));
+  posts.push(meta);
+  await renderCard(await crop(meta), meta.title, `${file.replace(/^\d+-/, '').replace(/\.md$/, '')}.jpg`);
+}
+
+// The journal's own card (JOURNAL_CARD), over the first post's photograph.
+await renderCard(await crop(posts[0]), 'Journal — short reads on focus, rest and small habits', '_journal.jpg');

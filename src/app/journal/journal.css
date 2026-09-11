@@ -167,6 +167,9 @@ body:has(.journal) {
 }
 
 .journal-section {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
   font-size: 0.8125rem;
   color: var(--text-secondary);
   text-decoration: none;
@@ -398,8 +401,14 @@ body:has(.journal) {
   border-radius: 0;
 }
 
-.journal-invite .journal-invite-photo img {
-  object-position: 80% 60% !important;
+.journal-fade-in {
+  animation: journal-fade var(--duration-veil) var(--ease-quiet) both;
+}
+
+@keyframes journal-fade {
+  from {
+    opacity: 0;
+  }
 }
 
 /* Dark where the words are, the photograph opening up to the right. */
@@ -471,9 +480,17 @@ body:has(.journal) {
   color: var(--text-primary);
 }
 
+/* The narrowest phones: the header link gives way; the banner and the
+   footer still lead to the room. */
+@media (max-width: 23rem) {
+  .journal-bar .journal-pill {
+    display: none;
+  }
+}
+
 .journal-post-title {
   margin-top: 0.875rem;
-  font-size: clamp(2.5rem, 1.7rem + 3vw, 3.75rem);
+  font-size: clamp(2.125rem, 1.4rem + 3.4vw, 3.75rem);
   line-height: 1.02;
 }
 

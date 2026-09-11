@@ -1,8 +1,8 @@
 /**
  * The journal at /journal.
  *
- * Indexed and in the sitemap, but not yet linked from the room. Set to false
- * to hide it from search engines again (noindex, out of the sitemap).
+ * Indexed, in the sitemap, and linked from the entry screen's top-right corner.
+ * Set to false to hide it again: noindex, out of the sitemap, no link.
  */
 export const JOURNAL_PUBLIC = true;
 

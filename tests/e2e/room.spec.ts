@@ -861,6 +861,33 @@ test.describe('the phone dock', () => {
   });
 });
 
+test.describe('the journal link', () => {
+  test('sits across from the name, after the door in the tab order', async ({ page }) => {
+    const link = page.getByRole('link', { name: 'Journal' });
+    await expect(link).toHaveAttribute('href', /\/journal\/$/);
+
+    // Top right, on the wordmark's line, lined up with the corner below it.
+    const geometry = await page.evaluate(() => {
+      const mid = (r: DOMRect) => r.top + r.height / 2;
+      const a = document.querySelector('.entry-journal')!.getBoundingClientRect();
+      const mark = document.querySelector('.entry-wordmark span')!.getBoundingClientRect();
+      const cup = document.querySelector('.coquiet-support')!.getBoundingClientRect();
+      return { offLine: Math.abs(mid(a) - mid(mark)), rightEdges: Math.abs(a.right - cup.right) };
+    });
+    expect(geometry.offLine).toBeLessThan(3);
+    expect(geometry.rightEdges).toBeLessThan(2);
+
+    await page.keyboard.press('Tab');
+    await expect(page.getByRole('button', { name: 'Enter the room' })).toBeFocused();
+    await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
+    await expect(link).toBeFocused();
+
+    await page.locator('.coquiet-cta').click();
+    await expect(page.locator('.entry-journal')).toHaveCount(0, { timeout: 3000 });
+  });
+});
+
 test.describe('the support link', () => {
   test('sits on the way in, and nowhere inside the room', async ({ page }) => {
     const link = page.locator('.coquiet-support');
@@ -955,11 +982,9 @@ test.describe('the version chip', () => {
     await expect(chip(page)).toHaveText(/Version \d+\.\d+\.\d+/);
     await expect(chip(page)).toHaveAttribute('aria-expanded', 'false');
 
-    // Last in the corner and last in the tab cycle: the door and the cup both
-    // come first, because both matter more than what build this is.
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
-    await page.keyboard.press('Tab');
+    // Last in the corner and last in the tab cycle: the door, the cup and the
+    // journal all come first, because they matter more than what build this is.
+    for (let i = 0; i < 4; i++) await page.keyboard.press('Tab');
     await expect(chip(page)).toBeFocused();
 
     // Drawn as the footer it belongs to, not as a control: no fill, no border.

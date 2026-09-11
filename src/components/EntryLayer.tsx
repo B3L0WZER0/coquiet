@@ -1,9 +1,12 @@
 'use client';
 
 import { Wordmark } from '@/components/Wordmark';
+import { BookMark } from '@/components/icons/BookMark';
 import { CoffeeMarkInline, CoffeeMarkSteaming } from '@/components/icons/DrinkMarks';
 import { LiveDot } from '@/components/ui/LiveDot';
 import { VersionBadge } from '@/components/VersionBadge';
+import { assetPath } from '@/lib/asset-path';
+import { JOURNAL_PUBLIC } from '@/lib/journal/config';
 import { SUPPORT_LABEL, SUPPORT_URL } from '@/lib/support';
 
 /** The composition shown before the room is entered. */
@@ -128,6 +131,15 @@ export function EntryLayer({
 
       {/* Pinned to the bottom edge on a desktop; the phone has no room for it. */}
       <p className="entry-footnote">Ambient sound fades in. Mute anytime.</p>
+
+      {/* Across from the name. After the door in the DOM, so a keyboard meets
+          the door first; a full page load, like every link to the journal. */}
+      {JOURNAL_PUBLIC && (
+        <a href={assetPath('/journal/')} className="entry-journal">
+          <BookMark />
+          Journal
+        </a>
+      )}
 
       {/* Out of flow, in the corner under the support link — the quietest thing
           on the screen, and the last one anybody needs. */}

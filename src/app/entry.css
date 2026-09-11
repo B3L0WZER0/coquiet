@@ -51,8 +51,16 @@
       color-mix(in oklab, var(--color-ink) 5%, transparent) 68%,
       transparent 77%
     ),
+    /* A pool under the journal link, which sits on the bright side too. Kept
+       to the corner so the lit wall stays lit. */
+    radial-gradient(
+      ellipse 30rem 14rem at 100% 0%,
+      color-mix(in oklab, var(--color-ink) 50%, transparent) 0%,
+      color-mix(in oklab, var(--color-ink) 40%, transparent) 45%,
+      transparent 100%
+    ),
     /* Only the foot, and only lightly: the room's own veil already weights the
-       top, and the support link is the one thing out here on the bright side. */
+       top, and the support link is the other thing out here on the bright side. */
     linear-gradient(
       to bottom,
       transparent 72%,
@@ -131,6 +139,33 @@
   font-size: clamp(0.8125rem, calc(0.72rem + 0.2vw), 0.9375rem);
   color: var(--text-secondary);
   text-shadow: var(--shadow-legible);
+}
+
+/* Top right, centred on the wordmark's line (--entry-mark is its height), with
+   a full-size touch target. Navigation by its place and its book, so no
+   underline. */
+.entry-journal {
+  --entry-mark: 1.875rem;
+  --entry-target: 2.75rem;
+  position: absolute;
+  right: calc(var(--inset-r) + var(--entry-gutter));
+  top: calc(
+    var(--inset-t) + clamp(1.75rem, 4vh, 3.25rem) + (var(--entry-mark) - var(--entry-target)) / 2
+  );
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: var(--entry-target);
+  color: var(--text-secondary);
+  font-size: clamp(0.875rem, calc(0.78rem + 0.25vw), 1.0625rem);
+  text-shadow: var(--shadow-legible);
+  transition: color var(--duration-control) var(--ease-quiet);
+}
+
+@media (hover: hover) {
+  .entry-journal:hover {
+    color: var(--text-primary);
+  }
 }
 
 /* ---- The version line ---------------------------------------------------
@@ -561,6 +596,10 @@
      thing being read here. */
   .entry-wordmark span {
     font-size: 1.5rem;
+  }
+
+  .entry-journal {
+    --entry-mark: 1.5rem;
   }
 
   .entry-scrim {

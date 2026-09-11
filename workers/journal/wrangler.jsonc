@@ -1,0 +1,19 @@
+{
+  "name": "coquiet-journal",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-09",
+
+  // Only the votes path leaves GitHub Pages; the journal pages themselves are static.
+  "routes": [{ "pattern": "coquiet.app/api/journal/*", "zone_name": "coquiet.app" }],
+  "workers_dev": false,
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "coquiet-journal",
+      "database_id": "d3409a51-629e-4fe0-adca-c654a832fbe9"
+    }
+  ],
+
+  "observability": { "enabled": true }
+}

@@ -89,7 +89,9 @@ export function roomChooserScript(): string {
   const prefix = assetPath('/images/');
   const dev = process.env.NODE_ENV !== 'production';
 
+  // The journal shows no room, so it starts no photograph downloading.
   return `(function(){try{
+if(/\\/journal(\\/|$)/.test(location.pathname))return;
 var R=${JSON.stringify(rooms)},W=${JSON.stringify(widths)},P=${JSON.stringify(prefix)};
 var i=Math.floor(Date.now()/3600000)%R.length;if(i<0)i+=R.length;var r=R[i];
 ${dev ? `var q=/[?&]room=([^&]*)/.exec(location.search);if(q){var f=R.find(function(x){return x[0]===decodeURIComponent(q[1])});if(f)r=f}` : ''}

@@ -1,0 +1,395 @@
+/* The journal: the room's palette, but a page you scroll and read. */
+
+/* The room locks the body to one viewport; the journal is a document. */
+html:has(.journal),
+body:has(.journal) {
+  height: auto;
+  overflow: auto;
+  overscroll-behavior: auto;
+}
+
+.journal {
+  min-height: 100dvh;
+  padding: calc(var(--inset-t) + 1.5rem) max(1.25rem, var(--inset-r))
+    calc(var(--inset-b) + 2.5rem) max(1.25rem, var(--inset-l));
+  background:
+    radial-gradient(120% 50rem at 50% -10rem, color-mix(in oklab, var(--color-tobacco) 20%, var(--color-ink)) 0%, var(--color-ink) 70%)
+    var(--color-ink);
+  color: var(--text-primary);
+}
+
+.journal a {
+  color: inherit;
+}
+
+.journal-bar,
+.journal-foot,
+.journal-list,
+.journal-article {
+  max-width: 64rem;
+  margin-inline: auto;
+}
+
+.journal-bar {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+}
+
+.journal-mark {
+  font-size: 1.75rem;
+  font-weight: 300;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.journal-section,
+.journal-kicker {
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.journal-kicker {
+  margin: 0 0 1.25rem;
+}
+
+.journal-kicker a {
+  text-decoration: none;
+}
+
+.journal-section:hover,
+.journal-kicker a:hover {
+  color: var(--text-primary);
+}
+
+.journal-title {
+  margin: 0;
+  font-family: var(--font-display), ui-serif, Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(2.25rem, 1.6rem + 3vw, 3.75rem);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.journal-lede {
+  margin: 1.25rem 0 0;
+  font-size: clamp(1.0625rem, 1rem + 0.3vw, 1.25rem);
+  line-height: 1.6;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+.journal-meta {
+  margin: 0.875rem 0 0;
+  font-size: 0.8125rem;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+}
+
+/* Index */
+
+.journal-intro {
+  max-width: 40rem;
+  margin: clamp(3rem, 9vw, 6.5rem) auto clamp(2.5rem, 6vw, 4.5rem);
+}
+
+.journal-list {
+  display: grid;
+  gap: 3rem 2rem;
+  margin-block: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 48rem) {
+  .journal-list {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  /* The newest post leads, across the full width. */
+  .journal-intro + .journal-list > li:first-child {
+    grid-column: 1 / -1;
+  }
+
+  .journal-intro + .journal-list > li:first-child .journal-card {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    gap: 2.5rem;
+    align-items: center;
+  }
+
+  .journal-intro + .journal-list > li:first-child h2 {
+    font-size: clamp(1.75rem, 1.2rem + 1.2vw, 2.25rem);
+  }
+}
+
+.journal-card {
+  display: block;
+  text-decoration: none;
+  border-radius: 12px;
+}
+
+.journal-card h2,
+.journal-card h3 {
+  margin: 1.125rem 0 0;
+  font-family: var(--font-display), ui-serif, Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  font-size: clamp(1.375rem, 1.2rem + 0.5vw, 1.625rem);
+  line-height: 1.22;
+  text-wrap: balance;
+  text-decoration: underline 1px transparent;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--duration-control) var(--ease-quiet);
+}
+
+.journal-card:hover h2,
+.journal-card:hover h3 {
+  text-decoration-color: var(--hairline-strong);
+}
+
+.journal-card-text > p:not(.journal-meta) {
+  margin: 0.625rem 0 0;
+  line-height: 1.6;
+  color: var(--text-secondary);
+}
+
+.journal-picture {
+  position: relative;
+  aspect-ratio: 3 / 2;
+  overflow: hidden;
+  border-radius: 10px;
+  background-color: var(--color-charcoal);
+  background-size: cover;
+  background-position: center;
+}
+
+.journal-picture img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 1.2s var(--ease-quiet);
+}
+
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .journal-card:hover .journal-picture img {
+    transform: scale(1.02);
+  }
+}
+
+/* Post */
+
+.journal-article-head {
+  max-width: 40rem;
+  margin: clamp(2.5rem, 8vw, 5.5rem) auto clamp(2rem, 5vw, 3rem);
+}
+
+.journal-hero {
+  aspect-ratio: 16 / 9;
+  margin-bottom: clamp(2.5rem, 6vw, 4rem);
+  border-radius: 14px;
+}
+
+.journal-prose {
+  max-width: 40rem;
+  margin-inline: auto;
+  font-size: clamp(1.0625rem, 1rem + 0.25vw, 1.1875rem);
+  line-height: 1.75;
+  color: var(--text-secondary);
+  text-wrap: pretty;
+}
+
+.journal-prose p {
+  margin: 0 0 1.3em;
+}
+
+.journal-prose h2,
+.journal-prose h3 {
+  margin: 2.2em 0 0.7em;
+  font-family: var(--font-display), ui-serif, Georgia, 'Times New Roman', serif;
+  font-weight: 400;
+  line-height: 1.2;
+  color: var(--text-primary);
+  text-wrap: balance;
+}
+
+.journal-prose h2 {
+  font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.9375rem);
+}
+
+.journal-prose h3 {
+  font-size: 1.3125rem;
+}
+
+.journal-prose strong {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.journal-prose a {
+  color: var(--text-primary);
+  text-decoration-color: var(--hairline-strong);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+}
+
+.journal-prose a:hover {
+  text-decoration-color: var(--color-cream);
+}
+
+.journal-prose ul,
+.journal-prose ol {
+  margin: 0 0 1.3em;
+  padding-left: 1.25em;
+}
+
+.journal-prose li {
+  margin: 0.55em 0;
+  padding-left: 0.25em;
+}
+
+.journal-prose li::marker {
+  color: var(--color-taupe);
+}
+
+/* The "try this" aside: the one thing to take away. */
+.journal-try {
+  margin: 2.25em 0;
+  padding: 1.25rem 1.5rem;
+  border-left: 2px solid var(--color-sand);
+  border-radius: 0 12px 12px 0;
+  background: color-mix(in oklab, var(--color-cream) 6%, transparent);
+  color: var(--text-primary);
+}
+
+.journal-try p:last-child {
+  margin-bottom: 0;
+}
+
+.journal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 40rem;
+  margin: 3.5rem auto 0;
+  padding-top: 2rem;
+  border-top: 1px solid color-mix(in oklab, var(--color-cream) 14%, transparent);
+}
+
+.journal-actions-prompt {
+  flex-basis: 100%;
+  margin: 0 0 0.25rem;
+  color: var(--text-muted);
+}
+
+.journal-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0 1.125rem;
+  border: 1px solid var(--hairline);
+  border-radius: 999px;
+  background: color-mix(in oklab, var(--color-cream) 4%, transparent);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition:
+    background-color var(--duration-control) var(--ease-quiet),
+    color var(--duration-control) var(--ease-quiet);
+}
+
+.journal-pill:hover {
+  background: color-mix(in oklab, var(--color-cream) 11%, transparent);
+}
+
+.journal-pill[aria-pressed='true'] {
+  border-color: transparent;
+  background: var(--color-stone);
+  color: var(--color-ink);
+}
+
+.journal-pill-count {
+  padding-left: 0.5rem;
+  border-left: 1px solid currentColor;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.8;
+}
+
+.journal-note {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.journal-invite {
+  max-width: 40rem;
+  margin: 4.5rem auto 0;
+  padding: clamp(2rem, 6vw, 3rem) clamp(1.5rem, 5vw, 3rem);
+  border: 1px solid color-mix(in oklab, var(--color-cream) 12%, transparent);
+  border-radius: 18px;
+  background: color-mix(in oklab, var(--color-tobacco) 14%, transparent);
+  text-align: center;
+}
+
+.journal-invite p {
+  margin: 0 0 1.5rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.journal-invite .journal-invite-title {
+  margin-bottom: 0.5rem;
+  font-family: var(--font-display), ui-serif, Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.625rem, 1.3rem + 1vw, 2.125rem);
+  color: var(--text-primary);
+}
+
+.journal-invite .coquiet-cta {
+  min-height: 3rem;
+  padding: 0 1.75rem;
+  font-size: 1rem;
+  text-decoration: none;
+  color: var(--color-ink);
+}
+
+.journal-more {
+  margin-top: clamp(4rem, 10vw, 6rem);
+}
+
+.journal-more-title {
+  margin: 0 0 1.75rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.journal-foot {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: clamp(4rem, 10vw, 6rem);
+  padding-top: 1.75rem;
+  border-top: 1px solid color-mix(in oklab, var(--color-cream) 12%, transparent);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.journal-foot p {
+  margin: 0;
+}
+
+.journal-foot a {
+  text-underline-offset: 0.2em;
+}

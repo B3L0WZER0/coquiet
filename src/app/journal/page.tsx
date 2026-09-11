@@ -1,8 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
+import { ArrowUpRight } from '@/components/journal/Arrows';
+import { JournalInvite } from '@/components/journal/JournalInvite';
 import { RoomPicture } from '@/components/journal/RoomPicture';
-import { getPosts } from '@/lib/journal/posts';
+import { Unbroken } from '@/components/journal/Unbroken';
+import { getPosts, type Post } from '@/lib/journal/posts';
 import { SITE_URL } from '@/lib/site';
 
 const TITLE = 'Journal · Coquiet';
@@ -17,15 +20,28 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
 };
 
+function Kicker({ post }: { post: Post }) {
+  return (
+    <p className="journal-kicker">
+      {post.category} · {post.minutes} min read
+    </p>
+  );
+}
+
 export default function JournalIndex() {
-  const posts = getPosts();
+  const [lead, ...rest] = getPosts();
+  // Pairs fill the grid; an odd one out gets a line of its own beneath it.
+  const paired = rest.length - (rest.length % 2);
+  const grid = rest.slice(0, paired);
+  const tail = rest.slice(paired);
+
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Blog',
     name: 'Coquiet Journal',
     url: `${SITE_URL}/journal/`,
     description: DESCRIPTION,
-    blogPost: posts.map((p) => ({
+    blogPost: [lead, ...rest].filter(Boolean).map((p) => ({
       '@type': 'BlogPosting',
       headline: p.title,
       url: `${SITE_URL}/journal/${p.slug}/`,
@@ -36,32 +52,66 @@ export default function JournalIndex() {
   return (
     <>
       <section className="journal-intro">
-        <h1 className="journal-title">Journal</h1>
-        <p className="journal-lede">
-          Short reads on focus, rest and the small habits that make work feel a little lighter. Best
-          with a cup of something warm.
-        </p>
+        <h1 className="journal-display">Journal</h1>
+        <p className="journal-lede">Short reads on focus, rest and the small habits that make work feel lighter.</p>
+        <p className="journal-lede-quiet">Best with a cup of something warm.</p>
       </section>
 
-      <ol className="journal-list">
-        {posts.map((post, i) => (
-          <li key={post.slug}>
-            <Link href={`/journal/${post.slug}`} className="journal-card">
-              <RoomPicture
-                roomId={post.room}
-                alt=""
-                sizes={i === 0 ? '(min-width: 48rem) 38rem, 100vw' : '(min-width: 48rem) 31rem, 100vw'}
-                priority={i === 0}
-              />
-              <div className="journal-card-text">
-                <h2>{post.title}</h2>
-                <p>{post.description}</p>
-                <p className="journal-meta">{post.minutes} min read</p>
-              </div>
+      {lead && (
+        <article className="journal-lead">
+          <Link href={`/journal/${lead.slug}/`} className="journal-lead-photo" tabIndex={-1} aria-hidden="true">
+            <RoomPicture roomId={lead.room} alt="" sizes="(min-width: 48rem) 36rem, 100vw" priority />
+          </Link>
+          <div className="journal-lead-text">
+            <Kicker post={lead} />
+            <h2 className="journal-lead-title">
+              <Link href={`/journal/${lead.slug}/`}>
+                <Unbroken text={lead.head} />
+              </Link>
+            </h2>
+            {lead.sub && <p className="journal-subtitle">{lead.sub}</p>}
+            <p className="journal-summary">{lead.summary}</p>
+            <Link href={`/journal/${lead.slug}/`} className="journal-textlink" aria-label={`Start reading: ${lead.head}`}>
+              Start reading <ArrowUpRight />
             </Link>
-          </li>
-        ))}
-      </ol>
+          </div>
+        </article>
+      )}
+
+      {rest.length > 0 && (
+        <section className="journal-explore" aria-labelledby="journal-more">
+          <h2 id="journal-more" className="journal-h2">
+            More from the journal
+          </h2>
+          <ul className="journal-grid">
+            {grid.map((p) => (
+              <li key={p.slug}>
+                <Link href={`/journal/${p.slug}/`} className="journal-card">
+                  <RoomPicture roomId={p.room} alt="" sizes="(min-width: 40rem) 31rem, 100vw" className="journal-card-photo" />
+                  <Kicker post={p} />
+                  <h3>
+                    <Unbroken text={p.head} />
+                  </h3>
+                  <p className="journal-card-summary">{p.summary}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          {tail.map((p) => (
+            <Link key={p.slug} href={`/journal/${p.slug}/`} className="journal-row">
+              <Kicker post={p} />
+              <span className="journal-row-title">
+                <span>
+                  <Unbroken text={p.head} />
+                </span>
+                <ArrowUpRight />
+              </span>
+            </Link>
+          ))}
+        </section>
+      )}
+
+      <JournalInvite />
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </>

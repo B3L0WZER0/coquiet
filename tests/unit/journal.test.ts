@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { readingMinutes, renderMarkdown } from '@/lib/journal/markdown';
+import { readingMinutes, renderMarkdown, splitTitle } from '@/lib/journal/markdown';
 import { getPosts, parsePost } from '@/lib/journal/posts';
 
 describe('journal markdown', () => {
@@ -12,10 +12,24 @@ describe('journal markdown', () => {
     expect(html).toContain('<ol><li>first</li><li>second</li></ol>');
   });
 
-  it('turns a quote into the "try this" aside', () => {
+  it('turns a quote into the "try this" box, its bold lead into the label', () => {
     expect(renderMarkdown('> **Try this:** one line.')).toBe(
-      '<aside class="journal-try"><p><strong>Try this:</strong> one line.</p></aside>',
+      '<aside class="journal-try"><p class="journal-try-label">Try this</p><p>one line.</p></aside>',
     );
+  });
+
+  it('turns >> into a pull quote', () => {
+    expect(renderMarkdown('>> The light is nice.')).toBe(
+      '<blockquote class="journal-pull"><p>The light is nice.</p></blockquote>',
+    );
+  });
+
+  it('splits a title at its colon', () => {
+    expect(splitTitle('The one-line morning: a gentle way')).toEqual({
+      head: 'The one-line morning',
+      sub: 'A gentle way.',
+    });
+    expect(splitTitle('How to rest')).toEqual({ head: 'How to rest', sub: null });
   });
 
   it('prefixes internal links with the base path and opens external ones apart', () => {
@@ -59,7 +73,8 @@ describe('journal posts', () => {
   });
 
   it('refuses a post whose room does not exist', () => {
-    const src = '---\ntitle: T\ndescription: D\ndate: 2026-01-01\nroom: nowhere\nalt: A\n---\nBody';
+    const src =
+      '---\ntitle: T\ndescription: D\nsummary: S\ncategory: C\ndate: 2026-01-01\nroom: nowhere\nalt: A\n---\nBody';
     expect(() => parsePost('01-x.md', src)).toThrow(/no room/);
   });
 });

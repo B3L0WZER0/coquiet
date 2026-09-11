@@ -3,6 +3,8 @@ title: The one-line morning: a gentle way to build a routine
 description: Struggling to stick to a morning routine? Start with a coffee and one handwritten line. Here's why something this small works, and how to let it grow.
 date: 2026-09-11
 room: coffee-lake-view
+category: Rituals
+summary: A cup of coffee, a pen, and one sentence — a routine small enough to keep.
 alt: A stone café with tall arched windows, looking out over a mountain lake in soft morning light.
 keywords: morning routine, how to start a morning routine, journaling, small habits, handwriting
 ---
@@ -15,7 +17,9 @@ If that has happened to you, the problem probably wasn't discipline. It was size
 
 Here it is. Make yourself a coffee — or tea, or warm water with lemon; the drink is up to you. While it's still hot, sit down with a notebook and a pen, and write one line by hand.
 
-That's it. One line. Not a page, not three pages. A sentence about yesterday, a thought about today, something you noticed on the way to the kettle. *Slept badly, but the light is nice.* *Want to finish the draft before lunch.* *The cat was being ridiculous again.*
+That's it. One line. Not a page, not three pages. A sentence about yesterday, a thought about today, something you noticed on the way to the kettle. *Want to finish the draft before lunch.* *The cat was being ridiculous again.* Or simply:
+
+>> Slept badly, but the light is nice.
 
 Then close the notebook and get on with your day.
 

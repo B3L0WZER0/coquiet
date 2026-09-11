@@ -2,9 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 
+import { ArrowLeft } from '@/components/journal/Arrows';
+import { JournalInvite } from '@/components/journal/JournalInvite';
 import { PostActions } from '@/components/journal/PostActions';
 import { RoomPicture } from '@/components/journal/RoomPicture';
-import { assetPath } from '@/lib/asset-path';
+import { Unbroken } from '@/components/journal/Unbroken';
 import { cardPath } from '@/lib/journal/config';
 import { formatDate, getPost, getPosts } from '@/lib/journal/posts';
 import { SITE_URL } from '@/lib/site';
@@ -59,6 +61,7 @@ export default async function PostPage({ params }: Props) {
     image: `${SITE_URL}${cardPath(post.slug)}`,
     url: `${SITE_URL}/journal/${post.slug}/`,
     mainEntityOfPage: `${SITE_URL}/journal/${post.slug}/`,
+    articleSection: post.category,
     keywords: post.keywords.join(', '),
     author: { '@type': 'Organization', name: 'Coquiet', url: SITE_URL },
     publisher: { '@type': 'Organization', name: 'Coquiet', url: SITE_URL },
@@ -67,12 +70,20 @@ export default async function PostPage({ params }: Props) {
   return (
     <article className="journal-article">
       <header className="journal-article-head">
+        <Link href="/journal/" className="journal-back">
+          <ArrowLeft /> Journal
+        </Link>
         <p className="journal-kicker">
-          <Link href="/journal">Journal</Link>
+          {post.category} · {post.minutes} min read
         </p>
-        <h1 className="journal-title">{post.title}</h1>
-        <p className="journal-meta">
-          {post.minutes} min read · <time dateTime={post.date}>{formatDate(post.date)}</time>
+        <h1 className="journal-display journal-post-title">
+          <Unbroken text={post.head} />
+          {/* In the heading, so the page's one <h1> still carries the whole title. */}
+          {post.sub && <span className="journal-post-subtitle">{post.sub}</span>}
+        </h1>
+        <p className="journal-dek">{post.description}</p>
+        <p className="journal-date">
+          <time dateTime={post.date}>{formatDate(post.date)}</time>
         </p>
       </header>
 
@@ -88,25 +99,20 @@ export default async function PostPage({ params }: Props) {
 
       <PostActions title={post.title} />
 
-      <aside className="journal-invite" aria-label="The room">
-        <p className="journal-invite-title">The room is open.</p>
-        <p>Instrumental music, a gentle timer, and quiet company while you work.</p>
-        <a href={assetPath('/')} className="coquiet-cta">
-          Visit the room
-        </a>
-      </aside>
+      <JournalInvite variant="row" />
 
-      <nav className="journal-more" aria-label="Keep reading">
-        <h2 className="journal-more-title">Keep reading</h2>
-        <ul className="journal-list">
+      <nav className="journal-next" aria-labelledby="journal-next">
+        <h2 id="journal-next" className="journal-kicker">
+          Keep reading
+        </h2>
+        <ul>
           {more.map((p) => (
             <li key={p.slug}>
-              <Link href={`/journal/${p.slug}`} className="journal-card">
-                <RoomPicture roomId={p.room} alt="" sizes="(min-width: 48rem) 31rem, 100vw" />
-                <div className="journal-card-text">
-                  <h3>{p.title}</h3>
-                  <p className="journal-meta">{p.minutes} min read</p>
-                </div>
+              <Link href={`/journal/${p.slug}/`}>
+                <span className="journal-next-title">
+                  <Unbroken text={p.head} />
+                </span>
+                <span className="journal-kicker">{p.minutes} min read</span>
               </Link>
             </li>
           ))}

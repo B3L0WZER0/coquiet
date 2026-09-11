@@ -9,12 +9,19 @@ import path from 'node:path';
 
 import { BASE_PATH } from '@/lib/asset-path';
 import { ROOMS } from '@/lib/background';
-import { readingMinutes, renderMarkdown } from '@/lib/journal/markdown';
+import { readingMinutes, renderMarkdown, splitTitle } from '@/lib/journal/markdown';
 
 export interface Post {
   slug: string;
+  /** The full title: the page <title>, and what search results show. */
   title: string;
+  /** The title as set on the page — split at its colon. */
+  head: string;
+  sub: string | null;
   description: string;
+  /** One short line for cards. */
+  summary: string;
+  category: string;
   /** YYYY-MM-DD */
   date: string;
   /** A room id from the background manifest — the post's photograph. */
@@ -28,7 +35,7 @@ export interface Post {
 }
 
 const DIR = path.join(process.cwd(), 'content/journal');
-const REQUIRED = ['title', 'description', 'date', 'room', 'alt'] as const;
+const REQUIRED = ['title', 'description', 'summary', 'category', 'date', 'room', 'alt'] as const;
 
 export function parsePost(file: string, source: string): Post {
   const match = /^---\n([\s\S]*?)\n---\n([\s\S]*)$/.exec(source.replace(/\r\n/g, '\n'));
@@ -46,10 +53,15 @@ export function parsePost(file: string, source: string): Post {
   if (!ROOMS.some((r) => r.id === meta.room)) throw new Error(`${file}: no room "${meta.room}"`);
 
   const body = match[2];
+  const { head, sub } = splitTitle(meta.title);
   return {
     slug: file.replace(/^\d+-/, '').replace(/\.md$/, ''),
     title: meta.title,
+    head,
+    sub,
     description: meta.description,
+    summary: meta.summary,
+    category: meta.category,
     date: meta.date,
     room: meta.room,
     alt: meta.alt,

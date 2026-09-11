@@ -3,6 +3,8 @@ title: How to take a real break (in five minutes or less)
 description: Scrolling your phone isn't really a break. Here are simple, restful things to do in five minutes that leave you calmer and ready to focus again.
 date: 2026-09-11
 room: open-ocean-reading-room
+category: Rest
+summary: Restful things to do with five spare minutes that aren't your phone.
 alt: A person reading on a window seat in a bare, quiet room that looks out over a grey sea and rocky islands.
 keywords: how to take a break, work breaks, screen breaks, rest, avoid burnout
 ---

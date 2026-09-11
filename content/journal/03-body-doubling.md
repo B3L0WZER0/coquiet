@@ -3,6 +3,8 @@ title: Body doubling: why it's easier to focus with someone nearby
 description: Ever noticed you get more done in a café or a library? That's body doubling, and it works even when nobody says a word. Here's why, and how to try it.
 date: 2026-09-11
 room: cafe-windows
+category: Quiet company
+summary: Why working near others, even in silence, makes focus come easier.
 alt: A quiet café with tall windows, where one person works on a laptop and another reads a book.
 keywords: body doubling, focus with others, working in a cafe, study with me, ADHD focus
 ---

@@ -1,6 +1,7 @@
 /**
  * The small slice of Markdown the journal is written in: paragraphs, ## and ###
- * headings, lists, **bold**, *italic*, links, and `>` for the "try this" aside.
+ * headings, lists, **bold**, *italic*, links, `>` for the "try this" box (a
+ * leading **Label:** becomes its heading) and `>>` for a pull quote.
  * Posts are ours, so this favours being readable over being complete.
  */
 
@@ -30,9 +31,16 @@ export function renderMarkdown(source: string, base = ''): string {
     .split(/\n\s*\n/)
     .map((block) => {
       const lines = block.split('\n').map((l) => l.trim());
+      if (lines.every((l) => l.startsWith('>>'))) {
+        const text = lines.map((l) => l.replace(/^>>\s?/, '')).join(' ');
+        return `<blockquote class="journal-pull"><p>${inline(text, base)}</p></blockquote>`;
+      }
       if (lines.every((l) => l.startsWith('>'))) {
-        const inner = lines.map((l) => l.replace(/^>\s?/, '')).join('\n');
-        return `<aside class="journal-try">${renderMarkdown(inner, base)}</aside>`;
+        let inner = lines.map((l) => l.replace(/^>\s?/, '')).join('\n');
+        const label = /^\*\*([^*]+?):\*\*\s*/.exec(inner);
+        if (label) inner = inner.slice(label[0].length);
+        const heading = label ? `<p class="journal-try-label">${escape(label[1])}</p>` : '';
+        return `<aside class="journal-try">${heading}${renderMarkdown(inner, base)}</aside>`;
       }
       if (block.startsWith('### ')) return `<h3>${inline(block.slice(4).trim(), base)}</h3>`;
       if (block.startsWith('## ')) return `<h2>${inline(block.slice(3).trim(), base)}</h2>`;
@@ -51,4 +59,12 @@ export function renderMarkdown(source: string, base = ''): string {
 export function readingMinutes(source: string): number {
   const words = source.trim().split(/\s+/).length;
   return Math.max(1, Math.round(words / 220));
+}
+
+/** "The one-line morning: a gentle way…" → a title and its subtitle. */
+export function splitTitle(title: string): { head: string; sub: string | null } {
+  const at = title.indexOf(': ');
+  if (at < 0) return { head: title, sub: null };
+  const rest = title.slice(at + 2);
+  return { head: title.slice(0, at), sub: `${rest[0].toUpperCase()}${rest.slice(1)}.` };
 }

@@ -3,6 +3,8 @@ title: A small ritual for ending the workday
 description: If work follows you into the evening, a simple shutdown ritual can help you close the day and actually rest. Here's a ten-minute version to try tonight.
 date: 2026-09-11
 room: mist-lake-pavilion
+category: Rituals
+summary: Ten minutes to close the day, so the evening can be an evening.
 alt: A person writing at a small desk in a cave-like room that opens onto a misty lake.
 keywords: shutdown ritual, end of workday routine, switching off after work, work-life balance, evening routine
 ---

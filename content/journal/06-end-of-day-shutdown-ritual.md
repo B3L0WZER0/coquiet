@@ -37,6 +37,6 @@ And if a work thought pops up later, you can tell it, kindly: *it's on the list.
 
 ## The other end of the morning
 
-If you've read about [the one-line morning](/journal/one-line-morning-routine), you might notice the two fit together. The shutdown ritual picks tomorrow's first task; the morning line starts the day with a clear head. Bookends, really — a quiet way in and a quiet way out.
+If you've read about [the one-line morning](/journal/one-line-morning-routine/), you might notice the two fit together. The shutdown ritual picks tomorrow's first task; the morning line starts the day with a clear head. Bookends, really — a quiet way in and a quiet way out.
 
 And tomorrow, if you'd like some company for that first task, [the room](/) will be open.

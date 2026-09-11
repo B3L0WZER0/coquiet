@@ -14,7 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const posts = getPosts();
   return [
     room,
-    { url: `${SITE_URL}/journal`, lastModified: posts[0]?.date, changeFrequency: 'weekly', priority: 0.7 },
-    ...posts.map((p) => ({ url: `${SITE_URL}/journal/${p.slug}`, lastModified: p.date, priority: 0.6 })),
+    { url: `${SITE_URL}/journal/`, lastModified: posts[0]?.date, changeFrequency: 'weekly', priority: 0.7 },
+    ...posts.map((p) => ({ url: `${SITE_URL}/journal/${p.slug}/`, lastModified: p.date, priority: 0.6 })),
   ];
 }

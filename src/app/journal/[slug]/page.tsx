@@ -20,7 +20,7 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = getPost((await params).slug);
   if (!post) return {};
-  const url = `/journal/${post.slug}`;
+  const url = `/journal/${post.slug}/`;
   const image = { url: cardPath(post.slug), width: 1200, height: 630, alt: post.alt };
   return {
     title: `${post.title} · Coquiet`,
@@ -57,8 +57,8 @@ export default async function PostPage({ params }: Props) {
     datePublished: post.date,
     dateModified: post.date,
     image: `${SITE_URL}${cardPath(post.slug)}`,
-    url: `${SITE_URL}/journal/${post.slug}`,
-    mainEntityOfPage: `${SITE_URL}/journal/${post.slug}`,
+    url: `${SITE_URL}/journal/${post.slug}/`,
+    mainEntityOfPage: `${SITE_URL}/journal/${post.slug}/`,
     keywords: post.keywords.join(', '),
     author: { '@type': 'Organization', name: 'Coquiet', url: SITE_URL },
     publisher: { '@type': 'Organization', name: 'Coquiet', url: SITE_URL },

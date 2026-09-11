@@ -52,7 +52,7 @@ describe('journal posts', () => {
   it('links only to posts that exist', () => {
     const slugs = new Set(posts.map((p) => p.slug));
     for (const p of posts) {
-      for (const [, slug] of p.body.matchAll(/\]\(\/journal\/([^)]+)\)/g)) {
+      for (const [, slug] of p.body.matchAll(/\]\(\/journal\/([^)/]+)\/?\)/g)) {
         expect(slugs.has(slug), `${p.slug} → ${slug}`).toBe(true);
       }
     }

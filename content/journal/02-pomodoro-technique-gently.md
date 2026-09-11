@@ -40,7 +40,7 @@ Here's where we'd gently push back on the strictest version of the rules.
 
 **An interrupted round isn't a failed round.** The doorbell rings. Someone needs you. That's life. Come back, start again, no penalty.
 
-**The break should really be a break.** Scrolling your phone for five minutes rarely feels restful — it's more input for a tired mind. Stand up, look out of a window, refill your water, stretch. We wrote more about [taking a real break](/journal/how-to-take-a-real-break).
+**The break should really be a break.** Scrolling your phone for five minutes rarely feels restful — it's more input for a tired mind. Stand up, look out of a window, refill your water, stretch. We wrote more about [taking a real break](/journal/how-to-take-a-real-break/).
 
 **Don't count for the sake of counting.** It's tempting to turn pomodoros into a score. But four calm, focused rounds is a lovely amount of work for a day. You don't need to beat yesterday.
 

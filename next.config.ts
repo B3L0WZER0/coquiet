@@ -24,6 +24,9 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   // The floating dev badge sits on top of the room's bottom-left presence line.
   devIndicators: false,
+  // Pages only answers /journal/ with a journal/index.html; without this the
+  // export writes journal.html and the slashed address is a 404.
+  trailingSlash: true,
   ...(staticExport
     ? {
         output: 'export' as const,

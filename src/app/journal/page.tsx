@@ -12,8 +12,8 @@ const DESCRIPTION =
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: '/journal' },
-  openGraph: { type: 'website', siteName: 'Coquiet', title: TITLE, description: DESCRIPTION, url: '/journal' },
+  alternates: { canonical: '/journal/' },
+  openGraph: { type: 'website', siteName: 'Coquiet', title: TITLE, description: DESCRIPTION, url: '/journal/' },
   twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION },
 };
 
@@ -23,12 +23,12 @@ export default function JournalIndex() {
     '@context': 'https://schema.org',
     '@type': 'Blog',
     name: 'Coquiet Journal',
-    url: `${SITE_URL}/journal`,
+    url: `${SITE_URL}/journal/`,
     description: DESCRIPTION,
     blogPost: posts.map((p) => ({
       '@type': 'BlogPosting',
       headline: p.title,
-      url: `${SITE_URL}/journal/${p.slug}`,
+      url: `${SITE_URL}/journal/${p.slug}/`,
       datePublished: p.date,
     })),
   };

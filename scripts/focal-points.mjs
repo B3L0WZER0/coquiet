@@ -20,6 +20,9 @@ export const FOCAL_X = {
   'alpine-meadow-workspace': 72,
   'architecture-canyon': 73,
   'architecture-fireplace-lake': 65,
+  // The waterfall over the rocks. The one figure sits against the far-left
+  // edge, a speck in the copy's band, so the view carries it instead.
+  'autumn-ravine-studio': 52,
   'cafe-concrete-hall': 50,
   'cafe-garden-door': 68,
   'cafe-windows': 32,
@@ -54,6 +57,8 @@ export const FOCAL_X = {
   // built around. Centred on the view instead; in portrait they fall outside.
   'forest-waterfall-salon': 18,
   'garden-pool': 66,
+  // The reader by the fire, doubled in the pool below.
+  'granite-pool-reading-room': 45,
   'library-in-jungle': 80,
   // The figure sits almost against the left edge, as in forest-waterfall-salon,
   // but here the slice can hold both: just wide enough to keep her and the water.
@@ -66,6 +71,10 @@ export const FOCAL_X = {
   // the sea only appears as a sliver beside him; it keeps the landscape view.
   'mediterranean-terrace-cafe': 30,
   'mist-lake-pavilion': 30,
+  // The woman at the lamp-lit desk at the back, rather than the misty lake.
+  'misty-lake-work-alcove': 85,
+  // The reader at the table under the mountain window.
+  'mountain-boulder-library': 65,
   'mountain-cavern': 55,
   // Just wide enough to keep the figure at the desk on the left edge without
   // giving up the fjord — he still reads as a person at this size.
@@ -84,6 +93,8 @@ export const FOCAL_X = {
   // The desk and its lamp. The arched window is the better photograph, but it
   // is the only frame here with anyone in it.
   'snow-valley-monastery-study': 40,
+  // The woman at the table, with the quarry wall and the autumn tree.
+  'stone-courtyard-cafe': 35,
   'valley-vault': 34,
   // Off the desk a little, so the slice carries some of the lake it looks at.
   'work-lake-view': 26,

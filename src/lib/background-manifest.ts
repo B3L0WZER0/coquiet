@@ -51,6 +51,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAwBQCdASogABIAPuVio02pJaMiMAwBIByJZQC3uCPSOnHSHXBHYe5LjMyit23I7wCTIAD+s3bnemTIgkIcWw1+FjrsZQtpZcj+5BiG/WK0DI6wJ5oXjw33UVziSv6ypCJbk9wcuM01omSJLssneSgq3DewNJNIhAA=",
   },
   {
+    id: "autumn-ravine-studio",
+    widths: [640, 1024, 1600],
+    focalX: 52,
+    focalY: 50,
+    chrome: "#adadac",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQBACdASogABIAPu1kqU2ppaOiMAgBMB2JZQCo9Bf6q5OFx/HRikWd0s3dU/+OQAD+q4S7Xr6jnK/BlBE4jWjYtMaHiCecNClb50g25MzjQVdqLBrvH8IMtvxQlKN9K/rA7uZYgWmAAA==",
+  },
+  {
     id: "cafe-concrete-hall",
     widths: [640, 1024, 1600],
     focalX: 50,
@@ -235,6 +243,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADQBACdASogABIAPu1mq04ppaQiMAgBMB2JZQC2yCFoUFbAMkzwnCJ0WQSkemlasAD+7ov2KavS/hRIE2QlTnj/CN1NADUWdGs0KtMvxNPj3l2K93YqUdFHqOSfYPzr7+AqZL8dp1PoFZzy/rJpVl7gAAA=",
   },
   {
+    id: "granite-pool-reading-room",
+    widths: [640, 1024, 1600],
+    focalX: 45,
+    focalY: 50,
+    chrome: "#625f5f",
+    lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAABwBQCdASogABIAPu1kqk2ppaQiMBgMATAdiWcAtsgN0fj9B76yQ0nWkTbvAKZ0bx3x6SIAAP655f02lVSRih4x340xDHArpht6av2a72F/hBqR1iPfYRLGQ9O+IBUaGw0LV7mAAAA=",
+  },
+  {
     id: "library-in-jungle",
     widths: [640, 1024, 1600],
     focalX: 80,
@@ -273,6 +289,22 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#5a4d3f",
     lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAQBQCdASogABIAPu1oqk4ppiQiMAgBMB2JZwDA3B6V4Lipjay5jbYfhlUR5m001ZegAP7r/yN5IFSEiIhzF7duojrjY+qkT6AsdD2xRx+Crlcb7mqnMLsw9wyaIH/93wx36aQAAAA=",
+  },
+  {
+    id: "misty-lake-work-alcove",
+    widths: [640, 1024, 1600],
+    focalX: 85,
+    focalY: 50,
+    chrome: "#615246",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABwBQCdASogABIAPu1qq08ppiOiMBgIATAdiWcAvOAQMXgODI2BJk5VITrUjm0rBQfdW2VAAPxdrxXyMsJR0zoG+DPvqw99rLR7jTI/+f+VE5VY+vHvrnr5knqcruzp0Kbhwrhr5MhYAAAA",
+  },
+  {
+    id: "mountain-boulder-library",
+    widths: [640, 1024, 1600],
+    focalX: 65,
+    focalY: 50,
+    chrome: "#676362",
+    lqip: "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAABwBACdASogABIAPuVeo02pJSMiMAwBIByJZwDE2CFUvjeJWXaZMb+tivMOAAD+y8mtehH2TLlmTTtOnfalOyfIx3H2CiwWAJCij0fLVeDE737L+c1WlPcIs319cuHEwAA=",
   },
   {
     id: "mountain-cavern",
@@ -345,6 +377,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#3f3833",
     lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQBACdASogABIAPt1apU2opSOiN/qoARAbiWcAxkAej5NAayXzI87OTHFmGClGAAD+7yZ9S/OTMyUwJiBH69s342y706ETq61jkChcht3kTz1bPQVbND9x8TK2iCGiCGiA7CEC4VGegAAA",
+  },
+  {
+    id: "stone-courtyard-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 35,
+    focalY: 50,
+    chrome: "#6c645e",
+    lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBQCdASogABIAPuVipE2pJaOiMAwBIByJZwDC+CPaZEwH0A4mZy4bwN+l44nyb14AAP4H2V0g5u7Qm4qZ6fW6SBled3MF/mLVePiRouCP1cpyesU/ahbcTnZAQiWSV0YFMAAA",
   },
   {
     id: "valley-vault",

@@ -311,19 +311,6 @@ body:has(.journal) {
   background: color-mix(in oklab, var(--color-cream) 11%, transparent);
 }
 
-.journal-pill[aria-pressed='true'] {
-  border-color: transparent;
-  background: var(--color-stone);
-  color: var(--color-ink);
-}
-
-.journal-pill-count {
-  padding-left: 0.5rem;
-  border-left: 1px solid currentColor;
-  font-variant-numeric: tabular-nums;
-  opacity: 0.8;
-}
-
 .journal-note {
   margin: 0;
   font-size: 0.875rem;

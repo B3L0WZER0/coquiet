@@ -86,7 +86,7 @@ export default async function PostPage({ params }: Props) {
 
       <div className="journal-prose" dangerouslySetInnerHTML={{ __html: post.html }} />
 
-      <PostActions slug={post.slug} title={post.title} />
+      <PostActions title={post.title} />
 
       <aside className="journal-invite" aria-label="The room">
         <p className="journal-invite-title">The room is open.</p>

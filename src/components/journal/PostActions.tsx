@@ -2,58 +2,12 @@
 
 import { useEffect, useRef, useState } from 'react';
 
-import { VOTES_API } from '@/lib/journal/config';
-
-interface Votes {
-  count: number;
-  voted: boolean;
-}
-
-function isVotes(value: unknown): value is Votes {
-  const v = value as Votes | null;
-  return typeof v?.count === 'number' && typeof v?.voted === 'boolean';
-}
-
-/** "This helped" and "Share" at the foot of a post. */
-export function PostActions({ slug, title }: { slug: string; title: string }) {
-  // Null until the votes service has answered. Without it (local dev, a
-  // github.io build) the button never appears rather than doing nothing.
-  const [votes, setVotes] = useState<Votes | null>(null);
-  const [busy, setBusy] = useState(false);
+/** "Share" at the foot of a post. */
+export function PostActions({ title }: { title: string }) {
   const [note, setNote] = useState('');
   const noteTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const url = `${VOTES_API}/${slug}`;
 
-  useEffect(() => {
-    let live = true;
-    fetch(url, { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((d: unknown) => {
-        if (live && isVotes(d)) setVotes(d);
-      })
-      .catch(() => {});
-    return () => {
-      live = false;
-      clearTimeout(noteTimer.current);
-    };
-  }, [url]);
-
-  async function toggleVote() {
-    if (!votes || busy) return;
-    const before = votes;
-    const voted = !before.voted;
-    setVotes({ count: before.count + (voted ? 1 : -1), voted });
-    setBusy(true);
-    try {
-      const r = await fetch(url, { method: voted ? 'POST' : 'DELETE' });
-      const d: unknown = r.ok ? await r.json() : null;
-      setVotes(isVotes(d) ? d : before);
-    } catch {
-      setVotes(before);
-    } finally {
-      setBusy(false);
-    }
-  }
+  useEffect(() => () => clearTimeout(noteTimer.current), []);
 
   function say(text: string) {
     setNote(text);
@@ -94,26 +48,6 @@ export function PostActions({ slug, title }: { slug: string; title: string }) {
         </svg>
         Share
       </button>
-      {votes && (
-        <button
-          type="button"
-          className="journal-pill"
-          aria-pressed={votes.voted}
-          onClick={toggleVote}
-        >
-          <svg aria-hidden="true" width="16" height="16" viewBox="0 0 16 16">
-            <path
-              d="M8 13.5S2.5 10.2 2.5 6.2A2.7 2.7 0 0 1 8 4.8a2.7 2.7 0 0 1 5.5 1.4c0 4-5.5 7.3-5.5 7.3Z"
-              fill={votes.voted ? 'currentColor' : 'none'}
-              stroke="currentColor"
-              strokeWidth="1.3"
-              strokeLinejoin="round"
-            />
-          </svg>
-          {votes.voted ? 'Glad it helped' : 'This helped'}
-          {votes.count > 0 && <span className="journal-pill-count">{votes.count}</span>}
-        </button>
-      )}
       <p className="journal-note" aria-live="polite">
         {note}
       </p>

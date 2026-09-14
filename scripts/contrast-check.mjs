@@ -431,6 +431,21 @@ async function auditRoom(roomId) {
   return rows;
 }
 
+/**
+ * Failures shipped on purpose. Each is pinned to one room, one text and a
+ * floor: if the ratio drops below the floor it fails again, so an exception
+ * can never quietly cover something worse than what was agreed.
+ */
+const ACCEPTED = [
+  // Sunlit floor behind the desktop version chip; misses by a hair, and the
+  // chip's legibility shadow (which this audit ignores) covers the gap.
+  // Diego shipped it anyway, 2026-09-14.
+  { room: 'arched-tree-cafe', text: 'Version', floor: 4.3 },
+];
+
+const accepted = (r) =>
+  ACCEPTED.some((a) => r.state.startsWith(`${a.room} · `) && r.text === a.text && r.ratio >= a.floor);
+
 console.log(
   `\nAuditing ${targets.length} of ${entries.size} rooms` +
     (skipped > 0 ? `, ${skipped} unchanged since they last passed` : '') +
@@ -443,7 +458,7 @@ await Promise.all(
   Array.from({ length: Math.min(JOBS, targets.length) }, async () => {
     while (next < targets.length) {
       const id = targets[next++];
-      const rows = await auditRoom(id);
+      const rows = (await auditRoom(id)).map((r) => (!r.pass && accepted(r) ? { ...r, pass: true, accepted: true } : r));
       results.push(...rows);
       const failed = rows.filter((r) => !r.pass).length;
       if (failed === 0) passing.push(id);

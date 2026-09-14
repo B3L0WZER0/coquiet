@@ -18,6 +18,8 @@ export const FOCAL_X = {
   // Framed on the desk the figure fell behind the headline and the barn read
   // as empty, so this takes the meadow and the cloud on the slope instead.
   'alpine-meadow-workspace': 72,
+  // The reader under the great arch, with the mountains behind him.
+  'arched-tree-cafe': 55,
   'architecture-canyon': 73,
   'architecture-fireplace-lake': 65,
   // The waterfall over the rocks. The one figure sits against the far-left

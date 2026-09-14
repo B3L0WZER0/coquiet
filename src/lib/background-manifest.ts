@@ -35,6 +35,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBQCdASogABIAPu1oqk4ppiQiMAgBMB2JZQC7MxgC/GpB7GBSn2cq/5cJX2K8anUXXAD+nsuXOLJeW0hGHamE9Z80WLHNklvlhID8v+7vSjgDsqvC0bRLGGQpOQMnIi9aHUZeD0AAAA==",
   },
   {
+    id: "arched-tree-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 55,
+    focalY: 50,
+    chrome: "#a8a29e",
+    lqip: "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAQBQCdASogABIAPu1iqE2ppaOiMAgBMB2JYwCsABjNYsoGo2gJIgH8/gENfkRbbEqAAPxgzsKegFaclJ9LdRj8C/VgA09+ynK2qJ4wBf4OxoakNMpp5G8E5/DxTKeTuyHfAkMC5gR652qYwyWMhoM8eHL6udQA",
+  },
+  {
     id: "architecture-canyon",
     widths: [640, 1024, 1600],
     focalX: 73,

@@ -21,7 +21,7 @@ export default function JournalLayout({ children }: { children: React.ReactNode 
     <div className="journal">
       <header className="journal-bar">
         <div className="journal-brand">
-          <a href={room} className="journal-mark" aria-label="Coquiet — the room">
+          <a href={room} className="journal-mark" aria-label="Coquiet — the focus room">
             coquiet
           </a>
           <span className="journal-divider" aria-hidden="true" />
@@ -31,7 +31,7 @@ export default function JournalLayout({ children }: { children: React.ReactNode 
           </Link>
         </div>
         <a href={room} className="journal-pill">
-          Visit the room <ArrowUpRight />
+          Focus room <ArrowUpRight />
         </a>
       </header>
 

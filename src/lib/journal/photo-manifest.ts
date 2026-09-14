@@ -65,5 +65,14 @@ export const JOURNAL_PHOTOS: readonly JournalPhotoEntry[] = [
       2048
     ],
     "lqip": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADQAwCdASogAA0APu1mq04ppaQiMAgBMB2JQBOgAtX2gX4MQyVNwsAAx/DzcezKQ/6KU8shkEuIjGExb+npM9QObU/AzXLnzohS+rCHJvPoJ303cUaf8RQA"
+  },
+  {
+    "id": "when-focus-wont-come",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "lqip": "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAADwBACdASogABUAPuFcqE2opSQiMAwBEBwJZQC7ABhwP70k02P5u6NZeiknXNANMYAA/uv4Z3JLQ8ZOKNX56cq6JWatFo547hVRnUWVWRd+fexibYiAlJLOrvyDz1+5xiQw3hhEBPsogBJ8QS2phrD7HJTc/HqOlEA2AAAA"
   }
 ];

@@ -37,11 +37,15 @@ export const FOCAL_X = {
   'circular-window-studio': 65,
   'cliff-cave': 50,
   'cliffside-cafe-focus': 68,
+  // The man at the desk against the window onto the cloud in the valley.
+  'cloudline-walnut-study': 60,
   'coastal-grotto-writer': 60,
   'coastal-observatory': 74,
   'coffee-lake-mountain-view': 45,
   'coffee-lake-view': 61,
   'concrete-cave': 63,
+  // The two readers under the run of arches.
+  'courtyard-arch-cafe': 58,
   'desert-arches': 42,
   // Two other figures are further out; the reader in the chair sits next to the
   // courtyard tree, so framing them keeps the lit doorway in the slice too.
@@ -76,6 +80,8 @@ export const FOCAL_X = {
   // The reader at the table under the mountain window.
   'mountain-boulder-library': 65,
   'mountain-cavern': 55,
+  // The man at the window table and the ranges, rather than the library balcony.
+  'mountain-library-cafe': 85,
   // Just wide enough to keep the figure at the desk on the left edge without
   // giving up the fjord — he still reads as a person at this size.
   'nordic-fjord-study': 12,

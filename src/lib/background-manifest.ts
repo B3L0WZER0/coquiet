@@ -147,6 +147,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASogABIAPuFWpU2opKOiN/qoARAcCWUAvzgh3Kt1+V91C1lIFLSqzoAA/u6AhfAK+NseSPf7k/S8qKHAo/Etku2Ycwig7qQXYo4C7lVpp/RDDQaamL4DY0nwn97igAAA",
   },
   {
+    id: "cloudline-walnut-study",
+    widths: [640, 1024, 1600],
+    focalX: 60,
+    focalY: 50,
+    chrome: "#656264",
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAQBQCdASogABIAPu1kqE2ppaOiMAgBMB2JZQCnFCHSQYSVbY7KARKdV1boMc4KNhXAAP658qi1vG5IJ5OlugH/mqe2t+6nNnuc8fJxCsHmWjz5ILb2V+X8dkU6LN2t6SzAaJl8WV/NN2mDCSTAAA==",
+  },
+  {
     id: "coastal-grotto-writer",
     widths: [640, 1024, 1600],
     focalX: 60,
@@ -185,6 +193,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#573318",
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABQBACdASobABIAPu1wslKppiSiqAgBMB2JZQCxHy/BqT4Pux/00/dbZdeAAP7xfSedMP0db3UfxMIdLNNph9Zn4GrqSZP4LrBxJqRKbop6CS40g5217Acx12xjEgLhDTkbb3aW9Czly81O0sgwWcAA",
+  },
+  {
+    id: "courtyard-arch-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 58,
+    focalY: 50,
+    chrome: "#97897c",
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACwBACdASogABIAPu1mpU2ppaMiMBgMATAdiWcArhwJK6GIG1/9ReY33FoLPw1oAM1T94kGbWdugwcSTeJ9bK5z1lDzvlXWgQ3JajEpmWrTJO9ok/tpeowbYIdny6AL8qSTPDnHmZ329qiGygAAAA==",
   },
   {
     id: "desert-arches",
@@ -313,6 +329,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#655a54",
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADQBACdASogABIAPu1ip02ppaMiMBgMATAdiWcAyNQNE3O6IRgKqJQihMwwhuLk8AD+2VkZEEU5siKmNAbEQE6obJKoPqAelcic6AQtOJUehPdHP6MbZGHjJoW/tgVDb6gAAAAA",
+  },
+  {
+    id: "mountain-library-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 85,
+    focalY: 50,
+    chrome: "#afa6a1",
+    lqip: "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADwBACdASogABIAPt1WpE2opKOiN/qoARAbiWMAp0eOw0Ne4BufAqhLWT2hAaLxFAAA/ujMKJq+Obk4NGPmqBMas4Ko11jXJ+Tpgf8NvqjuqQCBeD9yic45+HQ+CdmeGAQpM8PG355nOz0YAAA=",
   },
   {
     id: "nordic-fjord-study",

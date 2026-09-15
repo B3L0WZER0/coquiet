@@ -7,6 +7,7 @@ import {
   RELEASES,
   VERSION,
   featureRequestDraft,
+  noteText,
 } from '@/lib/release';
 
 /** What the visitor's mail app will actually read back out of the link. */
@@ -23,7 +24,11 @@ describe('the panel contents', () => {
     for (const release of RELEASES) {
       expect(release.notes.length).toBeGreaterThan(0);
       expect(release.date).not.toBe('');
-      for (const note of release.notes) expect(note.trim()).not.toBe('');
+      for (const note of release.notes) {
+        expect(noteText(note).trim()).not.toBe('');
+        // A linked phrase that isn't in its note would silently render unlinked.
+        if (typeof note !== 'string' && note.link) expect(note.text).toContain(note.link.phrase);
+      }
     }
   });
 

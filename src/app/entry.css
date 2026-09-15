@@ -701,3 +701,18 @@
     bottom: calc(var(--inset-b) + 7.65rem);
   }
 }
+
+/* A linked phrase inside a release note: the note's own colour, underlined. */
+.version-note-link {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--hairline-strong);
+  transition: text-decoration-color var(--duration-control) var(--ease-quiet);
+}
+@media (hover: hover) {
+  .version-note-link:hover {
+    text-decoration-color: currentColor;
+  }
+}

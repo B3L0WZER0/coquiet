@@ -3,7 +3,15 @@
 import { useState } from 'react';
 
 import { Popover } from '@/components/ui/Popover';
-import { COMING_SOON, featureRequestDraft, RELEASES, VERSION } from '@/lib/release';
+import { assetPath } from '@/lib/asset-path';
+import {
+  COMING_SOON,
+  featureRequestDraft,
+  noteText,
+  RELEASES,
+  VERSION,
+  type ReleaseNote,
+} from '@/lib/release';
 
 /** The version line in the entry screen's corner: press it for what's new. */
 export function VersionBadge() {
@@ -36,6 +44,24 @@ function Panel() {
   return writing ? <RequestForm onBack={() => setWriting(false)} /> : <Notes onWrite={() => setWriting(true)} />;
 }
 
+/** A note as written, with its one linked phrase — if it has one — made a real
+ *  link. A full page load, like every other way into the journal. */
+function NoteText({ note }: { note: ReleaseNote }) {
+  const text = noteText(note);
+  const link = typeof note === 'string' ? undefined : note.link;
+  const at = link ? text.indexOf(link.phrase) : -1;
+  if (!link || at < 0) return <>{text}</>;
+  return (
+    <>
+      {text.slice(0, at)}
+      <a href={assetPath(link.path)} className="version-note-link">
+        {link.phrase}
+      </a>
+      {text.slice(at + link.phrase.length)}
+    </>
+  );
+}
+
 function Notes({ onWrite }: { onWrite: () => void }) {
   return (
     <div className="version-notes">
@@ -49,7 +75,9 @@ function Notes({ onWrite }: { onWrite: () => void }) {
           </h3>
           <ul className="version-release-list">
             {release.notes.map((note) => (
-              <li key={note}>{note}</li>
+              <li key={noteText(note)}>
+                <NoteText note={note} />
+              </li>
             ))}
           </ul>
         </section>

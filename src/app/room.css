@@ -39,12 +39,12 @@
   gap: 0.75rem;
   padding: calc(var(--inset-t) + 0.85rem) calc(var(--inset-r) + 0.85rem)
     calc(var(--inset-b) + 0.85rem) calc(var(--inset-l) + 0.85rem);
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr auto;
   grid-template-rows: auto minmax(0, 1fr) auto;
   grid-template-areas:
-    'wordmark'
-    'note'
-    'controls';
+    'wordmark companions'
+    'note     note'
+    'controls controls';
   align-items: start;
 }
 
@@ -59,6 +59,13 @@
 /* Mobile shows the room's company in the bar instead; this pill is desktop-only. */
 .area-presence {
   display: none;
+}
+.area-companions {
+  grid-area: companions;
+  justify-self: end;
+  align-self: center;
+  display: flex;
+  gap: 0.5rem;
 }
 /* The pool of shade behind the note spans the room, and the room is a
    different shape on each. A desk is wide enough for a 46%-wide ellipse to
@@ -237,6 +244,9 @@
 
   .area-wordmark {
     align-self: start;
+  }
+  .area-companions {
+    display: none;
   }
   /* Stretched to its column so the pill can ask how much room it really has. */
   .area-presence {

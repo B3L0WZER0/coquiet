@@ -227,6 +227,12 @@ export function Room() {
           <Wordmark />
         </div>
 
+        {/* Phone only: invite and plan sit across from the wordmark, because the
+            dock is full. On desktop they live beside the presence pill. */}
+        <div className="area-companions" data-dim={dimmed || undefined}>
+          <RoomCompanions mobile />
+        </div>
+
         {/* Bottom-left labelled pill on desktop. Hidden on mobile — there it
             moves into the bar as a figure-and-count button, below. */}
         <div className="area-presence" data-dim={dimmed || undefined}>

@@ -11,14 +11,27 @@ const circle =
 const action =
   'rounded-full border border-[var(--hairline)] px-3 py-1.5 text-[0.8125rem] transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]';
 
-/** Desktop only for now: invite a friend, and plan the next session. */
-export function RoomCompanions() {
+/** Invite a friend, and plan the next session. `mobile`: top-right of a phone,
+ *  so panels drop down from the right edge and lead with the phone's own tools. */
+export function RoomCompanions({ mobile = false }: { mobile?: boolean }) {
   return (
     <>
-      <InviteButton />
-      <PlanButton />
+      <InviteButton mobile={mobile} />
+      <PlanButton mobile={mobile} />
     </>
   );
+}
+
+// Written out in full so Tailwind sees every class.
+const PANEL_WIDTH = {
+  invite: { desk: 'w-[17.5rem]', phone: 'w-[min(17.5rem,calc(100vw-2rem))]' },
+  plan: { desk: 'w-[19rem]', phone: 'w-[min(19rem,calc(100vw-2rem))]' },
+};
+
+function panelPlacement(mobile: boolean, panel: keyof typeof PANEL_WIDTH) {
+  return mobile
+    ? ({ placement: 'bottom', align: 'end', panelClassName: PANEL_WIDTH[panel].phone } as const)
+    : ({ placement: 'top', align: 'start', panelClassName: PANEL_WIDTH[panel].desk } as const);
 }
 
 function useNote() {
@@ -35,7 +48,7 @@ function useNote() {
   ] as const;
 }
 
-function InviteButton() {
+function InviteButton({ mobile }: { mobile: boolean }) {
   const [note, say] = useNote();
   const [canShare, setCanShare] = useState(false);
   useEffect(() => setCanShare(typeof navigator.share === 'function'), []);
@@ -62,10 +75,8 @@ function InviteButton() {
     <Popover
       label="Invite a friend"
       revealOnHoverAndFocus={false}
-      placement="top"
-      align="start"
+      {...panelPlacement(mobile, 'invite')}
       offset={10}
-      panelClassName="w-[17.5rem]"
       triggerClassName={circle}
       panel={
         <div className="flex flex-col gap-2">
@@ -76,12 +87,13 @@ function InviteButton() {
             Focus comes easier in good company. Send a friend the room — you’ll hear the same music
             at the same moment.
           </p>
+          {/* A phone's share sheet is where its messaging apps are, so it leads there. */}
           <div className="mt-1 flex items-center gap-2">
             <button type="button" className={action} onClick={copy}>
               Copy link
             </button>
             {canShare && (
-              <button type="button" className={action} onClick={share}>
+              <button type="button" className={`${action} ${mobile ? 'order-first' : ''}`} onClick={share}>
                 Share…
               </button>
             )}
@@ -97,25 +109,26 @@ function InviteButton() {
   );
 }
 
-function PlanButton() {
-  // Recomputed each time the panel mounts, so "later today" never goes stale.
+function PlanButton({ mobile }: { mobile: boolean }) {
   return (
     <Popover
       label="Plan your next session"
       revealOnHoverAndFocus={false}
-      placement="top"
-      align="start"
+      {...panelPlacement(mobile, 'plan')}
       offset={10}
-      panelClassName="w-[19rem]"
       triggerClassName={circle}
-      panel={<PlanPanel />}
+      // Mounted only while open, so "later today" never goes stale.
+      panel={<PlanPanel mobile={mobile} />}
     >
       <CalendarMark />
     </Popover>
   );
 }
 
-function PlanPanel() {
+function PlanPanel({ mobile }: { mobile: boolean }) {
+  // An iPhone opens an .ics straight into "Add to Calendar"; Android and the
+  // desk more often mean Google.
+  const appleFirst = mobile && !/Android/i.test(navigator.userAgent);
   const slots = useMemo(() => suggestedSlots(new Date()), []);
   // Nothing chosen at first, so picking a time visibly unlocks the next step.
   const [chosen, setChosen] = useState<number | null>(null);
@@ -174,7 +187,7 @@ function PlanPanel() {
         <p className="mb-2 text-[0.8125rem]" style={{ color: start ? 'var(--text-primary)' : 'var(--text-muted)' }} aria-live="polite">
           {start ? `${time.format(start)} – ${time.format(planEnd(start))}` : 'Pick a time first'}
         </p>
-        <div className="flex gap-1.5">
+        <div className={`flex gap-1.5 ${appleFirst ? 'flex-row-reverse' : ''}`}>
           <button
             type="button"
             onClick={openGoogle}

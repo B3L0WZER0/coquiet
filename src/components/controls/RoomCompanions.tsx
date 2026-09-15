@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Popover } from '@/components/ui/Popover';
-import { googleCalendarUrl, icsFile, roomLink, suggestedSlots } from '@/lib/plan';
+import { googleCalendarUrl, icsFile, planEnd, roomLink, suggestedSlots } from '@/lib/plan';
 
 const circle =
   'control-surface flex h-11 w-11 items-center justify-center rounded-full transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]';
@@ -106,7 +106,7 @@ function PlanButton() {
       placement="top"
       align="start"
       offset={10}
-      panelClassName="w-[18.5rem]"
+      panelClassName="w-[19rem]"
       triggerClassName={circle}
       panel={<PlanPanel />}
     >
@@ -117,11 +117,18 @@ function PlanButton() {
 
 function PlanPanel() {
   const slots = useMemo(() => suggestedSlots(new Date()), []);
-  const [chosen, setChosen] = useState(0);
-  const start = slots[chosen].start;
+  // Nothing chosen at first, so picking a time visibly unlocks the next step.
+  const [chosen, setChosen] = useState<number | null>(null);
+  const start = chosen === null ? null : slots[chosen].start;
   const time = new Intl.DateTimeFormat(undefined, { hour: 'numeric', minute: '2-digit' });
 
+  function openGoogle() {
+    if (!start) return;
+    window.open(googleCalendarUrl(start, roomLink(window.location)), '_blank', 'noopener');
+  }
+
   function downloadIcs() {
+    if (!start) return;
     const now = new Date();
     const ics = icsFile(start, roomLink(window.location), now, `${start.getTime()}-${now.getTime()}`);
     const url = URL.createObjectURL(new Blob([ics], { type: 'text/calendar' }));
@@ -132,51 +139,60 @@ function PlanPanel() {
     setTimeout(() => URL.revokeObjectURL(url), 1000);
   }
 
+  const calendarButton =
+    'min-h-11 flex-1 rounded-full px-3 py-2 text-[0.8125rem] transition-colors duration-[var(--duration-control)] disabled:opacity-40';
+
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col">
       <p className="text-[0.9375rem]" style={{ color: 'var(--text-primary)' }}>
         Plan your next session
       </p>
-      <p className="text-[0.8125rem] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
+      <p className="mt-1 text-[0.8125rem] leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
         Two hours in the room, in your calendar. Invite a friend as a guest to come along.
       </p>
-      <div className="mt-1 flex flex-wrap gap-1.5" role="group" aria-label="Start time">
-        {slots.map((slot, i) => (
+
+      <fieldset className="mt-4 border-0 p-0">
+        <legend className="label-quiet mb-2">1. Pick a time</legend>
+        <div className="flex flex-wrap gap-1.5">
+          {slots.map((slot, i) => (
+            <button
+              key={slot.start.getTime()}
+              type="button"
+              aria-pressed={i === chosen}
+              onClick={() => setChosen(i === chosen ? null : i)}
+              className="chip-select flex min-h-11 items-center rounded-full px-3.5 py-2 text-[0.8125rem] transition-all duration-[var(--duration-control)]"
+            >
+              {slot.day === 'today' ? 'Today' : 'Tomorrow'} {time.format(slot.start)}
+            </button>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset className="mt-4 border-0 p-0" disabled={!start}>
+        <legend className="label-quiet mb-2">2. Add it to your calendar</legend>
+        {/* Always rendered, so the panel doesn't grow when a time is picked. */}
+        <p className="mb-2 text-[0.8125rem]" style={{ color: start ? 'var(--text-primary)' : 'var(--text-muted)' }} aria-live="polite">
+          {start ? `${time.format(start)} – ${time.format(planEnd(start))}` : 'Pick a time first'}
+        </p>
+        <div className="flex gap-1.5">
           <button
-            key={slot.start.getTime()}
             type="button"
-            aria-pressed={i === chosen}
-            onClick={() => setChosen(i)}
-            className={action}
-            style={
-              i === chosen
-                ? { backgroundColor: 'var(--surface-strong)', borderColor: 'var(--hairline-strong)', color: 'var(--text-primary)' }
-                : { color: 'var(--text-secondary)' }
-            }
+            onClick={openGoogle}
+            className={calendarButton}
+            style={{ backgroundColor: 'var(--surface-active)', border: '1px solid var(--hairline-strong)', color: 'var(--text-primary)' }}
           >
-            {slot.day === 'today' ? 'Today' : 'Tomorrow'} {time.format(slot.start)}
+            Google Calendar
           </button>
-        ))}
-      </div>
-      <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-[0.8125rem]">
-        <a
-          href={googleCalendarUrl(start, roomLink(window.location))}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline decoration-[var(--hairline-strong)] underline-offset-4 hover:decoration-current"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          Google Calendar
-        </a>
-        <button
-          type="button"
-          onClick={downloadIcs}
-          className="underline decoration-[var(--hairline-strong)] underline-offset-4 hover:decoration-current"
-          style={{ color: 'var(--text-primary)' }}
-        >
-          Apple / Outlook
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={downloadIcs}
+            className={calendarButton}
+            style={{ backgroundColor: 'var(--surface-active)', border: '1px solid var(--hairline-strong)', color: 'var(--text-primary)' }}
+          >
+            Apple / Outlook
+          </button>
+        </div>
+      </fieldset>
     </div>
   );
 }

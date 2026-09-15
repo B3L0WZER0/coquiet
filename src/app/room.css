@@ -72,6 +72,15 @@
   position: relative;
   top: 0.2rem;
 }
+/* The same glass as the dock, so the two read as one set of controls. */
+.area-companions button.control-surface {
+  background-color: transparent;
+  background-image: linear-gradient(
+    to bottom,
+    color-mix(in oklab, var(--color-ink) 58%, transparent) 0%,
+    color-mix(in oklab, var(--color-ink) 74%, transparent) 100%
+  );
+}
 /* The pool of shade behind the note spans the room, and the room is a
    different shape on each. A desk is wide enough for a 46%-wide ellipse to
    cover a 32ch line; a phone is not — the same figure there stopped short of

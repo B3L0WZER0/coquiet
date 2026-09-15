@@ -238,10 +238,23 @@
   .area-wordmark {
     align-self: start;
   }
+  /* Stretched to its column so the pill can ask how much room it really has. */
   .area-presence {
     grid-area: presence;
-    justify-self: start;
+    justify-self: stretch;
     align-self: end;
+    container-type: inline-size;
+  }
+  .presence-compact {
+    display: none;
+  }
+  @container (max-width: 21rem) {
+    .presence-full {
+      display: none;
+    }
+    .presence-compact {
+      display: flex;
+    }
   }
   .area-note {
     justify-self: center;

@@ -61,12 +61,21 @@ export function PresenceLine({
       // A pill, matching the badge on the entry screen. As bare text this read
       // as a caption, and nobody thought to press it — which meant the Room
       // pulse behind it was effectively invisible.
-      triggerClassName="control-surface flex min-h-11 items-center gap-2 rounded-full px-4 py-2 text-[0.8125rem] transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]"
+      triggerClassName="control-surface flex min-h-11 items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-[0.8125rem] transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]"
       panel={<RoomPulse pulse={computePulse(sessions)} />}
     >
-      <span className="flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
+      <span className="presence-full flex items-center gap-2" style={{ color: 'var(--text-secondary)' }}>
         <LiveDot />
         {label}
+      </span>
+      {/* A narrow desktop window: the figure and the count, as in the phone dock.
+          The trigger's accessible name still carries the full line. */}
+      <span
+        className="presence-compact items-center gap-1.5"
+        style={{ color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}
+      >
+        <PeopleMark />
+        {here > 1 ? here - 1 : 'Just you'}
       </span>
     </Popover>
   );

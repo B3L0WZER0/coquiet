@@ -91,6 +91,27 @@ export function useAudio() {
     navigator.mediaSession.playbackState = state.status === 'playing' ? 'playing' : 'paused';
   }, [state.status, state.channel]);
 
+  // Lock-screen controls. Play and pause go through the engine, so they fade and
+  // a resume rejoins the shared position. Seeking is withdrawn: skipping 10s
+  // would put this visitor out of step with everyone else in the room.
+  useEffect(() => {
+    if (!('mediaSession' in navigator)) return;
+    const set = (action: MediaSessionAction, handler: MediaSessionActionHandler | null) => {
+      try {
+        navigator.mediaSession.setActionHandler(action, handler);
+      } catch {
+        // An action this browser doesn't know is fine to skip.
+      }
+    };
+    set('play', () => void getEngine()?.play());
+    set('pause', () => void getEngine()?.pause());
+    for (const action of ['seekbackward', 'seekforward', 'seekto'] as const) set(action, null);
+    return () => {
+      set('play', null);
+      set('pause', null);
+    };
+  }, []);
+
   const enter = useCallback(() => getEngine()?.enter(), []);
   const toggle = useCallback(() => getEngine()?.toggle(), []);
   const retry = useCallback(() => getEngine()?.retry(), []);

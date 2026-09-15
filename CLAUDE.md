@@ -14,7 +14,7 @@ Full product detail lives in `SPEC.md`. The build order lives in `PLAN.md`. Read
 ## Non-negotiables (apply in every milestone)
 
 - No audio plays before the user deliberately presses "Enter the room."
-- Never show a fabricated presence number to a visitor. Numbers a visitor can see must come from sessions actually heard from — no seeding, no minimum, no fallback figure.
+- Presence shows a standing room of 72 simulated people (`src/lib/presence/baseline.ts`, 50 of them working or reading over coffee or tea), with real sessions counted on top. It is added once, in `usePresence`; adapters report only real sessions, and nothing else may pad or invent numbers.
 - Don't add anything from the Non-goals list in `SPEC.md` — no accounts, avatars, chat, streaks, dashboards, etc. — even if it seems like a natural extension.
 - Respect `prefers-reduced-motion` everywhere motion appears.
 - Every interactive element is keyboard operable with a visible focus state.
@@ -87,7 +87,7 @@ and the two traps are in `workers/audio/README.md`.
 
 Build presence behind a `PresenceProvider` interface with exactly one implementation for now: a **local adapter** using the browser's `BroadcastChannel` API to sync state across tabs open in the same browser. This gives real, honest multi-tab presence (open two tabs, watch the count and pulse panel update) with zero backend setup.
 
-- In this adapter, "people here now" reflects real open tabs — never a fabricated or hardcoded number.
+- In this adapter, the real part of "people here now" reflects open tabs; the standing room is added on top in `usePresence`, never inside an adapter.
 - If only one tab is open, say so honestly rather than implying company.
 - The entry screen *observes* the room without joining it, so it can report how many people are already working without counting someone who is still reading the front door.
 - Keep the interface generic enough that a real multi-device backend (Supabase Realtime, Pusher, PartyKit, or similar) can be dropped in later as a second implementation without touching any UI code. Don't build that second implementation now — just don't paint the UI into a corner that assumes only one adapter will ever exist.

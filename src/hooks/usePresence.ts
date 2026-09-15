@@ -1,8 +1,9 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { ChannelId } from '@/lib/channels';
+import { withBaseline } from '@/lib/presence/baseline';
 import { hasSupabase } from '@/lib/presence/config';
 import { LocalPresenceAdapter } from '@/lib/presence/local-adapter';
 import { SupabasePresenceAdapter } from '@/lib/presence/supabase-adapter';
@@ -84,12 +85,20 @@ export function usePresence(entered: boolean, channel: ChannelId) {
 
   const clearPresence = useCallback(() => setPresence(null, null), [setPresence]);
 
-  const status: PresenceStatus = snapshot.available
-    ? { kind: 'live', count: snapshot.sessions.length }
+  // Adapters report only real sessions; the standing room is added here, so
+  // every presence surface sees the same total.
+  const shown = useMemo<PresenceSnapshot>(
+    () =>
+      snapshot.available ? { ...snapshot, sessions: withBaseline(snapshot.sessions) } : snapshot,
+    [snapshot],
+  );
+
+  const status: PresenceStatus = shown.available
+    ? { kind: 'live', count: shown.sessions.length }
     : { kind: 'unavailable' };
 
   return {
-    snapshot,
+    snapshot: shown,
     status,
     own,
     setPresence,

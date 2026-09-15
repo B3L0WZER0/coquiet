@@ -89,10 +89,9 @@ test('no audio exists or is fetched before the room is entered', async ({ page }
 
   expect(await deckState(page)).toHaveLength(0);
   expect(audioRequests).toHaveLength(0);
-  // The entry screen watches the room, but with nobody in it there is no
-  // count to show — only the fact that the room is open.
-  await expect(page.getByText('Room open', { exact: true })).toBeVisible();
-  await expect(page.getByText(/focusing/)).toHaveCount(0);
+  // The entry screen watches the room, and shows the standing room before any
+  // real visitor arrives.
+  await expect(page.getByText('72 people focusing together', { exact: true })).toBeVisible();
 });
 
 test('entry starts Flow and fades in from silence', async ({ page }) => {
@@ -694,31 +693,31 @@ test.describe('watching the room from the doorway', () => {
     page,
   }) => {
     const badge = page.locator('.entry-presence-slot p');
-    await expect(badge).toHaveText('Room open');
+    await expect(badge).toHaveText('72 people focusing together');
 
     // Someone else actually enters.
     const first = await context.newPage();
     await first.goto('/');
     await first.locator('.coquiet-cta').click();
     await first.waitForTimeout(1200);
-    await expect(badge).toHaveText('1 person focusing right now');
+    await expect(badge).toHaveText('73 people focusing together');
 
     const second = await context.newPage();
     await second.goto('/');
     await second.locator('.coquiet-cta').click();
     await second.waitForTimeout(1200);
-    await expect(badge).toHaveText('2 people focusing together');
+    await expect(badge).toHaveText('74 people focusing together');
 
     // The people inside must not be able to see the watcher. Standing in the
     // doorway is not being in the room, and counting it would be a lie told to
     // everybody else.
-    await expect(first.locator('.area-presence')).toHaveText('Focusing with 1 other');
+    await expect(first.locator('.area-presence')).toHaveText('Focusing with 73 others');
 
     // Entering turns the watcher into one of them.
     await page.locator('.coquiet-cta').click();
     await page.waitForTimeout(1500);
-    await expect(page.locator('.area-presence')).toHaveText('Focusing with 2 others');
-    await expect(first.locator('.area-presence')).toHaveText('Focusing with 2 others');
+    await expect(page.locator('.area-presence')).toHaveText('Focusing with 74 others');
+    await expect(first.locator('.area-presence')).toHaveText('Focusing with 74 others');
 
     await first.close();
     await second.close();
@@ -762,7 +761,7 @@ test.describe('the phone dock', () => {
     await expect(page.locator('.dock-label')).toHaveText([
       'Flow',
       '25 min',
-      '1 here',
+      '73 here',
       'Presence',
     ]);
 

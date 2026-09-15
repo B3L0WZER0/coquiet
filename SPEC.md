@@ -89,7 +89,7 @@ No sound before deliberate interaction. On press:
 6. Briefly show the current focus note
 7. No onboarding form
 
-If presence sync is unavailable: `The quiet room is open.` If nobody else is present: `You're opening the room. Others will join.` Never fabricate a live number.
+If presence sync is unavailable: `The quiet room is open.` If nobody else is present: `You're opening the room. Others will join.` The live number is the standing room (72 simulated people) plus real sessions.
 
 ## Music selector
 
@@ -161,7 +161,7 @@ Keep this behind the interface so a real cross-device backend (Supabase Realtime
 
 ## Quiet presence (display)
 
-Bottom left, one persistent line: `● [n] here now` — real count of currently-entered sessions from the active adapter (local adapter in v1), never raw page views, never fabricated.
+Bottom left, one persistent line: `● [n] here now` — the standing room of 72 simulated people plus currently-entered sessions from the active adapter, never raw page views.
 
 Tap/click opens a compact **Room pulse** panel: `[n] working · [n] studying · [n] creating · [n] reading` and `[n] coffee · [n] tea · [n] water`. If groups are extremely small, suppress the detailed breakdown for privacy. No flags, maps, rankings, or identities.
 
@@ -179,7 +179,7 @@ Responsive AVIF/WebP background; preload only the initial visual; no full audio 
 
 ## Explicit non-goals
 
-No chat, comments, DMs, video/voice, profiles, accounts, avatars, followers, public user lists, flags/maps, likes/reactions, productivity scores, streaks/badges/leaderboards, task management, user-created rooms or playlists, track voting/requests, cooking/gaming modes, large analytics dashboards, lyrics/spoken-word music, in-room advertising, or fake presence numbers. One global room, one shared presence count, three music channels.
+No chat, comments, DMs, video/voice, profiles, accounts, avatars, followers, public user lists, flags/maps, likes/reactions, productivity scores, streaks/badges/leaderboards, task management, user-created rooms or playlists, track voting/requests, cooking/gaming modes, large analytics dashboards, lyrics/spoken-word music, or in-room advertising. One global room, one shared presence count, three music channels.
 
 ## Acceptance criteria
 
@@ -197,7 +197,7 @@ No chat, comments, DMs, video/voice, profiles, accounts, avatars, followers, pub
 12. Presence updates in real time between simultaneous tabs in the same browser (v1 scope — see note below).
 13. Disconnected/stale sessions disappear automatically.
 14. Activity/drink selections update aggregate counts without identifying anyone.
-15. No fabricated count ever appears, including when the local adapter has only one tab open.
+15. The count is always the 72-person standing room plus real sessions, including when only one tab is open.
 16. Layout stays uncluttered from 320px through large desktop.
 17. Every interactive element is keyboard accessible.
 18. Reduced-motion mode disables unnecessary movement.

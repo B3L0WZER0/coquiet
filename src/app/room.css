@@ -66,6 +66,11 @@
   align-self: center;
   display: flex;
   gap: 0.5rem;
+  /* Centred on the wordmark's letters, not its box: a lowercase word sits low
+     in its line, so box-centred buttons rode about 3px high. An offset rather
+     than a margin, so the row — and the wordmark in it — doesn't grow. */
+  position: relative;
+  top: 0.2rem;
 }
 /* The pool of shade behind the note spans the room, and the room is a
    different shape on each. A desk is wide enough for a 46%-wide ellipse to

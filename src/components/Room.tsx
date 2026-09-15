@@ -13,6 +13,7 @@ import { MusicSelector } from '@/components/controls/MusicSelector';
 import { PersonalPresence } from '@/components/controls/PersonalPresence';
 import { PlaybackBar } from '@/components/controls/PlaybackBar';
 import { PresenceLine } from '@/components/controls/PresenceLine';
+import { RoomCompanions } from '@/components/controls/RoomCompanions';
 import { VolumeControl } from '@/components/controls/VolumeControl';
 import { useAudio } from '@/hooks/useAudio';
 import { usePresence } from '@/hooks/usePresence';
@@ -229,7 +230,10 @@ export function Room() {
         {/* Bottom-left labelled pill on desktop. Hidden on mobile — there it
             moves into the bar as a figure-and-count button, below. */}
         <div className="area-presence" data-dim={dimmed || undefined}>
-          <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} />
+          <div className="flex items-center gap-2">
+            <PresenceLine status={presence.status} sessions={presence.snapshot.sessions} />
+            <RoomCompanions />
+          </div>
         </div>
 
         {/* A break outranks a note; music that would not load outranks both,

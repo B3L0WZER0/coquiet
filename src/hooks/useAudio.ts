@@ -1,9 +1,10 @@
 'use client';
 
-import { useCallback, useSyncExternalStore } from 'react';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
+import { assetPath } from '@/lib/asset-path';
 import { AudioEngine, type AudioState } from '@/lib/audio-engine';
-import { DEFAULT_CHANNEL, isChannelId, type ChannelId } from '@/lib/channels';
+import { DEFAULT_CHANNEL, getChannel, isChannelId, type ChannelId } from '@/lib/channels';
 import { setChimeContextSource } from '@/lib/chime';
 import { STORAGE_KEYS, readStored, writeStored } from '@/lib/storage';
 
@@ -77,6 +78,18 @@ function getServerSnapshot(): AudioState {
 
 export function useAudio() {
   const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+
+  // The lock screen's Now Playing card. Left to itself iOS shows the page title
+  // and borrows a transparent-cornered icon, which it paints with white corners.
+  useEffect(() => {
+    if (state.status === 'idle' || !('mediaSession' in navigator)) return;
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: getChannel(state.channel).label,
+      artist: 'Coquiet',
+      artwork: [{ src: assetPath('/artwork-512.png'), sizes: '512x512', type: 'image/png' }],
+    });
+    navigator.mediaSession.playbackState = state.status === 'playing' ? 'playing' : 'paused';
+  }, [state.status, state.channel]);
 
   const enter = useCallback(() => getEngine()?.enter(), []);
   const toggle = useCallback(() => getEngine()?.toggle(), []);

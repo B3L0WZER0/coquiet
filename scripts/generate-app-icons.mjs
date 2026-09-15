@@ -50,6 +50,9 @@ for (const size of [192, 512]) {
 }
 await writeFile(join(PUBLIC, 'icon-maskable.png'), await onField(512, 0.92));
 await writeFile(join(APP, 'apple-icon.png'), await onField(180, 1));
+// Lock-screen / Now Playing artwork: full bleed and opaque for the same reason
+// as `apple-icon` — iOS paints transparent corners white there.
+await writeFile(join(PUBLIC, 'artwork-512.png'), await onField(512, 1));
 await writeFile(join(APP, 'icon.png'), await render(256));
 await copyFile(join(ASSETS, 'favicon.ico'), join(APP, 'favicon.ico'));
 

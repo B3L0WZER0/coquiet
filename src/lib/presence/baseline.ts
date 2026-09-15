@@ -9,13 +9,17 @@ import {
   type PresenceSession,
 } from '@/lib/presence/types';
 
-/** How many simulated people are always in the room. */
-export const BASELINE_COUNT = 72;
+/** The standing room drifts between these, a person or two at a time. */
+export const BASELINE_MIN = 60;
+export const BASELINE_MAX = 80;
 
-/** How many of them have shared what they're up to. */
-export const BASELINE_SHARED = 50;
+/** Roughly this share of it has set an activity and a drink. */
+export const BASELINE_SHARED_RATIO = 0.7;
 
-/** The mix is reshuffled this often — the same for every visitor meanwhile. */
+/** A fresh target size is drawn this often; the count glides between them. */
+export const DRIFT_MS = 10 * 60 * 1000;
+
+/** The pulse mix is reshuffled this often. */
 export const RESHUFFLE_MS = 60 * 60 * 1000;
 
 const CHANNELS: ChannelId[] = ['still', 'flow', 'momentum'];
@@ -30,6 +34,18 @@ function prng(seed: number): () => number {
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+}
+
+/** How many simulated people are in the room at `now` — the same for everyone. */
+export function baselineCount(now: number): number {
+  const slot = Math.floor(now / DRIFT_MS);
+  // A different seed stream from the mix, so size and mix don't move together.
+  const target = (s: number) =>
+    BASELINE_MIN + prng(s ^ 0x9e3779b9)() * (BASELINE_MAX - BASELINE_MIN);
+  const t = (now % DRIFT_MS) / DRIFT_MS;
+  // Cosine easing, so the count settles at each target instead of turning sharply.
+  const eased = (1 - Math.cos(Math.PI * t)) / 2;
+  return Math.round(target(slot) + (target(slot + 1) - target(slot)) * eased);
 }
 
 /** Splits `total` into `n` random counts, strictly decreasing, none below 1. */
@@ -63,12 +79,13 @@ function shuffle<T>(items: T[], rand: () => number): T[] {
   return items;
 }
 
-function buildBaseline(seed: number): Omit<PresenceSession, 'lastSeen'>[] {
-  const rand = prng(seed);
-  const activities = expand<Activity>(ACTIVITIES, rankedSplit(BASELINE_SHARED, ACTIVITIES.length, rand));
-  const drinks = shuffle(expand<Drink>(DRINKS, rankedSplit(BASELINE_SHARED, DRINKS.length, rand)), rand);
+function buildBaseline(count: number, mixSeed: number): Omit<PresenceSession, 'lastSeen'>[] {
+  const rand = prng(mixSeed);
+  const shared = Math.round(count * BASELINE_SHARED_RATIO);
+  const activities = expand<Activity>(ACTIVITIES, rankedSplit(shared, ACTIVITIES.length, rand));
+  const drinks = shuffle(expand<Drink>(DRINKS, rankedSplit(shared, DRINKS.length, rand)), rand);
 
-  return Array.from({ length: BASELINE_COUNT }, (_, i) => ({
+  return Array.from({ length: count }, (_, i) => ({
     id: `baseline-${i}`,
     activity: activities[i] ?? null,
     drink: drinks[i] ?? null,
@@ -76,14 +93,16 @@ function buildBaseline(seed: number): Omit<PresenceSession, 'lastSeen'>[] {
   }));
 }
 
-let cached: { slot: number; room: Omit<PresenceSession, 'lastSeen'>[] } | null = null;
+let cached: { key: string; room: Omit<PresenceSession, 'lastSeen'>[] } | null = null;
 
 /** The real sessions with the standing room added in front of them. */
 export function withBaseline(
   sessions: readonly PresenceSession[],
   now: number = Date.now(),
 ): PresenceSession[] {
-  const slot = Math.floor(now / RESHUFFLE_MS);
-  if (cached?.slot !== slot) cached = { slot, room: buildBaseline(slot) };
+  const count = baselineCount(now);
+  const mixSeed = Math.floor(now / RESHUFFLE_MS);
+  const key = `${count}:${mixSeed}`;
+  if (cached?.key !== key) cached = { key, room: buildBaseline(count, mixSeed) };
   return [...cached.room.map((s) => ({ ...s, lastSeen: now })), ...sessions];
 }

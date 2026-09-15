@@ -41,6 +41,9 @@ export default defineConfig({
       // this is what stops .env.local putting Supabase back.
       NEXT_PUBLIC_SUPABASE_URL: '',
       NEXT_PUBLIC_SUPABASE_ANON_KEY: '',
+      // The standing room drifts with the clock; the presence tests count only
+      // the pages they open. Its behaviour is covered by unit tests.
+      NEXT_PUBLIC_PRESENCE_BASELINE: 'off',
       // Next locks a dev server per dist dir, so this is what lets the suite
       // run without stopping the server you are developing in.
       NEXT_DIST_DIR: '.next-e2e',

@@ -14,7 +14,7 @@ Full product detail lives in `SPEC.md`. The build order lives in `PLAN.md`. Read
 ## Non-negotiables (apply in every milestone)
 
 - No audio plays before the user deliberately presses "Enter the room."
-- Presence shows a standing room of 72 simulated people (`src/lib/presence/baseline.ts`, 50 of them sharing an activity and a drink, reshuffled hourly but always ranked working > studying > reading > creating and coffee > tea > water), with real sessions counted on top. It is added once, in `usePresence`; adapters report only real sessions, and nothing else may pad or invent numbers.
+- Presence shows a standing room of simulated people that drifts between 60 and 80 (seeded by the clock, so every visitor sees the same number) (`src/lib/presence/baseline.ts`, about 70% of them sharing an activity and a drink, reshuffled hourly but always ranked working > studying > reading > creating and coffee > tea > water), with real sessions counted on top. It is added once, in `usePresence`; adapters report only real sessions, and nothing else may pad or invent numbers.
 - Don't add anything from the Non-goals list in `SPEC.md` — no accounts, avatars, chat, streaks, dashboards, etc. — even if it seems like a natural extension.
 - Respect `prefers-reduced-motion` everywhere motion appears.
 - Every interactive element is keyboard operable with a visible focus state.

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { ChannelId } from '@/lib/channels';
 import { withBaseline } from '@/lib/presence/baseline';
-import { hasSupabase } from '@/lib/presence/config';
+import { BASELINE_ENABLED, hasSupabase } from '@/lib/presence/config';
 import { LocalPresenceAdapter } from '@/lib/presence/local-adapter';
 import { SupabasePresenceAdapter } from '@/lib/presence/supabase-adapter';
 import type {
@@ -17,6 +17,9 @@ import { STORAGE_KEYS, removeStored } from '@/lib/storage';
 import type { PresenceStatus } from '@/lib/presence/copy';
 
 const EMPTY: PresenceSnapshot = { sessions: [], joined: false, available: false };
+
+/** How often the drifting standing room is re-read. */
+const BASELINE_TICK_MS = 20_000;
 
 /** The room's presence provider. */
 function createProvider(): PresenceProvider {
@@ -87,10 +90,21 @@ export function usePresence(entered: boolean, channel: ChannelId) {
 
   // Adapters report only real sessions; the standing room is added here, so
   // every presence surface sees the same total.
+  const [now, setNow] = useState(() => Date.now());
+  // The standing room drifts on its own, so re-read it without waiting for a
+  // real session to change.
+  useEffect(() => {
+    if (!BASELINE_ENABLED) return;
+    const id = setInterval(() => setNow(Date.now()), BASELINE_TICK_MS);
+    return () => clearInterval(id);
+  }, []);
+
   const shown = useMemo<PresenceSnapshot>(
     () =>
-      snapshot.available ? { ...snapshot, sessions: withBaseline(snapshot.sessions) } : snapshot,
-    [snapshot],
+      snapshot.available && BASELINE_ENABLED
+        ? { ...snapshot, sessions: withBaseline(snapshot.sessions, now) }
+        : snapshot,
+    [snapshot, now],
   );
 
   const status: PresenceStatus = shown.available

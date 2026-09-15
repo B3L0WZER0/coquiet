@@ -5,7 +5,7 @@
  * so trimming it to two is how it stays a chip and not a changelog page.
  */
 
-export const VERSION = '0.2.0';
+export const VERSION = '0.3.0';
 
 /** Where a request goes. A dedicated inbox, not a personal one — the address
  *  is in the page source of a public site, so it will be scraped. */
@@ -38,20 +38,21 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    version: '0.3.0',
+    date: 'September 2026',
+    notes: [
+      'Share the room with friends. Focus comes easier in good company.',
+      'Plan your next session and add it straight to your calendar.',
+      'The journal is here: short reads on focus, rest and small habits.',
+    ],
+  },
+  {
     version: '0.2.0',
     date: 'September 2026',
     notes: [
       'Optimized for mobile, so Coquiet feels comfortable on a smaller screen.',
       'A custom timer is here. Choose a session length that works for you.',
       'Music now transitions with gentle fades, so changes feel smooth and natural.',
-    ],
-  },
-  {
-    version: '0.1.0',
-    date: 'August 2026',
-    notes: [
-      'Coquiet is now live for family and friends. We’re happy to share this quiet space with you.',
-      'Find your focus with three music options: Still, Flow, and Momentum.',
     ],
   },
 ];

@@ -235,6 +235,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAACwBACdASogABIAPu1mq04ppaQiMAgBMB2JZQDE2BALd6GCPMneG0D46AMMkhsgAP0cP5UHjWHbc8JX5PIxKDywtkT7zVH9ZxxdYv80TFxwkUmukXU8RqmD3ykY5JG23GDLxMgAAAA=",
   },
   {
+    id: "fern-court-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 15,
+    focalY: 50,
+    chrome: "#6e605b",
+    lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwBACdASogABIAPuVipk2pJaOiMAwBIByJZQCzgA7ItL11wdMHbGnTI6RK1+ukqwAAyyersMYnpT73uA7KMgrofTyNMjgkaXDBeUTuCX6FexUltWDiyeHP6dZ9SFY+VlAAAA==",
+  },
+  {
     id: "forest-console-invitation",
     widths: [640, 1024, 1600],
     focalX: 50,
@@ -267,12 +275,28 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADQBACdASogABIAPu1mq04ppaQiMAgBMB2JZQC2yCFoUFbAMkzwnCJ0WQSkemlasAD+7ov2KavS/hRIE2QlTnj/CN1NADUWdGs0KtMvxNPj3l2K93YqUdFHqOSfYPzr7+AqZL8dp1PoFZzy/rJpVl7gAAA=",
   },
   {
+    id: "granite-garden-study",
+    widths: [640, 1024, 1600],
+    focalX: 74,
+    focalY: 50,
+    chrome: "#736052",
+    lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADQBACdASogABIAPu1qq0+ppiOiMBgIATAdiWUAt7gQtdqGCXLm5eIL/csJCdV/wAD+nn5EkTY9EUOfHqQ4lRUHlMFLe8kBTEFv+gCH8b7nOjOtgL+8/Yb3n34zw+8KaqoAAA==",
+  },
+  {
     id: "granite-pool-reading-room",
     widths: [640, 1024, 1600],
     focalX: 45,
     focalY: 50,
     chrome: "#625f5f",
     lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAABwBQCdASogABIAPu1kqk2ppaQiMBgMATAdiWcAtsgN0fj9B76yQ0nWkTbvAKZ0bx3x6SIAAP655f02lVSRih4x340xDHArpht6av2a72F/hBqR1iPfYRLGQ9O+IBUaGw0LV7mAAAA=",
+  },
+  {
+    id: "lake-window-library",
+    widths: [640, 1024, 1600],
+    focalX: 82,
+    focalY: 50,
+    chrome: "#86786c",
+    lqip: "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAABQBQCdASogABIAPu1mrU+ppSQiMBgIATAdiWUAuzOR95wdgJns0Ak8/r7a5bH8wrSiV2gA/n3aFgmAvZ3Pae3+6M3s97LI88dSera/gRDJM7tL2HRSBdRAqEZ37X868Wyp8dhnDBpkn2We0IUHuUIDjcAAAA==",
   },
   {
     id: "library-in-jungle",
@@ -379,6 +403,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAACwBACdASogABIAPu1srlCppiQiqAqpMB2JZQAAKNKpzYi33LTkvT2gj8c1QfcAAP5Hu4aflUa4AhZQcA/5uHkJSX5WqiXozD56p+tEV7p5Ai3AADloHK+N/44KbV3seU7590oB7aK0SAAA",
   },
   {
+    id: "olive-vault-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 25,
+    focalY: 50,
+    chrome: "#675543",
+    lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAACwBACdASogABIAPu1kqk4ppaQiMAgBMB2JZQCvDA4A4ZEJoEwzPDADIpThA3IQAP5vvvGeoIF17gDSif6UUYV5EHxM3jIZ04MOo2Yo53jxdo7AgepKFKYiLUA6UG+p3tp+gD9yAAA=",
+  },
+  {
     id: "open-ocean-reading-room",
     widths: [640, 1024, 1600],
     focalX: 16,
@@ -417,6 +449,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#6c645e",
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBQCdASogABIAPuVipE2pJaOiMAwBIByJZwDC+CPaZEwH0A4mZy4bwN+l44nyb14AAP4H2V0g5u7Qm4qZ6fW6SBled3MF/mLVePiRouCP1cpyesU/ahbcTnZAQiWSV0YFMAAA",
+  },
+  {
+    id: "tideline-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 32,
+    focalY: 50,
+    chrome: "#624e3d",
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACwBACdASogABIAPu1kpk4ppaMiMBgMATAdiWUAuwAMdRM9ek9K8VFP6L8F5p2AAP6pCU1Wp71jY3CZGu0znWjW7+B80t8Bp8h5lDC72ljkQkAydN28ZWK7n40eKsdrFCHW6T1E+kHJ4htwNcAAAA==",
   },
   {
     id: "valley-vault",

@@ -54,6 +54,8 @@ export const FOCAL_X = {
   'desert-coffee': 68,
   'desert-rock-pavilion': 60,
   // No person in frame; centred on the lit desk.
+  // The woman at her laptop against the rain window, with the fern court.
+  'fern-court-cafe': 15,
   'forest-console-invitation': 50,
   // The woman at the far table, who lands just above the copy. The man in the
   // near chair is larger but sits under it, back to the room.
@@ -64,7 +66,11 @@ export const FOCAL_X = {
   'forest-waterfall-salon': 18,
   'garden-pool': 66,
   // The reader by the fire, doubled in the pool below.
+  // The man at the desk by the shelves, with the pool and the autumn trees.
+  'granite-garden-study': 74,
   'granite-pool-reading-room': 45,
+  // The woman at the window desk, with the lake filling the rest.
+  'lake-window-library': 82,
   'library-in-jungle': 80,
   // The figure sits almost against the left edge, as in forest-waterfall-salon,
   // but here the slice can hold both: just wide enough to keep her and the water.
@@ -93,6 +99,8 @@ export const FOCAL_X = {
   // The woman at the long table, under the tall window and the olive hills —
   // the orangery and its view in one slice.
   'olive-orangery-library': 40,
+  // The woman at her table under the arch, with the olive tree in the court.
+  'olive-vault-cafe': 25,
   'open-ocean-reading-room': 16,
   'rain-garden-pavilion': 64,
   // The terraces the room is named for barely survive a portrait slice; this
@@ -103,6 +111,8 @@ export const FOCAL_X = {
   'snow-valley-monastery-study': 40,
   // The woman at the table, with the quarry wall and the autumn tree.
   'stone-courtyard-cafe': 35,
+  // The woman at the table, with the dune grass and the sea through the doors.
+  'tideline-cafe': 32,
   'valley-vault': 34,
   // Off the desk a little, so the slice carries some of the lake it looks at.
   'work-lake-view': 26,

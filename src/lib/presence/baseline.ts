@@ -9,9 +9,15 @@ import {
   type PresenceSession,
 } from '@/lib/presence/types';
 
-/** The standing room drifts between these, a person or two at a time. */
-export const BASELINE_MIN = 60;
+/** The standing room moves between these across the day. */
+export const BASELINE_MIN = 30;
 export const BASELINE_MAX = 80;
+
+/** Hour (UTC) the room is emptiest; it fills to its peak twelve hours later. */
+export const QUIET_HOUR_UTC = 3;
+
+/** How far the wandering sits either side of the day's curve. */
+const WANDER = 3;
 
 /** Roughly this share of it has set an activity and a drink. */
 export const BASELINE_SHARED_RATIO = 0.7;
@@ -36,16 +42,25 @@ function prng(seed: number): () => number {
   };
 }
 
+/** Where the day's curve sits at `now`: 0 at the quiet hour, 1 twelve hours on. */
+function dayShape(now: number): number {
+  const hours = now / 3_600_000 - QUIET_HOUR_UTC;
+  return (1 - Math.cos((Math.PI * hours) / 12)) / 2;
+}
+
 /** How many simulated people are in the room at `now` — the same for everyone. */
 export function baselineCount(now: number): number {
   const slot = Math.floor(now / DRIFT_MS);
   // A different seed stream from the mix, so size and mix don't move together.
-  const target = (s: number) =>
-    BASELINE_MIN + prng(s ^ 0x9e3779b9)() * (BASELINE_MAX - BASELINE_MIN);
+  const wander = (s: number) => (prng(s ^ 0x9e3779b9)() * 2 - 1) * WANDER;
   const t = (now % DRIFT_MS) / DRIFT_MS;
   // Cosine easing, so the count settles at each target instead of turning sharply.
   const eased = (1 - Math.cos(Math.PI * t)) / 2;
-  return Math.round(target(slot) + (target(slot + 1) - target(slot)) * eased);
+  const drift = wander(slot) + (wander(slot + 1) - wander(slot)) * eased;
+
+  // The day carries the shape; the wandering keeps it off a perfect curve.
+  const curve = BASELINE_MIN + WANDER + (BASELINE_MAX - BASELINE_MIN - 2 * WANDER) * dayShape(now);
+  return Math.round(curve + drift);
 }
 
 /** Splits `total` into `n` random counts, strictly decreasing, none below 1. */

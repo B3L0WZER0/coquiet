@@ -5,6 +5,7 @@ import {
   BASELINE_MAX,
   BASELINE_MIN,
   BASELINE_SHARED_RATIO,
+  QUIET_HOUR_UTC,
   RESHUFFLE_MS,
   baselineCount,
   rankedSplit,
@@ -31,7 +32,16 @@ function strictlyDecreasing(counts: number[]): boolean {
 }
 
 describe('standing room size', () => {
-  it('stays between 60 and 80', () => {
+  it('empties overnight and fills through the afternoon', () => {
+    const at = (hourUtc: number) => baselineCount(Date.UTC(2026, 8, 16, hourUtc));
+    expect(at(QUIET_HOUR_UTC)).toBeLessThan(40);
+    expect(at(QUIET_HOUR_UTC + 12)).toBeGreaterThan(70);
+    // Morning climbs, evening falls.
+    expect(at(9)).toBeGreaterThan(at(5));
+    expect(at(21)).toBeLessThan(at(17));
+  });
+
+  it('stays between 30 and 80', () => {
     for (const now of DAY_BY_MINUTE) {
       const n = baselineCount(now);
       expect(n).toBeGreaterThanOrEqual(BASELINE_MIN);
@@ -43,7 +53,7 @@ describe('standing room size', () => {
     const counts = DAY_BY_MINUTE.map(baselineCount);
     expect(new Set(counts).size).toBeGreaterThan(10);
     for (let i = 1; i < counts.length; i++) {
-      expect(Math.abs(counts[i] - counts[i - 1])).toBeLessThanOrEqual(4);
+      expect(Math.abs(counts[i] - counts[i - 1])).toBeLessThanOrEqual(2);
     }
   });
 

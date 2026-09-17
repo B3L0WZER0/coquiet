@@ -59,6 +59,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAwBQCdASogABIAPuVio02pJaMiMAwBIByJZQC3uCPSOnHSHXBHYe5LjMyit23I7wCTIAD+s3bnemTIgkIcWw1+FjrsZQtpZcj+5BiG/WK0DI6wJ5oXjw33UVziSv6ypCJbk9wcuM01omSJLssneSgq3DewNJNIhAA=",
   },
   {
+    id: "autumn-courtyard-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 50,
+    focalY: 50,
+    chrome: "#a38169",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAACwBACdASogABIAPu1oq02ppiQiMAgBMB2JYwC/OB4jHRJ4UvaTgwV14kFXafgAAP65/AZFRiUmfo3sWeC73LEEMptxSM+WaxbHiKAHZ3qkKSE7uBGAHxySmlaqg+XlRC6iYDjIAAAAAA==",
+  },
+  {
     id: "autumn-ravine-studio",
     widths: [640, 1024, 1600],
     focalX: 52,
@@ -203,6 +211,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAABQBACdASobABIAPu1wslKppiSiqAgBMB2JZQCxHy/BqT4Pux/00/dbZdeAAP7xfSedMP0db3UfxMIdLNNph9Zn4GrqSZP4LrBxJqRKbop6CS40g5217Acx12xjEgLhDTkbb3aW9Czly81O0sgwWcAA",
   },
   {
+    id: "copper-beech-library",
+    widths: [640, 1024, 1600],
+    focalX: 85,
+    focalY: 50,
+    chrome: "#8e7a6c",
+    lqip: "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAADwBACdASogABIAPu1mq08ppaOiMBgIATAdiWUAt7gQtddq02KzrsziRwmrFliwqDgA/ts3brzXVgu6ztuDtDMGj8epbPAB2SfmujJ8faiK+WjJmyGoA29nb0PIaUN9HUYyHu7RFEgyfeBEAAA=",
+  },
+  {
     id: "courtyard-arch-cafe",
     widths: [640, 1024, 1600],
     focalX: 58,
@@ -339,6 +355,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAQBQCdASogABIAPu1oqk4ppiQiMAgBMB2JZwDA3B6V4Lipjay5jbYfhlUR5m001ZegAP7r/yN5IFSEiIhzF7duojrjY+qkT6AsdD2xRx+Crlcb7mqnMLsw9wyaIH/93wx36aQAAAA=",
   },
   {
+    id: "misty-lake-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 60,
+    focalY: 50,
+    chrome: "#645751",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAACQBACdASogABIAPuVgpE2pJaMiMAwBIByJZQCtaBuDT+u2PcZuydgEutF2pQAA/udAaHQoRY2BPMEgAHPf5Yba1avfzmsbpI6tT34dap9a51iVJgkw73h5LjhDKSe/JT5inCAExUAAAA==",
+  },
+  {
     id: "misty-lake-work-alcove",
     widths: [640, 1024, 1600],
     focalX: 85,
@@ -425,6 +449,22 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#44452b",
     lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQBACdASogABIAPu1kqE2ppaOiMAgBMB2JYwDCgB5e8rW4/agZydfRiOAT3eg0MAD+2X+VcMDmgnZh+nTwf8TNFLlGjmmbuy9WKOisrQwPTarsFZk6q0YPu9h28HDP101nHZqE20AAAA==",
+  },
+  {
+    id: "rainfall-ridge-studio",
+    widths: [640, 1024, 1600],
+    focalX: 55,
+    focalY: 50,
+    chrome: "#8e837c",
+    lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwBQCdASogABIAPt1WpU2opKOiN/qoARAbiWUAuzMOgn4JTW1WAm/c/UytfaNhIiGXQAD+0Dr/gKcMyF6xQZlCyn2hkJhnqmReHOHeNvyKNvn97QKjVe5ht6FUDXVMfJ2NZnn3Kyu1HRPnrPe/ZiAA",
+  },
+  {
+    id: "rainlit-maple-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 55,
+    focalY: 50,
+    chrome: "#958378",
+    lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwBQCdASogABIAPu1kp02ppaOiMBgMATAdiWUAguUDPsC5HMszMNcWae8xpmn63olKAAD+y+zBsRLPoCI1HVVfP/eSez9zQ+tABfua6p0Xp1yQjoiRJVfTf50q9Qnszc/Xs9OsazL7jJYgf0PRQAAA",
   },
   {
     id: "rice-terrace-focus-pavilion",

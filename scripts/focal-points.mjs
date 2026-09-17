@@ -22,6 +22,8 @@ export const FOCAL_X = {
   'arched-tree-cafe': 55,
   'architecture-canyon': 73,
   'architecture-fireplace-lake': 65,
+  // The woman at the tall window, with the cloister and its copper trees.
+  'autumn-courtyard-cafe': 50,
   // The waterfall over the rocks. The one figure sits against the far-left
   // edge, a speck in the copy's band, so the view carries it instead.
   'autumn-ravine-studio': 52,
@@ -46,6 +48,8 @@ export const FOCAL_X = {
   'coffee-lake-mountain-view': 45,
   'coffee-lake-view': 61,
   'concrete-cave': 63,
+  // The woman at the desk against the glass, with the shelves beside her.
+  'copper-beech-library': 85,
   // The two readers under the run of arches.
   'courtyard-arch-cafe': 58,
   'desert-arches': 42,
@@ -83,6 +87,8 @@ export const FOCAL_X = {
   // the sea only appears as a sliver beside him; it keeps the landscape view.
   'mediterranean-terrace-cafe': 30,
   'mist-lake-pavilion': 30,
+  // The man at the window table, with the lake and the far shore behind him.
+  'misty-lake-cafe': 60,
   // The woman at the lamp-lit desk at the back, rather than the misty lake.
   'misty-lake-work-alcove': 85,
   // The reader at the table under the mountain window.
@@ -103,6 +109,10 @@ export const FOCAL_X = {
   'olive-vault-cafe': 25,
   'open-ocean-reading-room': 16,
   'rain-garden-pavilion': 64,
+  // The man at the desk, with the rain coming down the wooded ridge.
+  'rainfall-ridge-studio': 55,
+  // The window wall and its maples, with the two at the tables below them.
+  'rainlit-maple-cafe': 55,
   // The terraces the room is named for barely survive a portrait slice; this
   // keeps the woman at her desk instead, and the valley to the landscape view.
   'rice-terrace-focus-pavilion': 20,

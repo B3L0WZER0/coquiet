@@ -10,14 +10,14 @@ import {
 } from '@/lib/presence/types';
 
 /** The standing room moves between these across the day. */
-export const BASELINE_MIN = 30;
-export const BASELINE_MAX = 80;
+export const BASELINE_MIN = 320;
+export const BASELINE_MAX = 580;
 
 /** Hour (UTC) the room is emptiest; it fills to its peak twelve hours later. */
 export const QUIET_HOUR_UTC = 3;
 
 /** How far the wandering sits either side of the day's curve. */
-const WANDER = 3;
+const WANDER = 12;
 
 /** Roughly this share of it has set an activity and a drink. */
 export const BASELINE_SHARED_RATIO = 0.7;

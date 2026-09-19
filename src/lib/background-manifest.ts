@@ -35,6 +35,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBQCdASogABIAPu1oqk4ppiQiMAgBMB2JZQC7MxgC/GpB7GBSn2cq/5cJX2K8anUXXAD+nsuXOLJeW0hGHamE9Z80WLHNklvlhID8v+7vSjgDsqvC0bRLGGQpOQMnIi9aHUZeD0AAAA==",
   },
   {
+    id: "alpine-peak-library",
+    widths: [640, 1024, 1600],
+    focalX: 40,
+    focalY: 50,
+    chrome: "#817064",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABwBACdASogABIAPuVepE2pJSOiMAwBIByJZQC06BYuAB4kVny3zM3ZbFuKwAD+tlmd5m3GeL3R6RV9tGfNUgAyRuSqrTomDUXieZtqHXX6TMXzr4a9m+EUxhCji0MczA1whGC9MYAAAA==",
+  },
+  {
     id: "arched-tree-cafe",
     widths: [640, 1024, 1600],
     focalX: 55,
@@ -235,6 +243,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQBACdASogABIAPu1kqE4ppaOiMAgBMB2JZQCw7BjF0g9iJcQzsyX6yfS3uTScgAD+zrWj+dbTX/9pyqvqH6r8kBmEHvpkde0mBTLdkYnaG5pDHCac1maXoM5BWI3AYxX5Rn24HMpRilQA",
   },
   {
+    id: "desert-cleft-library",
+    widths: [640, 1024, 1600],
+    focalX: 30,
+    focalY: 50,
+    chrome: "#746965",
+    lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAACQBACdASogABIAPuFUpU2opCOiN/qoARAcCWUAt7gj0AO0IbRqHxYO5PisqGAA/iwioKd7bH25aOiiSW5lvz4aH9hr9P1i2B7ofGU4nkX2iA8OG71IJ7WZh8iGiA+OO3wAAA==",
+  },
+  {
     id: "desert-coffee",
     widths: [640, 1024, 1600],
     focalX: 68,
@@ -257,6 +273,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#6e605b",
     lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwBACdASogABIAPuVipk2pJaOiMAwBIByJZQCzgA7ItL11wdMHbGnTI6RK1+ukqwAAyyersMYnpT73uA7KMgrofTyNMjgkaXDBeUTuCX6FexUltWDiyeHP6dZ9SFY+VlAAAA==",
+  },
+  {
+    id: "fjord-vault-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 65,
+    focalY: 50,
+    chrome: "#715e51",
+    lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADQBACdASogABIAPu1kqE2ppaOiMAgBMB2JZQCdM5ODSgR8hT7FSQSIS5N9XduIwADiasmLrIFLHihP3xEDSPPIjPzSbQxBS3Ne8NtDYYSzTZix4+D6+R3M2MmTIe8MD5CKpRgA",
   },
   {
     id: "forest-console-invitation",
@@ -489,6 +513,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#6c645e",
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBQCdASogABIAPuVipE2pJaOiMAwBIByJZwDC+CPaZEwH0A4mZy4bwN+l44nyb14AAP4H2V0g5u7Qm4qZ6fW6SBled3MF/mLVePiRouCP1cpyesU/ahbcTnZAQiWSV0YFMAAA",
+  },
+  {
+    id: "tidal-oculus-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 85,
+    focalY: 50,
+    chrome: "#8d847c",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAACwBACdASogABIAPuVepk2pJSOiN/VYASAciWUAnTMOgLx4FIRG0Pb1kvmkt1wAAP4VDj3nyiZUu8ugv0ZgZgqQz2QLBCNMGWGHegG5NBTDMT/Vhp4zy7McZ/V0Dc8ftG9UHVppHGAAAA==",
   },
   {
     id: "tideline-cafe",

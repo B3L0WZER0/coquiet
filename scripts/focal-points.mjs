@@ -18,6 +18,9 @@ export const FOCAL_X = {
   // Framed on the desk the figure fell behind the headline and the barn read
   // as empty, so this takes the meadow and the cloud on the slope instead.
   'alpine-meadow-workspace': 72,
+  // The peaks over the larch valley and an empty desk. Framed on the man, a
+  // stone pillar filled the slice and put him behind the headline.
+  'alpine-peak-library': 40,
   // The reader under the great arch, with the mountains behind him.
   'arched-tree-cafe': 55,
   'architecture-canyon': 73,
@@ -53,6 +56,8 @@ export const FOCAL_X = {
   // The two readers under the run of arches.
   'courtyard-arch-cafe': 58,
   'desert-arches': 42,
+  // The reader at the shelves between the rock face and the desert view.
+  'desert-cleft-library': 30,
   // Two other figures are further out; the reader in the chair sits next to the
   // courtyard tree, so framing them keeps the lit doorway in the slice too.
   'desert-coffee': 68,
@@ -60,6 +65,8 @@ export const FOCAL_X = {
   // No person in frame; centred on the lit desk.
   // The woman at her laptop against the rain window, with the fern court.
   'fern-court-cafe': 15,
+  // The waterfall down the fjord wall, with the man at his table below it.
+  'fjord-vault-cafe': 65,
   'forest-console-invitation': 50,
   // The woman at the far table, who lands just above the copy. The man in the
   // near chair is larger but sits under it, back to the room.
@@ -121,6 +128,8 @@ export const FOCAL_X = {
   'snow-valley-monastery-study': 40,
   // The woman at the table, with the quarry wall and the autumn tree.
   'stone-courtyard-cafe': 35,
+  // The woman at the table by the glass, with the cliffs and the sea.
+  'tidal-oculus-cafe': 85,
   // The woman at the table, with the dune grass and the sea through the doors.
   'tideline-cafe': 32,
   'valley-vault': 34,

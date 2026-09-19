@@ -311,6 +311,44 @@ export const BREAK_SUGGESTIONS: readonly string[] = [
   'Walk a slow lap of the room.',
   'Rinse your face.',
   'Sit still and listen to the music.',
+
+  // Hands and body
+  'Open and close your hands a few times.',
+  'Rub your palms together until they are warm.',
+  'Press your thumb slowly into your palm.',
+  'Press your thumbs gently along your brow.',
+  'Circle your ankles, one then the other.',
+  'Stretch your calves against the wall.',
+  'Twist gently to each side, seated.',
+  'Fold forward and let your head hang.',
+  'Clasp your hands behind you and stand tall.',
+  'Rest your forehead on your folded arms.',
+  'Lie on the floor, if you have the room.',
+  'Take your shoes off and stand a while.',
+
+  // Breath and stillness
+  'Let out a long, slow sigh.',
+  'Yawn if you feel one coming.',
+  'Breathe out for longer than you breathe in.',
+  'Check in with your body, top to bottom.',
+  'Let your mind wander and see where it goes.',
+  'Listen for the quietest sound nearby.',
+  'Count three things you can hear.',
+
+  // Around you
+  'Water a plant, or just look at one.',
+  'Watch the light move on a wall.',
+  'Watch the sky change for a minute.',
+  'Sit somewhere other than your desk.',
+  'Walk around the block, unhurried.',
+  'Change the light if it is bothering you.',
+  'Check whether you are too warm or too cold.',
+
+  // Small comforts
+  'Hold a warm cup in both hands.',
+  'Peel an orange, if there is one.',
+  'Wet your wrists under cool water.',
+  'Clean your glasses, if you wear them.',
 ];
 
 const HOUR_MS = 60 * 60 * 1000;

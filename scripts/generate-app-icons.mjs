@@ -17,7 +17,8 @@
  *   shipping our rounded corners would round them twice, and any transparency
  *   it kept would come back black.
  * - `icon` is what a browser reaches for when it wants better than the .ico —
- *   a retina tab, a bookmark tile — so it only has to beat 48px.
+ *   a retina tab, a bookmark tile, Google's search-result icon — so it only has to
+ *   beat 48px, and Google only takes a multiple of 48 (192, not 256).
  * - `favicon.ico` is copied, not rendered: the hand-made one is hinted for the
  *   sizes a tab actually draws, which a downscale of the full mark is not.
  *
@@ -53,7 +54,7 @@ await writeFile(join(APP, 'apple-icon.png'), await onField(180, 1));
 // Lock-screen / Now Playing artwork: full bleed and opaque for the same reason
 // as `apple-icon` — iOS paints transparent corners white there.
 await writeFile(join(PUBLIC, 'artwork-512.png'), await onField(512, 1));
-await writeFile(join(APP, 'icon.png'), await render(256));
+await writeFile(join(APP, 'icon.png'), await render(192));
 await copyFile(join(ASSETS, 'favicon.ico'), join(APP, 'favicon.ico'));
 
 console.log('public/icon-192.png  icon-512.png  icon-maskable.png');

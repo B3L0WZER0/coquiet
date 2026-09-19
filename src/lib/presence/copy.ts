@@ -6,6 +6,14 @@ export type PresenceStatus =
   /** An adapter is running and reports a real count, including this visitor. */
   | { kind: 'live'; count: number };
 
+// Pinned to en-US so the separator matches the English copy around it.
+const COUNT_FORMAT = new Intl.NumberFormat('en-US');
+
+/** A presence number as shown: "1,024". */
+export function formatCount(n: number): string {
+  return COUNT_FORMAT.format(n);
+}
+
 /** The badge on the entry screen. */
 export function entryPresenceLine(status: PresenceStatus): string | null {
   // Not listening, so not entitled to the live dot or anything beside it.
@@ -14,7 +22,7 @@ export function entryPresenceLine(status: PresenceStatus): string | null {
   // "Together" needs somebody to be together with, so one person gets their
   // own sentence rather than a plural bent around a single session.
   if (status.count === 1) return '1 person focusing right now';
-  return `${status.count} people focusing together`;
+  return `${formatCount(status.count)} people focusing together`;
 }
 
 /** The persistent line inside the room. */
@@ -25,5 +33,5 @@ export function roomPresenceLine(status: PresenceStatus): string | null {
   const others = status.count - 1;
   if (others <= 0) return 'The room is yours for now';
   if (others === 1) return 'Focusing with 1 other';
-  return `Focusing with ${others} others`;
+  return `Focusing with ${formatCount(others)} others`;
 }

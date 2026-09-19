@@ -8,7 +8,7 @@ import {
   presenceSummary,
   pulse,
 } from '@/lib/presence/aggregate';
-import { entryPresenceLine, roomPresenceLine } from '@/lib/presence/copy';
+import { entryPresenceLine, formatCount, roomPresenceLine } from '@/lib/presence/copy';
 import type { Activity, Drink, PresenceSession } from '@/lib/presence/types';
 
 const NOW = 1_700_000_000_000;
@@ -152,6 +152,14 @@ describe('honest copy', () => {
     expect(roomPresenceLine({ kind: 'live', count: 2 })).toBe('Focusing with 1 other');
     expect(roomPresenceLine({ kind: 'live', count: 3 })).toBe('Focusing with 2 others');
     expect(roomPresenceLine({ kind: 'live', count: 313 })).toBe('Focusing with 312 others');
+  });
+
+  it('groups thousands, so a big room still reads at a glance', () => {
+    expect(formatCount(999)).toBe('999');
+    expect(formatCount(1024)).toBe('1,024');
+    expect(formatCount(12_480)).toBe('12,480');
+    expect(entryPresenceLine({ kind: 'live', count: 1024 })).toBe('1,024 people focusing together');
+    expect(roomPresenceLine({ kind: 'live', count: 1025 })).toBe('Focusing with 1,024 others');
   });
 
   it('never promises that other people will arrive', () => {

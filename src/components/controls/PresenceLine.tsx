@@ -5,7 +5,7 @@ import { PeopleMark } from '@/components/icons/DockMarks';
 import { LiveDot } from '@/components/ui/LiveDot';
 import { Popover } from '@/components/ui/Popover';
 import { pulse as computePulse } from '@/lib/presence/aggregate';
-import { roomPresenceLine, type PresenceStatus } from '@/lib/presence/copy';
+import { formatCount, roomPresenceLine, type PresenceStatus } from '@/lib/presence/copy';
 import type { PresenceSession } from '@/lib/presence/types';
 
 /** One persistent handle on who else is in the room — a labelled pill in the
@@ -43,7 +43,7 @@ export function PresenceLine({
         {/* Everyone in the room, the reader included — so "1 here" is true when
             they are the only one, rather than a promise of company. */}
         <span className="dock-label" style={{ fontVariantNumeric: 'tabular-nums' }}>
-          {here > 0 ? `${here} here` : 'Room'}
+          {here > 0 ? `${formatCount(here)} here` : 'Room'}
         </span>
       </Popover>
     );
@@ -75,7 +75,7 @@ export function PresenceLine({
         style={{ color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}
       >
         <PeopleMark />
-        {here > 1 ? here - 1 : 'Just you'}
+        {here > 1 ? formatCount(here - 1) : 'Just you'}
       </span>
     </Popover>
   );

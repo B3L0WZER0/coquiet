@@ -6,6 +6,7 @@ import {
   MIN_GROUP_FOR_BREAKDOWN,
   type RoomPulse as Pulse,
 } from '@/lib/presence/aggregate';
+import { formatCount } from '@/lib/presence/copy';
 
 /** The Room pulse panel. */
 export function RoomPulse({ pulse }: { pulse: Pulse }) {
@@ -110,7 +111,7 @@ function PulseRow({
       <span className="shrink-0" style={{ color: 'var(--color-taupe)' }}>
         {mark}
       </span>
-      <span style={{ fontVariantNumeric: 'tabular-nums' }}>{count}</span>{' '}
+      <span style={{ fontVariantNumeric: 'tabular-nums' }}>{formatCount(count)}</span>{' '}
       <span style={{ color: 'var(--text-secondary)' }}>{label}</span>
     </li>
   );

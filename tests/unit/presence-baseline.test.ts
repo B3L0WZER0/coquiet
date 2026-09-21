@@ -34,14 +34,14 @@ function strictlyDecreasing(counts: number[]): boolean {
 describe('standing room size', () => {
   it('empties overnight and fills through the afternoon', () => {
     const at = (hourUtc: number) => baselineCount(Date.UTC(2026, 8, 16, hourUtc));
-    expect(at(QUIET_HOUR_UTC)).toBeLessThan(350);
-    expect(at(QUIET_HOUR_UTC + 12)).toBeGreaterThan(550);
+    expect(at(QUIET_HOUR_UTC)).toBeLessThan(450);
+    expect(at(QUIET_HOUR_UTC + 12)).toBeGreaterThan(650);
     // Morning climbs, evening falls.
     expect(at(9)).toBeGreaterThan(at(5));
     expect(at(21)).toBeLessThan(at(17));
   });
 
-  it('stays between 320 and 580', () => {
+  it('stays between 420 and 680', () => {
     for (const now of DAY_BY_MINUTE) {
       const n = baselineCount(now);
       expect(n).toBeGreaterThanOrEqual(BASELINE_MIN);

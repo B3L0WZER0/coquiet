@@ -8,6 +8,15 @@ export interface JournalPhotoEntry {
 
 export const JOURNAL_PHOTOS: readonly JournalPhotoEntry[] = [
   {
+    "id": "a-softer-start-to-the-week",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "lqip": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAQBACdASogABAAPu1orU2ppqSiMAgBMB2JYwC7AGBr2z8B4qmGTDreIAD+hHA1DTywGrNDAELlPShd2bzX+GnsF83vaDBru/VZSA1cMvKmaCfh80hlOcAA"
+  },
+  {
     "id": "body-doubling",
     "widths": [
       640,

@@ -643,8 +643,13 @@ body:has(.journal) {
 .journal-support-mark {
   display: inline-block;
   margin-right: 0.45rem;
-  vertical-align: -0.2em;
-  opacity: 0.85;
+  vertical-align: -0.3em;
+}
+
+/* The steaming cup is drawn at 22px; this line is 13px type. */
+.journal-support-mark svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 .journal-support-link {

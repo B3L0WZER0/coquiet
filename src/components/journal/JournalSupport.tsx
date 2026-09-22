@@ -1,4 +1,4 @@
-import { CoffeeMarkInline } from '@/components/icons/DrinkMarks';
+import { CoffeeMarkSteaming } from '@/components/icons/DrinkMarks';
 import { SUPPORT_URL } from '@/lib/support';
 
 /**
@@ -11,7 +11,7 @@ export function JournalSupport({ variant = 'post' }: { variant?: 'post' | 'index
   return (
     <p className={`journal-support journal-support-${variant}`}>
       <span className="journal-support-mark" aria-hidden="true">
-        <CoffeeMarkInline />
+        <CoffeeMarkSteaming />
       </span>
       {variant === 'post'
         ? 'If this one helped, or landed at the right moment — you can '
@@ -19,7 +19,9 @@ export function JournalSupport({ variant = 'post' }: { variant?: 'post' | 'index
       <a href={SUPPORT_URL} target="_blank" rel="noopener noreferrer" className="journal-support-link">
         buy us a coffee
       </a>
-      . It keeps the room open.
+      {variant === 'post'
+        ? '. It goes straight into making Coquiet better.'
+        : ' — it goes straight into making it better.'}
     </p>
   );
 }

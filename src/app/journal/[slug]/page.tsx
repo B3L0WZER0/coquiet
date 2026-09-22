@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 
 import { ArrowLeft } from '@/components/journal/Arrows';
 import { JournalInvite } from '@/components/journal/JournalInvite';
+import { JournalSupport } from '@/components/journal/JournalSupport';
 import { PostActions } from '@/components/journal/PostActions';
 import { Picture } from '@/components/journal/Picture';
 import { Unbroken } from '@/components/journal/Unbroken';
@@ -98,6 +99,8 @@ export default async function PostPage({ params }: Props) {
       <div className="journal-prose" dangerouslySetInnerHTML={{ __html: post.html }} />
 
       <PostActions title={post.title} />
+
+      <JournalSupport />
 
       <JournalInvite variant="row" />
 

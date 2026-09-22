@@ -12,6 +12,7 @@ body:has(.journal) {
   --rule: color-mix(in oklab, var(--color-cream) 16%, transparent);
   --serif: var(--font-display), ui-serif, Georgia, 'Times New Roman', serif;
   --green: color-mix(in oklab, var(--color-sage) 80%, var(--color-cream));
+  --gold: color-mix(in oklab, var(--color-clay) 45%, var(--color-sand)); /* the coffee line, and only that */
 
   min-height: 100dvh;
   padding: calc(var(--inset-t) + 1.25rem) max(1.25rem, var(--inset-r))
@@ -423,7 +424,8 @@ body:has(.journal) {
 
 .journal-article-head,
 .journal-prose,
-.journal-share {
+.journal-share,
+.journal-support-post {
   max-width: 40rem;
   margin-inline: auto;
 }
@@ -626,6 +628,40 @@ body:has(.journal) {
 
 .journal-note {
   color: var(--text-muted);
+}
+
+/* The coffee line. Gold, small, and never louder than the share line above it. */
+.journal-support {
+  /* `auto` matters: this rule wins over the shared prose-column centring. */
+  margin: 1rem auto 0;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  color: var(--gold);
+}
+
+/* Inline, not a flex item: the sentence has to stay one sentence and wrap. */
+.journal-support-mark {
+  display: inline-block;
+  margin-right: 0.45rem;
+  vertical-align: -0.2em;
+  opacity: 0.85;
+}
+
+.journal-support-link {
+  color: inherit;
+  text-decoration: underline 1px color-mix(in oklab, var(--gold) 45%, transparent);
+  text-underline-offset: 0.3em;
+}
+
+.journal-support-link:hover {
+  text-decoration-color: var(--gold);
+}
+
+/* Under the index it sits on its own, below the invite back into the room. */
+.journal-support-index {
+  margin-top: clamp(1.75rem, 4vw, 2.25rem);
+  text-align: center;
+  text-wrap: pretty;
 }
 
 .journal-next {

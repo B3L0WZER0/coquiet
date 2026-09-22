@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import { ArrowUpRight } from '@/components/journal/Arrows';
 import { JournalInvite } from '@/components/journal/JournalInvite';
+import { JournalSupport } from '@/components/journal/JournalSupport';
 import { Picture } from '@/components/journal/Picture';
 import { Unbroken } from '@/components/journal/Unbroken';
 import { JOURNAL_CARD } from '@/lib/journal/config';
@@ -122,6 +123,8 @@ export default function JournalIndex() {
       )}
 
       <JournalInvite />
+
+      <JournalSupport variant="index" />
 
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
     </>

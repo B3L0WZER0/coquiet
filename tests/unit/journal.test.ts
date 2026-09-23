@@ -77,4 +77,12 @@ describe('journal posts', () => {
       '---\ntitle: T\ndescription: D\nsummary: S\ncategory: C\ndate: 2026-01-01\nroom: nowhere\nalt: A\n---\nBody';
     expect(() => parsePost('01-x.md', src)).toThrow(/no room/i);
   });
+
+  it('opens the music door unless a post names the ambient one', () => {
+    const src = (door: string) =>
+      `---\ntitle: T\ndescription: D\nsummary: S\ncategory: C\ndate: 2026-01-01\nroom: mist-lake-pavilion\nalt: A${door}\n---\nBody`;
+    expect(parsePost('01-x.md', src('')).door).toBe('music');
+    expect(parsePost('01-x.md', src('\ndoor: ambient')).door).toBe('ambient');
+    expect(() => parsePost('01-x.md', src('\ndoor: rain'))).toThrow(/door must be/);
+  });
 });

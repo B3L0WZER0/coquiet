@@ -66,7 +66,7 @@ Then:
 
 `/journal/` — short reads on focus, rest and small habits, for people and for search. Indexed, in the sitemap, and linked from the entry screen's top-right corner — not from inside the room (`JOURNAL_PUBLIC` in `src/lib/journal/config.ts` turns all three off). Share is the only action on a post: no votes, likes or comments.
 
-A post is `content/journal/NN-slug.md`. The slug is its permanent URL. Front matter: `title` (split at its colon into title and subtitle), `description` (the search snippet, 70–165 characters), `summary` (one line for cards), `category`, `date`, `alt`, and either `image` (a photo in `content/journal/images/`, with an optional wider `hero`) or `room`. In the body, `>` makes the "try this" box, with a leading `**Label:**` as its heading, and `>>` makes a pull quote. After adding a post or photo, run `npm run assets:journal` to encode the photos and render the preview cards, then `npm test`.
+A post is `content/journal/NN-slug.md`. The slug is its permanent URL. Front matter: `title` (split at its colon into title and subtitle), `description` (the search snippet, 70–165 characters), `summary` (one line for cards), `category`, `date`, `alt`, and either `image` (a photo in `content/journal/images/`, with an optional wider `hero`) or `room`, and optionally `door: ambient` for a post about sound, so its closing invite opens `/ambient/` instead of the music door. In the body, `>` makes the "try this" box, with a leading `**Label:**` as its heading, and `>>` makes a pull quote. After adding a post or photo, run `npm run assets:journal` to encode the photos and render the preview cards, then `npm test`.
 
 ## Where the music comes from
 

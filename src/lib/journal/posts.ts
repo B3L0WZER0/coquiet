@@ -8,6 +8,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import path from 'node:path';
 
 import { BASE_PATH } from '@/lib/asset-path';
+import type { RoomMode } from '@/lib/channels';
 import { readingMinutes, renderMarkdown, splitTitle } from '@/lib/journal/markdown';
 import { journalPhoto, roomPhoto, type Photo } from '@/lib/journal/photos';
 
@@ -30,6 +31,8 @@ export interface Post {
   hero: Photo;
   /** Describes the hero. */
   alt: string;
+  /** Which room the post's invite opens: `door: ambient` for posts about sound. */
+  door: RoomMode;
   keywords: string[];
   minutes: number;
   html: string;
@@ -64,6 +67,9 @@ export function parsePost(file: string, source: string): Post {
     throw new Error(`${file}: ${(e as Error).message}`);
   }
 
+  const door = meta.door ?? 'music';
+  if (door !== 'music' && door !== 'ambient') throw new Error(`${file}: door must be "music" or "ambient"`);
+
   const body = match[2];
   const { head, sub } = splitTitle(meta.title);
   return {
@@ -78,6 +84,7 @@ export function parsePost(file: string, source: string): Post {
     photo,
     hero: meta.hero ? journalPhoto(meta.hero) : photo,
     alt: meta.alt,
+    door,
     keywords: (meta.keywords ?? '').split(',').map((k) => k.trim()).filter(Boolean),
     minutes: readingMinutes(body),
     html: renderMarkdown(body, BASE_PATH),

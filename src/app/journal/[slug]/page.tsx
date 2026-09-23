@@ -102,7 +102,7 @@ export default async function PostPage({ params }: Props) {
 
       <JournalSupport />
 
-      <JournalInvite variant="row" />
+      <JournalInvite variant="row" door={post.door} />
 
       <nav className="journal-next" aria-labelledby="journal-next">
         <h2 id="journal-next" className="journal-kicker">

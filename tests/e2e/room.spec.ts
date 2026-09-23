@@ -1036,8 +1036,9 @@ test.describe('the version chip', () => {
       expect(await panel.locator('.version-release-list li').nth(i).innerText()).not.toBe('');
     }
 
+    await expect(panel.getByRole('link', { name: 'Ambient' })).toHaveAttribute('href', '/ambient/');
     await expect(panel.locator('.version-soon-title')).toHaveText([
-      'New music genres',
+      'New sounds',
       'More presence selections',
     ]);
 

@@ -32,4 +32,4 @@ scripts/.cache/
 
 # Raw footage and field recordings for `npm run assets:ambient`.
 /ambient-inbox/*
-!/ambient-inbox/README.md
+!/ambient-inbox/SOURCES.md

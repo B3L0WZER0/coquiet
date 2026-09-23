@@ -7,7 +7,7 @@
 
 import { JOURNAL_PUBLIC } from '@/lib/journal/config';
 
-export const VERSION = '0.3.0';
+export const VERSION = '0.5.0';
 
 /** Where a request goes. A dedicated inbox, not a personal one — the address
  *  is in the page source of a public site, so it will be scraped. */
@@ -47,6 +47,18 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    version: '0.5.0',
+    date: 'September 2026',
+    notes: [
+      {
+        text: 'Ambient is here: ocean waves, wind in a forest, and falling snow.',
+        link: { phrase: 'Ambient', path: '/ambient/' },
+      },
+      'Fourteen new rooms and seven new pieces of music.',
+      'More focus notes and break ideas.',
+    ],
+  },
+  {
     version: '0.3.0',
     date: 'September 2026',
     notes: [
@@ -59,19 +71,10 @@ export const RELEASES: Release[] = [
       },
     ],
   },
-  {
-    version: '0.2.0',
-    date: 'September 2026',
-    notes: [
-      'Optimized for mobile, so Coquiet feels comfortable on a smaller screen.',
-      'A custom timer is here. Choose a session length that works for you.',
-      'Music now transitions with gentle fades, so changes feel smooth and natural.',
-    ],
-  },
 ];
 
 /** Named, not dated: these are intentions, not promises. */
 export const COMING_SOON: { title: string; hint: string }[] = [
-  { title: 'New music genres', hint: 'Rain, maybe. Piano, definitely.' },
+  { title: 'New sounds', hint: 'Rain for Ambient, maybe. Piano, definitely.' },
   { title: 'More presence selections', hint: 'More than working, studying, reading, creating.' },
 ];

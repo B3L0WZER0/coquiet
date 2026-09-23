@@ -44,3 +44,5 @@ A few gentle guidelines:
 In Coquiet there's always music playing, and it's always instrumental. There are three channels: **Still** — spacious piano and slow strings, for calm thinking; **Flow** — balanced chamber music for steady concentration; and **Momentum** — brighter strings for when you need a little lift. Everyone in the room hears the same music at the same moment, like a radio playing softly in a shared studio.
 
 No playlists to manage, no lyrics, nothing to choose but the mood. [Come in and listen](/).
+
+And on days when even music is too much, there's the [Ambient room](/ambient/): ocean waves, wind in a forest, falling snow. Sound with no melody to follow at all.

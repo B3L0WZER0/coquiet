@@ -81,3 +81,15 @@ test('the room selector works from the keyboard', async ({ page }) => {
   const outline = await ambient.evaluate((el) => getComputedStyle(el).outlineStyle);
   expect(outline).not.toBe('none');
 });
+
+test('/ambient/ opens the door on Ambient, silently, and is its own page', async ({ page }) => {
+  await page.goto('/ambient/');
+  await expect(page).toHaveTitle(/Ambient/);
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/ambient\/$/);
+  await expect(page.getByRole('radio', { name: /Ambient/ })).toHaveAttribute('aria-checked', 'true');
+  // Nothing plays until the door is pressed.
+  expect(await page.evaluate(() => [...document.querySelectorAll('audio')].every((a) => a.paused))).toBe(true);
+  // Still a choice: the visitor can go back to Music.
+  await page.getByRole('radio', { name: 'Music' }).click();
+  await expect(page.getByRole('radio', { name: 'Music' })).toHaveAttribute('aria-checked', 'true');
+});

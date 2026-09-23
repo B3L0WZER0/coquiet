@@ -21,7 +21,7 @@ import { useFocusNote } from '@/hooks/useFocusNote';
 import { useIdleDim } from '@/hooks/useIdleDim';
 import { useTimer } from '@/hooks/useTimer';
 import { CHIME_DURATION_MS, primeChime } from '@/lib/chime';
-import { AMBIENT_CHANNELS, CHANNELS, modeOf } from '@/lib/channels';
+import { AMBIENT_CHANNELS, CHANNELS, modeOf, type RoomMode } from '@/lib/channels';
 import { breakSuggestion } from '@/lib/notes';
 import { entryPresenceLine } from '@/lib/presence/copy';
 
@@ -41,7 +41,8 @@ const CHIME_DUCK_IN = 900;
 const CHIME_DUCK_IN_LATE = 220;
 const CHIME_DUCK_OUT = 900;
 
-export function Room() {
+/** `initialMode` is the door a linked address opens on; the visitor can still switch. */
+export function Room({ initialMode }: { initialMode?: RoomMode } = {}) {
   const [entered, setEntered] = useState(false);
   const [dissolving, setDissolving] = useState(false);
 
@@ -51,6 +52,10 @@ export function Room() {
   // stable callback, not the wrapper, or they tear themselves down twice a
   // second — which would cancel a duck the moment it started.
   const setDuck = audio.setDuck;
+  const setMode = audio.setMode;
+  useEffect(() => {
+    if (initialMode) void setMode(initialMode);
+  }, [initialMode, setMode]);
   const note = useFocusNote(entered);
   const dimmed = useIdleDim(entered);
   const playButtonRef = useRef<HTMLDivElement>(null);

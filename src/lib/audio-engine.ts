@@ -27,6 +27,12 @@ export const FADE = {
   trackIn: 5000,
   /** Lowering and restoring music around a break. */
   duck: 1500,
+  /** One ambient scene giving way to another — a true blend, in step with
+   *  the picture's own crossfade. */
+  scene: 2400,
+  /** An ambient loop overlapping its own start. Weather has no phrase to
+   *  break, so the seam is an equal-power blend with no dip. */
+  loopOverlap: 4000,
 } as const;
 
 /** How often the audible deck's remaining time is checked. */
@@ -470,6 +476,10 @@ export class AudioEngine {
       const outgoing = this.active;
       const incoming = this.idle;
       const channel = getChannel(this.channelId);
+      if (channel.kind === 'ambient') {
+        await this.loopAmbient(outgoing, incoming, channel, mine);
+        return;
+      }
       const index = outgoing.loaded?.trackIndex ?? stationPosition(channel).trackIndex;
       const nextIndex = (index + 1) % channel.tracks.length;
       const next: StationPosition = {
@@ -557,6 +567,58 @@ export class AudioEngine {
     } finally {
       if (this.segueToken === token) this.segueing = false;
     }
+  }
+
+  /** Carry an ambient loop into its own beginning on the other deck. */
+  private async loopAmbient(
+    outgoing: Deck,
+    incoming: Deck,
+    channel: Channel,
+    mine: () => boolean,
+  ): Promise<void> {
+    const start: StationPosition = { trackIndex: 0, track: channel.tracks[0], offsetSeconds: 0 };
+    const ready = await withTimeout(this.prepare(incoming, channel, start), TAIL_LOAD_MS);
+    if (!ready) {
+      this.gaveUpOn = this.deckKey(outgoing);
+      return;
+    }
+    if (!mine()) return;
+
+    const untilBlend = (this.remainingMs(outgoing) ?? 0) - FADE.loopOverlap;
+    if (untilBlend > 0) await sleep(untilBlend);
+    if (!mine()) return;
+
+    this.route(incoming);
+    incoming.fade = 0;
+    this.apply(incoming);
+    try {
+      await incoming.el.play();
+    } catch {
+      return;
+    }
+    if (!mine()) {
+      incoming.el.pause();
+      return;
+    }
+
+    this.activeIndex = this.activeIndex === 0 ? 1 : 0;
+    const blend = Math.max(500, Math.min(FADE.loopOverlap, this.remainingMs(outgoing) ?? 0));
+    const outFrom = outgoing.fade;
+    const outPromise = this.fadeDeck(outgoing, 0, blend, (t) => outFrom * Math.cos((t * Math.PI) / 2));
+    const inPromise = this.fadeDeck(incoming, 1, blend, (t) => Math.sin((t * Math.PI) / 2));
+    if (await outPromise) this.release(outgoing);
+    await inPromise;
+  }
+
+  /** Stopped, silent, and holding no source, ready to be prepared afresh. */
+  private release(deck: Deck) {
+    if (this.disposed || !(deck.el instanceof HTMLAudioElement)) return;
+    deck.el.pause();
+    deck.el.removeAttribute('src');
+    deck.el.load();
+    deck.el.preload = 'none';
+    deck.loaded = null;
+    deck.fade = 0;
   }
 
   /** Ramp one deck's fade factor to a target. */
@@ -736,16 +798,17 @@ export class AudioEngine {
       return;
     }
 
+    // Between two ambient scenes the sounds blend, like the pictures do.
+    const blend = channel.kind === 'ambient' && outgoing.loaded !== null
+      && getChannel(outgoing.loaded.channel).kind === 'ambient';
+
     // The old piece leaves, quickly and on a curve that drops away early.
     const outFrom = outgoing.fade;
-    const outPromise = this.fadeDeck(
-      outgoing,
-      0,
-      FADE.channelOut,
-      (t) => outFrom * (1 - t) ** 2,
-    );
+    const outPromise = blend
+      ? this.fadeDeck(outgoing, 0, FADE.scene, (t) => outFrom * Math.cos((t * Math.PI) / 2))
+      : this.fadeDeck(outgoing, 0, FADE.channelOut, (t) => outFrom * (1 - t) ** 2);
 
-    await sleep(Math.max(0, FADE.channelOut - FADE.channelOverlap));
+    if (!blend) await sleep(Math.max(0, FADE.channelOut - FADE.channelOverlap));
     if (this.disposed) return;
 
     this.route(incoming);
@@ -768,12 +831,9 @@ export class AudioEngine {
     this.activeIndex = this.activeIndex === 0 ? 1 : 0;
 
     // Smoothstep: eases in and settles rather than arriving at full tilt.
-    const inPromise = this.fadeDeck(
-      incoming,
-      1,
-      FADE.channelIn,
-      (t) => t * t * (3 - 2 * t),
-    );
+    const inPromise = blend
+      ? this.fadeDeck(incoming, 1, FADE.scene, (t) => Math.sin((t * Math.PI) / 2))
+      : this.fadeDeck(incoming, 1, FADE.channelIn, (t) => t * t * (3 - 2 * t));
 
     const outDone = await outPromise;
 

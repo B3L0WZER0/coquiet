@@ -1,14 +1,21 @@
 /** The three music channels. */
 
+import { AMBIENT_SCENES, sceneSound, type AmbientId } from '@/lib/ambient';
 import { audioPath } from '@/lib/asset-path';
 import { AUDIO_MANIFEST, type ManifestTrack } from '@/lib/audio-manifest';
 
-export type ChannelId = 'still' | 'flow' | 'momentum';
+export type MusicChannelId = 'still' | 'flow' | 'momentum';
+export type ChannelId = MusicChannelId | AmbientId;
+
+/** Which room a channel belongs to. Chosen at the door. */
+export type RoomMode = 'music' | 'ambient';
 
 export type Track = ManifestTrack;
 
 export interface Channel {
   id: ChannelId;
+  /** Ambient channels are one seamless loop, crossfaded into itself. */
+  kind: RoomMode;
   label: string;
   /** Shown in the info popover beside the switch. */
   description: string;
@@ -38,6 +45,7 @@ function build(
   const tracks = manifest.map((t) => ({ ...t, src: audioPath(t.src) }));
   return {
     id,
+    kind: 'music',
     label,
     description,
     tracks,
@@ -52,16 +60,38 @@ export const CHANNELS: readonly Channel[] = [
   build('momentum', 'Momentum', 'Brighter strings and restrained rhythmic energy.'),
 ];
 
+/** One loop each. The station clock still applies, so a loop is picked up
+ *  mid-way rather than always from its first wave. */
+export const AMBIENT_CHANNELS: readonly Channel[] = AMBIENT_SCENES.map((scene) => ({
+  id: scene.id,
+  kind: 'ambient',
+  label: scene.label,
+  description: scene.description,
+  tracks: [{ src: sceneSound(scene), durationSeconds: scene.soundSeconds, title: scene.sound }],
+  durationSeconds: scene.soundSeconds,
+  epochMs: BASE_EPOCH,
+}));
+
+const ALL_CHANNELS: readonly Channel[] = [...CHANNELS, ...AMBIENT_CHANNELS];
+
 export const DEFAULT_CHANNEL: ChannelId = 'flow';
 
 export function getChannel(id: ChannelId): Channel {
-  const channel = CHANNELS.find((c) => c.id === id);
+  const channel = ALL_CHANNELS.find((c) => c.id === id);
   if (!channel) throw new Error(`Unknown channel: ${id}`);
   return channel;
 }
 
 export function isChannelId(value: unknown): value is ChannelId {
+  return typeof value === 'string' && ALL_CHANNELS.some((c) => c.id === value);
+}
+
+export function isMusicChannelId(value: unknown): value is MusicChannelId {
   return typeof value === 'string' && CHANNELS.some((c) => c.id === value);
+}
+
+export function modeOf(id: ChannelId): RoomMode {
+  return isMusicChannelId(id) ? 'music' : 'ambient';
 }
 
 /** Where in the programme a channel is: which piece, and how far into it. */

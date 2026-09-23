@@ -21,6 +21,7 @@ import { useFocusNote } from '@/hooks/useFocusNote';
 import { useIdleDim } from '@/hooks/useIdleDim';
 import { useTimer } from '@/hooks/useTimer';
 import { CHIME_DURATION_MS, primeChime } from '@/lib/chime';
+import { AMBIENT_CHANNELS, CHANNELS, modeOf } from '@/lib/channels';
 import { breakSuggestion } from '@/lib/notes';
 import { entryPresenceLine } from '@/lib/presence/copy';
 
@@ -195,6 +196,9 @@ export function Room() {
     note.show();
   }, [timer, note]);
 
+  const mode = modeOf(audio.state.channel);
+  const channels = mode === 'ambient' ? AMBIENT_CHANNELS : CHANNELS;
+
   const playing = audio.state.status === 'playing';
   const soundFailed = audio.state.status === 'error';
   const onBreak = timer.session.phase === 'break' || timer.session.phase === 'break-ended';
@@ -268,13 +272,15 @@ export function Room() {
               <MusicSelector
                 value={audio.state.channel}
                 onChange={(id) => void audio.setChannel(id)}
-                info={<ChannelInfo />}
+                info={<ChannelInfo channels={channels} />}
+                channels={channels}
               />
             </span>
             <span className="only-mobile">
               <MusicSelector
                 value={audio.state.channel}
                 onChange={(id) => void audio.setChannel(id)}
+                channels={channels}
                 compact
               />
             </span>
@@ -359,6 +365,8 @@ export function Room() {
       {!entered && (
         <EntryLayer
           presenceLine={entryPresenceLine(presence.status)}
+          mode={mode}
+          onMode={(next) => void audio.setMode(next)}
           leaving={dissolving}
           onEnter={handleEnter}
         />

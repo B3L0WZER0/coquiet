@@ -68,6 +68,13 @@ const entries = new Map(
 );
 if (entries.size === 0) throw new Error('No rooms in the manifest. Run: npm run assets:images');
 
+// The Ambient room's three landscapes are audited as rooms of their own,
+// `ambient-<scene>`, over their still frame (the loop's first frame).
+const AMBIENT_MANIFEST = path.join(ROOT, 'src/lib/ambient-manifest.ts');
+const AMBIENT_DIR = path.join(ROOT, 'public/ambient');
+const ambientText = await readFile(AMBIENT_MANIFEST, 'utf8');
+for (const m of ambientText.matchAll(/^ {2}"(\w+)": (\{[\s\S]*?^ {2}\})/gm)) entries.set(`ambient-${m[1]}`, m[2]);
+
 const unknown = only.filter((id) => !entries.has(id));
 if (unknown.length > 0) throw new Error(`Not a room: ${unknown.join(', ')}`);
 
@@ -95,11 +102,16 @@ async function appHash() {
 const APP = await appHash();
 const images = await readdir(IMAGE_DIR);
 
+const ambientFiles = await readdir(AMBIENT_DIR).catch(() => []);
+
 async function fingerprint(id) {
   const h = createHash('sha1').update(APP).update(entries.get(id));
-  const own = images.filter((f) => /^(.*)-\d+\.(avif|webp)$/.exec(f)?.[1] === id).sort();
+  const scene = id.startsWith('ambient-') ? id.slice(8) : null;
+  const own = scene
+    ? ambientFiles.filter((f) => f.startsWith(`${scene}-`)).sort()
+    : images.filter((f) => /^(.*)-\d+\.(avif|webp)$/.exec(f)?.[1] === id).sort();
   for (const f of own) {
-    const s = await stat(path.join(IMAGE_DIR, f));
+    const s = await stat(path.join(scene ? AMBIENT_DIR : IMAGE_DIR, f));
     h.update(`${f}:${s.size}:${s.mtimeMs}`);
   }
   return h.digest('hex');
@@ -280,10 +292,14 @@ async function settle(page) {
 
 /** The photograph, decoded — sampling the blurred placeholder audits a room that isn't there. */
 async function loaded(page) {
-  await page.locator('img.room-image').waitFor({ state: 'attached', timeout: 20000 });
+  // In the Ambient room the photograph is never fetched; the scene's still is the picture.
+  await page.locator('img.room-image, .ambient-scene[data-active] img').first().waitFor({ state: 'attached', timeout: 20000 });
   await page.evaluate(async () => {
-    await document.querySelector('img.room-image').decode().catch(() => {});
+    await document.querySelector('img.room-image')?.decode().catch(() => {});
+    await document.querySelector('.ambient-scene[data-active] img')?.decode().catch(() => {});
   });
+  // The scene fades in over the room photo.
+  if (await page.locator('.ambient-scene[data-active]').count()) await page.waitForTimeout(700);
   await settle(page);
 }
 
@@ -321,7 +337,19 @@ const DESKTOP = { width: 1440, height: 900 };
 async function auditRoom(roomId) {
   // A context per room, so every room is audited as a first-time visitor
   // without clearing storage, and so rooms can run beside each other.
-  const context = await browser.newContext({ viewport: DESKTOP });
+  const scene = roomId.startsWith('ambient-') ? roomId.slice(8) : null;
+  // A scene is judged on its still frame: with reduced motion that is all
+  // there is, and a moving frame would give different numbers every run.
+  const context = await browser.newContext({
+    viewport: DESKTOP,
+    ...(scene ? { reducedMotion: 'reduce' } : {}),
+  });
+  if (scene) {
+    await context.addInitScript((id) => {
+      localStorage.setItem('coquiet:channel', id);
+      localStorage.setItem('coquiet:ambient-scene', id);
+    }, scene);
+  }
   // Pin the 100s light drift at its first frame. Sampled at whatever phase the
   // run happens to reach, a room's numbers move on their own between runs —
   // which a cache of what already passed cannot live with.
@@ -351,7 +379,7 @@ async function auditRoom(roomId) {
   };
 
   try {
-    await goto(page, `${URL}/?room=${roomId}`);
+    await goto(page, scene ? URL : `${URL}/?room=${roomId}`);
 
     // Whether the presence line is up when the audit looks is down to who else
     // is in the room, and a line audited only when someone happened to be there
@@ -401,7 +429,7 @@ async function auditRoom(roomId) {
 
     // Open every panel so their contents are audited too.
     for (const [name, label] of [
-      ['What the channels are', 'channel info'],
+      [/What the (channels|scenes) are/, 'channel info'],
       [/Focus timer/, 'timer panel'],
       [/presence/i, 'presence panel'],
     ]) {
@@ -418,7 +446,7 @@ async function auditRoom(roomId) {
     // the frame, where the veil is thinnest. It needs the request to actually
     // fail, so it cannot ride along with the passes above.
     await page.route(BLOCKED_AUDIO, blockWithPage);
-    await goto(page, `${URL}/?room=${roomId}`);
+    await goto(page, scene ? URL : `${URL}/?room=${roomId}`);
     await enter(page);
     await at(`${roomId} · music blocked`);
     await phone(`${roomId} · music blocked phone`);

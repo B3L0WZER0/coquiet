@@ -125,7 +125,72 @@
 .entry-actions {
   display: flex;
   align-items: center;
-  margin-top: clamp(1.375rem, 2.6vh, 2rem);
+  margin-top: clamp(0.5rem, 1.2vh, 1rem);
+}
+
+/* Music / Ambient: two words above the door, the chosen one lit and ruled. */
+.entry-mode {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-top: clamp(0.875rem, 1.8vh, 1.375rem);
+  margin-left: -0.625rem;
+  font-size: clamp(0.8125rem, calc(0.74rem + 0.18vw), 0.9375rem);
+}
+
+.entry-mode-option {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.5rem;
+  padding: 0 0.625rem;
+  border-radius: 999px;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-shadow: var(--shadow-legible);
+  transition: color var(--duration-control) var(--ease-quiet);
+}
+
+.entry-mode-option[aria-checked='true'] {
+  color: var(--text-primary);
+}
+
+.entry-mode-option::after {
+  content: '';
+  position: absolute;
+  left: 0.625rem;
+  bottom: 0.45rem;
+  width: 0;
+  height: 1px;
+  background: color-mix(in oklab, var(--color-cream) 62%, transparent);
+  transition: width var(--duration-control) var(--ease-quiet);
+}
+
+.entry-mode-option[aria-checked='true']::after {
+  width: 1rem;
+}
+
+@media (hover: hover) {
+  .entry-mode-option:hover {
+    color: var(--text-primary);
+  }
+}
+
+.entry-mode-option:focus-visible {
+  outline: 2px solid var(--color-cream);
+  outline-offset: 0;
+}
+
+.entry-mode-new {
+  padding: 0.0625rem 0.4375rem;
+  border: 1px solid var(--hairline-strong);
+  border-radius: 999px;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-sand);
+  text-shadow: none;
 }
 
 /* One line across the foot of the screen: the promise on the left, the ask on
@@ -607,11 +672,13 @@
       to bottom,
       color-mix(in oklab, var(--color-ink) 34%, transparent) 0%,
       color-mix(in oklab, var(--color-ink) 8%, transparent) 13%,
-      transparent 27%,
-      color-mix(in oklab, var(--color-ink) 22%, transparent) 41%,
-      color-mix(in oklab, var(--color-ink) 52%, transparent) 55%,
-      color-mix(in oklab, var(--color-ink) 74%, transparent) 71%,
-      color-mix(in oklab, var(--color-ink) 84%, transparent) 87%,
+      transparent 23%,
+      /* Four points higher than before the Music / Ambient row, which lifted
+         the headline by about as much. */
+      color-mix(in oklab, var(--color-ink) 22%, transparent) 37%,
+      color-mix(in oklab, var(--color-ink) 52%, transparent) 51%,
+      color-mix(in oklab, var(--color-ink) 74%, transparent) 67%,
+      color-mix(in oklab, var(--color-ink) 84%, transparent) 83%,
       color-mix(in oklab, var(--color-ink) 88%, transparent) 100%
     );
   }
@@ -648,12 +715,16 @@
     font-size: clamp(0.9375rem, 3.9vw, 1.0625rem);
   }
 
+  .entry-mode {
+    margin-top: 0.75rem;
+  }
+
   /* The door and the cup, one row, sized as one control. */
   .entry-actions {
     --entry-action-size: 3.5rem;
     width: 100%;
     gap: 0.875rem;
-    margin-top: 1.5rem;
+    margin-top: 0.5rem;
   }
 
   .coquiet-cta {
@@ -698,7 +769,7 @@
      line above the row of actions. */
   .version-badge {
     right: var(--entry-gutter);
-    bottom: calc(var(--inset-b) + 7.65rem);
+    bottom: calc(var(--inset-b) + 9.9rem);
   }
 }
 

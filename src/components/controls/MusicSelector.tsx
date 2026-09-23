@@ -1,15 +1,19 @@
 'use client';
 
 import { NoteMark } from '@/components/icons/DockMarks';
+import { SceneMark } from '@/components/icons/SceneMarks';
 import { Popover } from '@/components/ui/Popover';
-import { CHANNELS, type ChannelId } from '@/lib/channels';
+import { isAmbientId } from '@/lib/ambient';
+import { CHANNELS, type Channel, type ChannelId } from '@/lib/channels';
 
-/** Still · Flow · Momentum, with an info mark alongside. */
+/** Still · Flow · Momentum — or, in the Ambient room, Blue · Green · White
+ *  with their marks — and an info mark alongside. */
 export function MusicSelector({
   value,
   onChange,
   info,
   compact = false,
+  channels = CHANNELS,
 }: {
   value: ChannelId;
   onChange: (id: ChannelId) => void;
@@ -17,8 +21,13 @@ export function MusicSelector({
   info?: React.ReactNode;
   /** Narrow screens: collapse to a single dock button opening a channel sheet. */
   compact?: boolean;
+  channels?: readonly Channel[];
 }) {
-  if (compact) return <CompactMusic value={value} onChange={onChange} />;
+  const ambient = channels[0]?.kind === 'ambient';
+  const groupLabel = ambient ? 'Ambient scene' : 'Music channel';
+  if (compact) {
+    return <CompactMusic value={value} onChange={onChange} channels={channels} groupLabel={groupLabel} />;
+  }
 
   return (
     <div className="relative flex items-center gap-2">
@@ -27,11 +36,11 @@ export function MusicSelector({
 
       <div
         role="radiogroup"
-        aria-label="Music channel"
+        aria-label={groupLabel}
         className="control-surface flex items-center gap-0.5 rounded-full p-1"
         style={{ minHeight: 'var(--control-height)' }}
       >
-        {CHANNELS.map((channel) => {
+        {channels.map((channel) => {
           const active = channel.id === value;
           return (
             <button
@@ -40,13 +49,14 @@ export function MusicSelector({
               role="radio"
               aria-checked={active}
               onClick={() => onChange(channel.id)}
-              className="relative min-h-9 rounded-full px-3.5 py-1.5 text-[0.8125rem] tracking-[0.04em] transition-all duration-[var(--duration-control)] ease-[var(--ease-quiet)] sm:px-4"
+              className="relative inline-flex min-h-9 items-center gap-1.5 rounded-full px-3.5 py-1.5 text-[0.8125rem] tracking-[0.04em] transition-all duration-[var(--duration-control)] ease-[var(--ease-quiet)] sm:px-4"
               style={{
                 backgroundColor: active ? 'var(--surface-active)' : 'transparent',
                 border: `1px solid ${active ? 'var(--hairline-strong)' : 'transparent'}`,
                 color: active ? 'var(--text-primary)' : 'var(--text-muted)',
               }}
             >
+              {isAmbientId(channel.id) && <SceneMark id={channel.id} />}
               {channel.label}
               <span
                 aria-hidden="true"
@@ -71,15 +81,19 @@ export function MusicSelector({
 function CompactMusic({
   value,
   onChange,
+  channels,
+  groupLabel,
 }: {
   value: ChannelId;
   onChange: (id: ChannelId) => void;
+  channels: readonly Channel[];
+  groupLabel: string;
 }) {
-  const current = CHANNELS.find((c) => c.id === value);
+  const current = channels.find((c) => c.id === value) ?? channels[0];
 
   return (
     <Popover
-      label={`Music channel: ${current?.label ?? 'Flow'}. Change it.`}
+      label={`${groupLabel}: ${current.label}. Change it.`}
       revealOnHoverAndFocus={false}
       placement="top"
       align="center"
@@ -88,9 +102,9 @@ function CompactMusic({
       triggerClassName="dock-trigger"
       panel={
         <div>
-          <p className="label-quiet mb-2">Music channel</p>
-          <div role="radiogroup" aria-label="Music channel" className="space-y-1.5">
-            {CHANNELS.map((channel) => {
+          <p className="label-quiet mb-2">{groupLabel}</p>
+          <div role="radiogroup" aria-label={groupLabel} className="space-y-1.5">
+            {channels.map((channel) => {
               const active = channel.id === value;
               return (
                 <button
@@ -114,7 +128,8 @@ function CompactMusic({
                     }`,
                   }}
                 >
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex items-center gap-1.5" style={{ color: 'var(--color-cream)' }}>
+                    {isAmbientId(channel.id) && <SceneMark id={channel.id} />}
                     <span
                       className="text-[0.8125rem] tracking-[0.02em]"
                       style={{ color: 'var(--color-cream)' }}
@@ -143,8 +158,8 @@ function CompactMusic({
         </div>
       }
     >
-      <NoteMark />
-      <span className="dock-label">{current?.label ?? 'Flow'}</span>
+      {isAmbientId(current.id) ? <SceneMark id={current.id} size={20} /> : <NoteMark />}
+      <span className="dock-label">{current.label}</span>
     </Popover>
   );
 }

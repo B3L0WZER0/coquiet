@@ -179,6 +179,8 @@ test('starting a timer counts down and survives a refresh', async ({ page }) => 
 });
 
 test('the whole critical path is reachable by keyboard alone', async ({ page }) => {
+  // The Music / Ambient switch, then the door.
+  await page.keyboard.press('Tab');
   await page.keyboard.press('Tab');
   await expect(page.getByRole('button', { name: 'Enter the room' })).toBeFocused();
   await page.keyboard.press('Enter');
@@ -576,6 +578,7 @@ test.describe('the entry composition', () => {
 
     // And the way in is still one tap, still reachable by keyboard first.
     await page.keyboard.press('Tab');
+    await page.keyboard.press('Tab');
     await expect(cta).toBeFocused();
   });
 
@@ -591,6 +594,7 @@ test.describe('the entry composition', () => {
     expect(await bg(), 'hover should lift the fill').not.toBe('rgb(242, 236, 225)');
 
     await page.mouse.move(0, 0);
+    await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     await expect(cta).toBeFocused();
     const focusRing = await cta.evaluate((el) => {
@@ -882,6 +886,8 @@ test.describe('the journal link', () => {
     expect(geometry.offLine).toBeLessThan(3);
     expect(geometry.rightEdges).toBeLessThan(2);
 
+    // The Music / Ambient switch, then the door.
+    await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     await expect(page.getByRole('button', { name: 'Enter the room' })).toBeFocused();
     await page.keyboard.press('Tab');
@@ -925,6 +931,8 @@ test.describe('the support link', () => {
   });
 
   test('is reachable by keyboard and shows a focus ring', async ({ page }) => {
+    // The Music / Ambient switch, then the door.
+    await page.keyboard.press('Tab');
     await page.keyboard.press('Tab');
     await expect(page.getByRole('button', { name: 'Enter the room' })).toBeFocused();
     await page.keyboard.press('Tab');
@@ -987,9 +995,9 @@ test.describe('the version chip', () => {
     await expect(chip(page)).toHaveText(/Version \d+\.\d+\.\d+/);
     await expect(chip(page)).toHaveAttribute('aria-expanded', 'false');
 
-    // Last in the corner and last in the tab cycle: the door, the cup and the
-    // journal all come first, because they matter more than what build this is.
-    for (let i = 0; i < 4; i++) await page.keyboard.press('Tab');
+    // Last in the corner and last in the tab cycle: the room switch, the door,
+    // the cup and the journal all come first.
+    for (let i = 0; i < 5; i++) await page.keyboard.press('Tab');
     await expect(chip(page)).toBeFocused();
 
     // Drawn as the footer it belongs to, not as a control: no fill, no border.

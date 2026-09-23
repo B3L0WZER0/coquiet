@@ -189,9 +189,12 @@ test('the whole critical path is reachable by keyboard alone', async ({ page }) 
 
   // Walk the whole tab cycle and record what it lands on. Tabbing continues
   // from wherever focus already is, so the cycle is read as a set rather than
-  // assumed to start at the first control.
+  // assumed to start at the first control. Stop once it laps back to the
+  // start rather than assuming a fixed number of controls — the room keeps
+  // growing new ones.
+  const startName = 'Pause music';
   const visited: { name: string; outline: string }[] = [];
-  for (let i = 0; i < 12; i++) {
+  for (let i = 0; i < 30; i++) {
     await page.keyboard.press('Tab');
     const entry = await page.evaluate(() => {
       const el = document.activeElement as HTMLElement | null;
@@ -201,7 +204,9 @@ test('the whole critical path is reachable by keyboard alone', async ({ page }) 
         outline: getComputedStyle(el).outlineWidth,
       };
     });
-    if (entry) visited.push(entry);
+    if (!entry) continue;
+    visited.push(entry);
+    if (entry.name === startName) break;
   }
 
   const names = visited.map((v) => v.name);
@@ -1052,8 +1057,18 @@ test.describe('the version chip', () => {
     await page.keyboard.press('Enter');
     await expect(page.locator('.version-panel')).toBeVisible();
 
-    // The one link inside is the next stop, not somewhere behind the panel.
-    await page.keyboard.press('Tab');
+    // What's next is inside the panel, not somewhere behind it — a release
+    // note can carry its own link (e.g. to the journal) ahead of the button.
+    for (let i = 0; i < 5; i++) {
+      await page.keyboard.press('Tab');
+      const inPanel = await page.evaluate(() =>
+        Boolean(document.querySelector('.version-panel')?.contains(document.activeElement)),
+      );
+      expect(inPanel, 'Tab should stay inside the open panel').toBe(true);
+      if (await page.locator('.version-request').evaluate((el) => el === document.activeElement)) {
+        break;
+      }
+    }
     await expect(page.locator('.version-request')).toBeFocused();
 
     await page.keyboard.press('Escape');

@@ -38,7 +38,7 @@ The share card is the one place the mark does *not* go: like the in-app
 ## The version chip
 
 `src/lib/release.ts` is the whole feature: the number in the entry screen's
-corner, the two releases the panel lists, what is under "coming soon", and the
+corner, the two releases the panel lists, and the
 address a request is drafted to. Keep `RELEASES` at two — the panel is a line
 in a corner, not a changelog page — and keep `VERSION` in step with
 `package.json`.

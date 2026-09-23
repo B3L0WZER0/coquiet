@@ -73,8 +73,3 @@ export const RELEASES: Release[] = [
   },
 ];
 
-/** Named, not dated: these are intentions, not promises. */
-export const COMING_SOON: { title: string; hint: string }[] = [
-  { title: 'New sounds', hint: 'Rain for Ambient, maybe. Piano, definitely.' },
-  { title: 'More presence selections', hint: 'More than working, studying, reading, creating.' },
-];

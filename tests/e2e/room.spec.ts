@@ -1023,7 +1023,7 @@ test.describe('the version chip', () => {
     await expect(page.locator('.version-panel')).toBeVisible();
   });
 
-  test('shows the last two releases, what is coming, and a way to ask', async ({ page }) => {
+  test('shows the last two releases and a way to ask', async ({ page }) => {
     await chip(page).click();
     const panel = page.locator('.version-panel');
 
@@ -1037,10 +1037,7 @@ test.describe('the version chip', () => {
     }
 
     await expect(panel.getByRole('link', { name: 'Ambient' })).toHaveAttribute('href', '/ambient/');
-    await expect(panel.locator('.version-soon-title')).toHaveText([
-      'New sounds',
-      'More presence selections',
-    ]);
+    await expect(panel.locator('.version-soon')).toHaveCount(0);
 
     await expect(panel.locator('.version-request')).toHaveText(/Request a feature/);
 

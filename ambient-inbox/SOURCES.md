@@ -1,13 +1,7 @@
 # Ambient sources (downloaded 2026-09-23)
 
-Stills — supplied by Diego, 2026-09-23 (used in place of a video frame)
+Stills — supplied by Diego, 2026-09-23
 - coast.webp, forest.webp, snow.webp
-
-Video — Pexels License (free, no attribution required)
-- coast.mp4       https://www.pexels.com/video/19901686/
-- forest.mp4      https://www.pexels.com/video/27700394/
-- forest-alt.mp4  https://www.pexels.com/video/39087890/
-- snow.mp4        https://www.pexels.com/video/34863402/
 
 Audio — Pixabay Content License (free, no attribution required)
 - coast-sound-beep.mp3  "Gentle Ocean Waves Mix (2018)"  https://pixabay.com/sound-effects/nature-gentle-ocean-waves-mix-2018-19693/

@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
 import {
-  COMING_SOON,
   FEATURE_REQUEST_EMAIL,
   FEATURE_REQUEST_SUBJECT,
   RELEASES,
@@ -29,14 +28,6 @@ describe('the panel contents', () => {
         // A linked phrase that isn't in its note would silently render unlinked.
         if (typeof note !== 'string' && note.link) expect(note.text).toContain(note.link.phrase);
       }
-    }
-  });
-
-  it('keeps coming-soon items to a title and a hint', () => {
-    expect(COMING_SOON.length).toBeGreaterThan(0);
-    for (const item of COMING_SOON) {
-      expect(item.title.trim()).not.toBe('');
-      expect(item.hint.trim()).not.toBe('');
     }
   });
 });

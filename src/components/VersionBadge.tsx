@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { Popover } from '@/components/ui/Popover';
 import { assetPath } from '@/lib/asset-path';
 import {
-  COMING_SOON,
   featureRequestDraft,
   noteText,
   RELEASES,
@@ -82,23 +81,6 @@ function Notes({ onWrite }: { onWrite: () => void }) {
           </ul>
         </section>
       ))}
-
-      {/* Deliberately a different object from the notes above: those happened,
-          these have not. Dashed edge, its own tint, no bullets. */}
-      <div className="version-soon">
-        <p className="label-quiet version-soon-label">
-          <SoonMark />
-          Coming soon
-        </p>
-        <ul className="version-soon-list">
-          {COMING_SOON.map((item) => (
-            <li key={item.title}>
-              <span className="version-soon-title">{item.title}</span>
-              <span className="version-soon-hint">{item.hint}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
 
       <button type="button" onClick={onWrite} className="version-request">
         Request a feature
@@ -184,15 +166,6 @@ function Chevron() {
         strokeLinecap="round"
         strokeLinejoin="round"
       />
-    </svg>
-  );
-}
-
-/** A small unfilled ring — the notes above get solid dots, these do not. */
-function SoonMark() {
-  return (
-    <svg aria-hidden="true" width="9" height="9" viewBox="0 0 9 9" fill="none">
-      <circle cx="4.5" cy="4.5" r="3.4" stroke="currentColor" strokeWidth="1.1" opacity="0.75" />
     </svg>
   );
 }

@@ -72,3 +72,30 @@ async function send(state: PollState): Promise<void> {
     // Offline or blocked: stays `unsent` for next time.
   }
 }
+
+export interface PollTally {
+  moving: number;
+  still: number;
+}
+
+/** The running totals, or null when there is no backend or it didn't answer. */
+export async function fetchTally(): Promise<PollTally | null> {
+  if (!hasSupabase()) return null;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/ambient_vote_tally`, {
+      method: 'POST',
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: '{}',
+    });
+    if (!res.ok) return null;
+    const value = (await res.json()) as Partial<PollTally>;
+    if (typeof value?.moving !== 'number' || typeof value?.still !== 'number') return null;
+    return { moving: value.moving, still: value.still };
+  } catch {
+    return null;
+  }
+}

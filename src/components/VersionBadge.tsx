@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { Popover } from '@/components/ui/Popover';
+import { fetchTally, type PollTally } from '@/lib/ambient-poll';
 import { assetPath } from '@/lib/asset-path';
 import {
   featureRequestDraft,
@@ -82,10 +83,36 @@ function Notes({ onWrite }: { onWrite: () => void }) {
         </section>
       ))}
 
+      <PollResult />
+
       <button type="button" onClick={onWrite} className="version-request">
         Request a feature
       </button>
     </div>
+  );
+}
+
+/** The Ambient room's moving-or-still question, as it stands. Fetched when the
+ *  panel opens; says nothing at all if the count can't be had. */
+function PollResult() {
+  const [tally, setTally] = useState<PollTally | null>(null);
+  useEffect(() => {
+    let live = true;
+    void fetchTally().then((t) => live && setTally(t));
+    return () => {
+      live = false;
+    };
+  }, []);
+  if (!tally) return null;
+
+  const total = tally.moving + tally.still;
+  return (
+    <p className="version-poll">
+      <span className="version-poll-q">Ambient: moving or still?</span>
+      <span className="version-poll-a">
+        {total === 0 ? 'No votes yet' : `${tally.still} still · ${tally.moving} moving`}
+      </span>
+    </p>
   );
 }
 

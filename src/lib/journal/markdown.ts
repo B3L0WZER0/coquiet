@@ -66,5 +66,5 @@ export function splitTitle(title: string): { head: string; sub: string | null } 
   const at = title.indexOf(': ');
   if (at < 0) return { head: title, sub: null };
   const rest = title.slice(at + 2);
-  return { head: title.slice(0, at), sub: `${rest[0].toUpperCase()}${rest.slice(1)}.` };
+  return { head: title.slice(0, at), sub: `${rest[0].toUpperCase()}${rest.slice(1)}` };
 }

@@ -27,7 +27,7 @@ describe('journal markdown', () => {
   it('splits a title at its colon', () => {
     expect(splitTitle('The one-line morning: a gentle way')).toEqual({
       head: 'The one-line morning',
-      sub: 'A gentle way.',
+      sub: 'A gentle way',
     });
     expect(splitTitle('How to rest')).toEqual({ head: 'How to rest', sub: null });
   });

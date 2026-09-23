@@ -4,8 +4,8 @@
  * Usage: npm run assets:ambient              every scene
  *        npm run assets:ambient -- coast     just one
  *
- * Each scene needs `<id>.<mp4|png|jpg>` (a picture, or footage to take one
- * frame from at `still` seconds) and `<id>-sound.<ext>` (a field recording).
+ * Each scene needs `<id>.<webp|png|jpg>` (a picture — it wins over footage)
+ * or `<id>.mp4` (footage to take one frame from at `still` seconds) and `<id>-sound.<ext>` (a field recording).
  * The sound runs [start, start + loop + fade], and its last `fade` seconds are
  * crossfaded into its first, so the last sample leads back into the first.
  *
@@ -39,7 +39,7 @@ export const SCENES = {
     // The cut above 16 kHz only removes faint clicks up there. Don't pull it
     // lower: the foam's fizz lives in 6–12 kHz, and without it the waves go dull.
     eq: `highpass=f=60,${BRICKWALL(16000)},acompressor=threshold=0.05:ratio=2:attack=40:release=600`,
-    focalX: 42,
+    focalX: 55,
     gainDb: 0,
   },
   forest: {
@@ -47,14 +47,14 @@ export const SCENES = {
     sound: { start: 3, loop: 280, fade: 8 },
     // A whine sits at ~10.7 kHz under the birds; nothing wanted lives there.
     eq: `highpass=f=80,${BRICKWALL(8500)}`,
-    focalX: 54,
+    focalX: 55,
     gainDb: -1,
   },
   snow: {
     still: 7,
     sound: { start: 5, loop: 270, fade: 8 },
     eq: 'highpass=f=40,acompressor=threshold=0.05:ratio=2.5:attack=40:release=600',
-    focalX: 28,
+    focalX: 15,
     gainDb: 1,
   },
 };
@@ -63,6 +63,7 @@ export const SCENES = {
  *  rather than listened to — close enough that nobody reaches for the volume
  *  switching rooms. */
 const TARGET_LUFS = -19;
+const STILLS = ['webp', 'png', 'jpg'];
 const POSTER_WIDTHS = [960, 1920];
 const WIDE_FIT = 'scale=1920:1080:flags=lanczos';
 // A portrait phone shows a narrow slice of a wide frame, blown up. A 3:4 crop
@@ -82,8 +83,10 @@ const probe = (file) =>
       .trim(),
   );
 
+/** The first of `exts`, in that order, that exists. */
 function source(id, suffix, exts) {
-  const hit = readdirSync(INBOX).find((f) => exts.some((e) => f === `${id}${suffix}.${e}`));
+  const files = readdirSync(INBOX);
+  const hit = exts.map((e) => `${id}${suffix}.${e}`).find((f) => files.includes(f));
   if (!hit) throw new Error(`Missing ambient-inbox/${id}${suffix}.{${exts.join(',')}}`);
   return path.join(INBOX, hit);
 }
@@ -125,12 +128,13 @@ for (const [id, cfg] of Object.entries(SCENES)) {
   if (!kept) {
   // A still for now: one frame of the footage, wide and in a 3:4 crop for
   // portrait phones. Moving loops come later.
-  const video = source(id, '', ['mp4', 'mov', 'webm', 'png', 'jpg']);
+  const video = source(id, '', [...STILLS, 'mp4', 'mov', 'webm']);
+  const seek = STILLS.includes(path.extname(video).slice(1)) ? [] : ['-ss', String(cfg.still)];
   const frame = path.join(OUT, `.${id}-frame.png`);
   const tallFrame = path.join(OUT, `.${id}-tall.png`);
   for (const [fit, out] of [[WIDE_FIT, frame], [TALL_FIT(cfg.focalX), tallFrame]]) {
     const pre = [cfg.crop ? `crop=${cfg.crop}` : null, fit].filter(Boolean).join(',');
-    ff(['-ss', String(cfg.still), '-i', video, '-frames:v', '1', '-vf', pre, out]);
+    ff([...seek, '-i', video, '-frames:v', '1', '-vf', pre, out]);
   }
   const poster = async (from, name, width) => {
     await sharp(from).resize({ width }).avif({ quality: 52, effort: 6 }).toFile(path.join(OUT, `${name}.avif`));

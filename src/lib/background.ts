@@ -1,5 +1,6 @@
 /** Which room the visitor is in. */
 
+import { AMBIENT_SCENES, TALL_MEDIA, scenePoster, scenePosterSet } from '@/lib/ambient';
 import { assetPath } from '@/lib/asset-path';
 import { BACKGROUND_MANIFEST, type ManifestRoom } from '@/lib/background-manifest';
 
@@ -88,6 +89,10 @@ export function roomChooserScript(): string {
   // setting and does not need to ship as a second copy.
   const prefix = assetPath('/images/');
   const dev = process.env.NODE_ENV !== 'production';
+  // In the Ambient room the landscape's still is what shows first, not a room.
+  const scenes = Object.fromEntries(
+    AMBIENT_SCENES.map((s) => [s.id, [scenePosterSet(s, 'avif'), `${scenePoster(s, 'avif', 'tall')} 1080w`, s.chrome]]),
+  );
 
   // The journal shows no room, so it starts no photograph downloading.
   return `(function(){try{
@@ -99,10 +104,12 @@ window.__coquietRoom=r[0];
 var y=document.createElement('style');
 y.textContent=':root{--room-lqip:url("'+r[3]+'");--room-focal-x:'+r[1]+'%;--room-focal-y:'+r[4]+'%}';
 document.head.appendChild(y);
-var m=document.querySelector('meta[name="theme-color"]');if(m)m.content=r[2];
-var l=document.createElement('link');l.rel='preload';l.as='image';l.type='image/avif';
-l.imageSrcset=W.map(function(w){return P+r[0]+'-'+w+'.avif '+w+'w'}).join(', ');
-l.imageSizes=${JSON.stringify(BACKGROUND_SIZES)};l.fetchPriority='high';
-document.head.appendChild(l);
+var S=${JSON.stringify(scenes)},c;try{c=localStorage.getItem('coquiet:channel')}catch(e){}
+var s=S[c],m=document.querySelector('meta[name="theme-color"]');if(m)m.content=s?s[2]:r[2];
+function pre(set,media){var l=document.createElement('link');l.rel='preload';l.as='image';l.type='image/avif';
+l.imageSrcset=set;l.imageSizes=${JSON.stringify(BACKGROUND_SIZES)};l.fetchPriority='high';if(media)l.media=media;
+document.head.appendChild(l)}
+if(s){pre(s[0],'not all and ${TALL_MEDIA}');pre(s[1],${JSON.stringify(TALL_MEDIA)})}
+else pre(W.map(function(w){return P+r[0]+'-'+w+'.avif '+w+'w'}).join(', '));
 }catch(e){}})();`;
 }

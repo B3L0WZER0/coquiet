@@ -6,22 +6,37 @@ import { CoffeeMarkInline, CoffeeMarkSteaming } from '@/components/icons/DrinkMa
 import { LiveDot } from '@/components/ui/LiveDot';
 import { VersionBadge } from '@/components/VersionBadge';
 import { assetPath } from '@/lib/asset-path';
+import type { RoomMode } from '@/lib/channels';
 import { JOURNAL_PUBLIC } from '@/lib/journal/config';
 import { SUPPORT_LABEL, SUPPORT_URL } from '@/lib/support';
+
+const MODES: readonly RoomMode[] = ['music', 'ambient'];
 
 /** The composition shown before the room is entered. */
 export function EntryLayer({
   presenceLine,
+  mode,
+  onMode,
   leaving,
   onEnter,
 }: {
   presenceLine: string | null;
+  /** Which room the door opens onto. */
+  mode: RoomMode;
+  onMode: (mode: RoomMode) => void;
   /** True while the layer dissolves; it is removed from the DOM after. */
   leaving: boolean;
   /** `byKeyboard` says whether the door was opened with Enter or Space, so the
       room knows whether moving focus would be a help or a stray highlight. */
   onEnter: (byKeyboard: boolean) => void;
 }) {
+  const onModeKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown'].includes(e.key)) return;
+    e.preventDefault();
+    const next = MODES[(MODES.indexOf(mode) + 1) % MODES.length];
+    onMode(next);
+    e.currentTarget.querySelector<HTMLButtonElement>(`[data-mode="${next}"]`)?.focus();
+  };
 
   return (
     <div
@@ -76,20 +91,24 @@ export function EntryLayer({
             </p>
           </div>
 
-          {/* Which room: two words above the door, not a second button. Ambient
-              is shown before it opens — dimmed, tagged, and nothing to press.
-              At launch it becomes a real choice and the tag reads "New". */}
-          <div role="group" aria-label="Room" className="entry-mode">
-            <span className="entry-mode-option" data-selected="">
-              Music<span className="sr-only">, selected</span>
-            </span>
-            <span className="entry-mode-option" data-soon="">
-              Ambient
-              <span className="entry-mode-badge" aria-hidden="true">
-                Soon
-              </span>
-              <span className="sr-only">, coming soon</span>
-            </span>
+          {/* Which room: a line of type above the door, not a second button.
+              One tab stop; the arrows move between the two, as radios do. */}
+          <div role="radiogroup" aria-label="Room" className="entry-mode" onKeyDown={onModeKey}>
+            {MODES.map((m) => (
+              <button
+                key={m}
+                type="button"
+                role="radio"
+                aria-checked={mode === m}
+                tabIndex={mode === m ? 0 : -1}
+                data-mode={m}
+                onClick={() => onMode(m)}
+                className="entry-mode-option"
+              >
+                {m === 'music' ? 'Music' : 'Ambient'}
+                {m === 'ambient' && <span className="entry-mode-new">New</span>}
+              </button>
+            ))}
           </div>
 
           {/* One row: the door, and — on a phone, where there is no footer to

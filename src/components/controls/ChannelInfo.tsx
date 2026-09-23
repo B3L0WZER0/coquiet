@@ -1,13 +1,16 @@
 'use client';
 
 import { Popover } from '@/components/ui/Popover';
-import { CHANNELS } from '@/lib/channels';
+import { SceneMark } from '@/components/icons/SceneMarks';
+import { getScene, isAmbientId } from '@/lib/ambient';
+import { CHANNELS, type Channel } from '@/lib/channels';
 
-/** The ⓘ beside MUSIC, explaining what the three channels are. */
-export function ChannelInfo() {
+/** The ⓘ beside the switch, explaining what the three channels are. */
+export function ChannelInfo({ channels = CHANNELS }: { channels?: readonly Channel[] }) {
+  const ambient = channels[0]?.kind === 'ambient';
   return (
     <Popover
-      label="What the channels are"
+      label={ambient ? 'What the scenes are' : 'What the channels are'}
       align="center"
       // Line the panel up with the whole selector rather than with this small
       // mark, which sits off to the right of centre. Anchoring to the selector
@@ -18,13 +21,21 @@ export function ChannelInfo() {
       panelClassName="w-[17rem] sm:w-[20rem]"
       panel={
         <dl className="space-y-2.5 text-left">
-          {CHANNELS.map((channel) => (
+          {channels.map((channel) => (
             <div key={channel.id}>
               <dt
-                className="text-[0.8125rem] tracking-[0.02em]"
+                className="flex items-center gap-1.5 text-[0.8125rem] tracking-[0.02em]"
                 style={{ color: 'var(--text-primary)' }}
               >
-                {channel.label}
+                {isAmbientId(channel.id) ? (
+                  <>
+                    <SceneMark id={channel.id} />
+                    {channel.label}
+                    <span style={{ color: 'var(--text-muted)' }}>· {getScene(channel.id).sound}</span>
+                  </>
+                ) : (
+                  channel.label
+                )}
               </dt>
               <dd
                 className="mt-0.5 text-[0.75rem] leading-relaxed"

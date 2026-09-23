@@ -42,6 +42,9 @@ export function removeStored(key: string): void {
 
 export const STORAGE_KEYS = {
   channel: 'channel',
+  /** The last pick inside each room, so going back to it lands where you were. */
+  musicChannel: 'music-channel',
+  ambientScene: 'ambient-scene',
   volume: 'volume',
   timer: 'timer',
   timerPreset: 'timer-preset',

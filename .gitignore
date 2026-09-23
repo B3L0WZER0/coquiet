@@ -14,6 +14,7 @@ shots/
 
 # Dist dir for the e2e server, so it can run beside a normal `next dev`.
 .next-e2e/
+.next-preview/
 
 # The tracks live in R2 and are archived outside the repo; keep a local copy
 # here for `next dev` and the e2e suite, but never commit it again.
@@ -28,3 +29,7 @@ scripts/.cache/
 
 # Local bucket and build state from `wrangler dev` in workers/.
 .wrangler/
+
+# Raw footage and field recordings for `npm run assets:ambient`.
+/ambient-inbox/*
+!/ambient-inbox/README.md

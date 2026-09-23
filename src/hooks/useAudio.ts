@@ -4,7 +4,16 @@ import { useCallback, useEffect, useSyncExternalStore } from 'react';
 
 import { assetPath } from '@/lib/asset-path';
 import { AudioEngine, type AudioState } from '@/lib/audio-engine';
-import { DEFAULT_CHANNEL, getChannel, isChannelId, type ChannelId } from '@/lib/channels';
+import { DEFAULT_AMBIENT, getScene, isAmbientId } from '@/lib/ambient';
+import {
+  DEFAULT_CHANNEL,
+  getChannel,
+  isChannelId,
+  isMusicChannelId,
+  modeOf,
+  type ChannelId,
+  type RoomMode,
+} from '@/lib/channels';
 import { setChimeContextSource } from '@/lib/chime';
 import { STORAGE_KEYS, readStored, writeStored } from '@/lib/storage';
 
@@ -13,6 +22,13 @@ export const DEFAULT_VOLUME = 0.5;
 /** The visitor's remembered channel, or Flow. */
 export function storedChannel(): ChannelId {
   return readStored(STORAGE_KEYS.channel, (raw) => (isChannelId(raw) ? raw : null), DEFAULT_CHANNEL);
+}
+
+/** The channel a room opens on: the last one picked in it. */
+export function storedChannelFor(mode: RoomMode): ChannelId {
+  return mode === 'music'
+    ? readStored(STORAGE_KEYS.musicChannel, (raw) => (isMusicChannelId(raw) ? raw : null), DEFAULT_CHANNEL)
+    : readStored(STORAGE_KEYS.ambientScene, (raw) => (isAmbientId(raw) ? raw : null), DEFAULT_AMBIENT);
 }
 
 /** The visitor's remembered level, or a comfortable default. */
@@ -76,6 +92,11 @@ function getServerSnapshot(): AudioState {
   return SERVER_STATE;
 }
 
+/** Just the state, for the backdrop, which follows the channel but controls nothing. */
+export function useAudioState(): AudioState {
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
 export function useAudio() {
   const state = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 
@@ -84,7 +105,7 @@ export function useAudio() {
   useEffect(() => {
     if (state.status === 'idle' || !('mediaSession' in navigator)) return;
     navigator.mediaSession.metadata = new MediaMetadata({
-      title: getChannel(state.channel).label,
+      title: isAmbientId(state.channel) ? getScene(state.channel).sound : getChannel(state.channel).label,
       artist: 'Coquiet',
       artwork: [{ src: assetPath('/artwork-512.png'), sizes: '512x512', type: 'image/png' }],
     });
@@ -118,8 +139,19 @@ export function useAudio() {
 
   const setChannel = useCallback((id: ChannelId) => {
     writeStored(STORAGE_KEYS.channel, id);
+    writeStored(modeOf(id) === 'music' ? STORAGE_KEYS.musicChannel : STORAGE_KEYS.ambientScene, id);
     return getEngine()?.setChannel(id);
   }, []);
+
+  /** Music or Ambient, chosen at the door. */
+  const setMode = useCallback(
+    (mode: RoomMode) => {
+      const current = getEngine()?.snapshot().channel;
+      if (current && modeOf(current) === mode) return;
+      return setChannel(storedChannelFor(mode));
+    },
+    [setChannel],
+  );
 
   const setVolume = useCallback((v: number) => {
     writeStored(STORAGE_KEYS.volume, String(v));
@@ -133,5 +165,5 @@ export function useAudio() {
   // promises on the way in.
   const toggleMuted = useCallback(() => getEngine()?.toggleMuted(), []);
 
-  return { state, enter, toggle, retry, setChannel, setVolume, setDuck, toggleMuted };
+  return { state, enter, toggle, retry, setChannel, setMode, setVolume, setDuck, toggleMuted };
 }

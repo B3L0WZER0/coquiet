@@ -527,3 +527,77 @@
     transparent 100%
   );
 }
+
+/* The Ambient room's landscapes. Each layer fades on its own, so a scene
+   change is a crossfade and leaving Ambient fades the whole set away. */
+.ambient-backdrop {
+  opacity: 0;
+  transition: opacity var(--ambient-fade) var(--ease-quiet);
+}
+
+.ambient-backdrop[data-showing] {
+  opacity: 1;
+}
+
+/* The incoming scene fades in on top; the outgoing one stays whole beneath
+   it until the fade is done, so the room photo never shows through. */
+.ambient-scene {
+  opacity: 0;
+  transition: opacity 0s linear var(--ambient-fade);
+}
+
+.ambient-scene[data-active] {
+  z-index: 1;
+  opacity: 1;
+  transition: opacity var(--ambient-fade) var(--ease-quiet);
+}
+
+/* A scene seen for the first time mounts already active; without this it
+   would cut in rather than fade. */
+@starting-style {
+  .ambient-scene[data-active] {
+    opacity: 0;
+  }
+}
+
+/* Tuned per scene by `npm run contrast`. */
+.ambient-shade {
+  --shade-top: 40%;
+  --shade-foot: 30%;
+  --shade-all: 0%;
+  background:
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-ink) var(--shade-top), transparent) 0%,
+      color-mix(in oklab, var(--color-ink) calc(var(--shade-top) * 0.6), transparent) 12%,
+      transparent 30%
+    ),
+    linear-gradient(
+      to top,
+      color-mix(in oklab, var(--color-ink) var(--shade-foot), transparent) 0%,
+      transparent 26%
+    ),
+    color-mix(in oklab, var(--color-ink) var(--shade-all), transparent);
+}
+
+[data-scene='forest'] .ambient-shade {
+  --shade-top: 36%;
+  --shade-foot: 20%;
+}
+
+[data-scene='snow'] .ambient-shade {
+  --shade-top: 72%;
+  --shade-foot: 56%;
+  --shade-all: 20%;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-backdrop,
+  .ambient-scene[data-active] {
+    transition-duration: 400ms;
+  }
+
+  .ambient-scene {
+    transition-delay: 400ms;
+  }
+}

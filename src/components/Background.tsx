@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 
+import { AmbientBackdrop } from '@/components/AmbientBackdrop';
+import { storedChannel, useAudioState } from '@/hooks/useAudio';
+import { isAmbientId } from '@/lib/ambient';
 import {
   BACKGROUND_SIZES,
   chosenRoom,
@@ -18,12 +21,18 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
   // document's head has the right one downloading long before this runs; by
   // the time the <picture> appears its bytes are usually already here.
   const [room, setRoom] = useState<Room | null>(null);
+  const { channel } = useAudioState();
+  const scene = isAmbientId(channel) ? channel : null;
 
-  // Read once, on mount, and never again: the room that is showing must not
-  // change under someone who is working.
+  // Read once, and never again: the room that is showing must not change
+  // under someone who is working. Not at all while a landscape covers it —
+  // asked for the first time only if the visitor goes back to Music. The
+  // stored channel is checked too, because on the hydrating render the engine
+  // still reports the server's default.
   useEffect(() => {
-    setRoom(chosenRoom());
-  }, []);
+    if (scene || isAmbientId(storedChannel())) return;
+    setRoom((r) => r ?? chosenRoom());
+  }, [scene]);
 
   // iOS Safari paints its own toolbar with the page's theme colour, and on a
   // page that never scrolls it keeps that toolbar expanded permanently — so a
@@ -32,10 +41,10 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
   // own, which lets the bar pass for the floor continuing past the edge. The
   // chooser has already set this; this keeps it true if the room ever changes.
   useEffect(() => {
-    if (!room) return;
+    if (!room || scene) return;
     const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
     if (meta) meta.content = room.chrome;
-  }, [room]);
+  }, [room, scene]);
 
   return (
     <div aria-hidden="true" className="room-backdrop pointer-events-none fixed -z-10 overflow-hidden">
@@ -62,6 +71,8 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
           </picture>
         )}
       </div>
+
+      <AmbientBackdrop scene={scene} />
 
       {/* Warm contrast veil. */}
       <div

@@ -8,7 +8,6 @@ import { DEFAULT_AMBIENT, getScene, isAmbientId } from '@/lib/ambient';
 import {
   DEFAULT_CHANNEL,
   getChannel,
-  isChannelId,
   isMusicChannelId,
   modeOf,
   type ChannelId,
@@ -19,9 +18,16 @@ import { STORAGE_KEYS, readStored, writeStored } from '@/lib/storage';
 
 export const DEFAULT_VOLUME = 0.5;
 
-/** The visitor's remembered channel, or Flow. */
+/** The room an address opens on: Ambient has its own, everything else is Music. */
+export function addressMode(): RoomMode {
+  if (typeof window === 'undefined') return 'music';
+  return /\/ambient(\/|$)/.test(window.location.pathname) ? 'ambient' : 'music';
+}
+
+/** The channel the page opens on: the last one picked in the address's room.
+ *  Not simply the last one played — leaving in Ambient must not make it the front door. */
 export function storedChannel(): ChannelId {
-  return readStored(STORAGE_KEYS.channel, (raw) => (isChannelId(raw) ? raw : null), DEFAULT_CHANNEL);
+  return storedChannelFor(addressMode());
 }
 
 /** The channel a room opens on: the last one picked in it. */
@@ -138,7 +144,6 @@ export function useAudio() {
   const retry = useCallback(() => getEngine()?.retry(), []);
 
   const setChannel = useCallback((id: ChannelId) => {
-    writeStored(STORAGE_KEYS.channel, id);
     writeStored(modeOf(id) === 'music' ? STORAGE_KEYS.musicChannel : STORAGE_KEYS.ambientScene, id);
     return getEngine()?.setChannel(id);
   }, []);

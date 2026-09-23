@@ -61,9 +61,12 @@ test('inside, the three scenes switch sound and picture together', async ({ page
     )
     .toBe(true);
 
-  // Remembered for next time, and the door opens back onto Ambient.
+  // The front door stays Music; Ambient's own address remembers the scene.
   await page.reload();
+  await expect(page.getByRole('radio', { name: 'Music' })).toHaveAttribute('aria-checked', 'true');
+  await page.goto('/ambient/');
   await expect(page.getByRole('radio', { name: /Ambient/ })).toHaveAttribute('aria-checked', 'true');
+  await expect(page.locator('link[rel="preload"][imagesrcset*="/ambient/forest-"]').first()).toBeAttached();
 });
 
 test('the room selector works from the keyboard', async ({ page }) => {

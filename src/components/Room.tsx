@@ -8,6 +8,7 @@ import { EntryLayer } from '@/components/EntryLayer';
 import { FocusNote } from '@/components/FocusNote';
 import { SoundUnavailable } from '@/components/SoundUnavailable';
 import { Wordmark } from '@/components/Wordmark';
+import { assetPath } from '@/lib/asset-path';
 import { ChannelInfo } from '@/components/controls/ChannelInfo';
 import { FocusTimer } from '@/components/controls/FocusTimer';
 import { MusicSelector } from '@/components/controls/MusicSelector';
@@ -237,7 +238,11 @@ export function Room({ initialMode }: { initialMode?: RoomMode } = {}) {
         inert={entered ? undefined : true}
       >
         <div className="area-wordmark" data-dim={dimmed || undefined}>
-          <Wordmark />
+          {/* Back to the front door: a full load, like the journal's links in.
+              Leaving the room, so the music and any running timer end with it. */}
+          <a href={assetPath('/')} className="rounded-sm" aria-label="Coquiet — back to the start">
+            <Wordmark />
+          </a>
         </div>
 
         {/* Phone only: invite and plan sit across from the wordmark, because the

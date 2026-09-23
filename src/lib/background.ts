@@ -1,6 +1,6 @@
 /** Which room the visitor is in. */
 
-import { AMBIENT_SCENES, TALL_MEDIA, scenePoster, scenePosterSet } from '@/lib/ambient';
+import { AMBIENT_SCENES, DEFAULT_AMBIENT, TALL_MEDIA, scenePoster, scenePosterSet } from '@/lib/ambient';
 import { assetPath } from '@/lib/asset-path';
 import { BACKGROUND_MANIFEST, type ManifestRoom } from '@/lib/background-manifest';
 
@@ -104,7 +104,7 @@ window.__coquietRoom=r[0];
 var y=document.createElement('style');
 y.textContent=':root{--room-lqip:url("'+r[3]+'");--room-focal-x:'+r[1]+'%;--room-focal-y:'+r[4]+'%}';
 document.head.appendChild(y);
-var S=${JSON.stringify(scenes)},c;try{c=localStorage.getItem('coquiet:channel')}catch(e){}
+var S=${JSON.stringify(scenes)},c;if(/\\/ambient(\\/|$)/.test(location.pathname)){try{c=localStorage.getItem('coquiet:ambient-scene')}catch(e){}if(!S[c])c=${JSON.stringify(DEFAULT_AMBIENT)}}
 var s=S[c],m=document.querySelector('meta[name="theme-color"]');if(m)m.content=s?s[2]:r[2];
 function pre(set,media){var l=document.createElement('link');l.rel='preload';l.as='image';l.type='image/avif';
 l.imageSrcset=set;l.imageSizes=${JSON.stringify(BACKGROUND_SIZES)};l.fetchPriority='high';if(media)l.media=media;

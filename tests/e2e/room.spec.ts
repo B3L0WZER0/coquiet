@@ -899,6 +899,14 @@ test.describe('the journal link', () => {
   });
 });
 
+test('the name in the room leads back to the door', async ({ page }) => {
+  await page.locator('.coquiet-cta').click();
+  const home = page.getByRole('link', { name: /back to the start/ });
+  await expect(home).toBeVisible({ timeout: 3000 });
+  await home.click();
+  await expect(page.getByRole('button', { name: 'Enter the room' })).toBeVisible();
+});
+
 test.describe('the support link', () => {
   test('sits on the way in, and nowhere inside the room', async ({ page }) => {
     const link = page.locator('.coquiet-support');

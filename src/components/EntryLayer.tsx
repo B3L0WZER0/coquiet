@@ -76,6 +76,22 @@ export function EntryLayer({
             </p>
           </div>
 
+          {/* Which room: two words above the door, not a second button. Ambient
+              is shown before it opens — dimmed, tagged, and nothing to press.
+              At launch it becomes a real choice and the tag reads "New". */}
+          <div role="group" aria-label="Room" className="entry-mode">
+            <span className="entry-mode-option" data-selected="">
+              Music<span className="sr-only">, selected</span>
+            </span>
+            <span className="entry-mode-option" data-soon="">
+              Ambient
+              <span className="entry-mode-badge" aria-hidden="true">
+                Soon
+              </span>
+              <span className="sr-only">, coming soon</span>
+            </span>
+          </div>
+
           {/* One row: the door, and — on a phone, where there is no footer to
               put it in — the coffee beside it. */}
           <div className="entry-actions">

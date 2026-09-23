@@ -159,6 +159,8 @@ async function audit(page, label) {
       // behind the entry layer at opacity 0, and its controls each report an
       // opacity of 1. Measuring them produced failures for text nobody can see.
       if (!el.checkVisibility({ opacityProperty: true, visibilityProperty: true })) continue;
+      // Screen-reader-only text is clipped to a pixel; there is nothing to see.
+      if (el.closest('.sr-only')) continue;
 
       // Measure the text's own line boxes, not the element's bounding box.
       // A box includes a pill's rounded corners and any sibling icon, and

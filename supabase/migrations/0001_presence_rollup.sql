@@ -22,17 +22,40 @@ create index if not exists presence_sessions_last_seen_idx
 alter table public.presence_sessions enable row level security;
 
 -- Open write, same trust model as today's channel.track(): anyone with the
--- anon key can already claim any session id. No select policy for anon —
--- unlike today, individual visitors' raw activity/drink is no longer
--- readable off the wire, only the aggregate the rollup broadcasts.
-create policy "anon can insert presence" on public.presence_sessions
-  for insert to anon with check (true);
+-- public key can already claim any session id.
+--
+-- `to public` (not `to anon`): PostgREST's Data API for this project executes
+-- table requests as the `authenticator` role itself, not as `anon` — verified
+-- via the Postgres logs (the QUERY/USER fields on a 42501 error). `authenticator`
+-- is a member of `anon`, but role-membership policies didn't apply to it, so
+-- policies here target `public` (every role) rather than relying on that.
+--
+-- A select policy is required too, even though clients only ever write: any
+-- INSERT/UPDATE/DELETE PostgREST issues carries an internal `RETURNING`
+-- (for its own row-count bookkeeping, regardless of the client's `Prefer`
+-- header), and Postgres enforces the select policy against that RETURNING —
+-- with none at all, every write fails with "new row violates row-level
+-- security policy" even though the write policy itself is satisfied. This
+-- was the actual multi-hour debugging saga; see the memory note for the
+-- full trail. Net effect: the table ends up world-readable to anyone with
+-- the public key, same exposure the old Presence design already had — not
+-- the extra tightening originally hoped for, but not a regression either.
+create policy "anyone can read presence" on public.presence_sessions
+  for select to public using (true);
 
-create policy "anon can update presence" on public.presence_sessions
-  for update to anon using (true) with check (true);
+create policy "anyone can insert presence" on public.presence_sessions
+  for insert to public with check (true);
 
-create policy "anon can delete presence" on public.presence_sessions
-  for delete to anon using (true);
+create policy "anyone can update presence" on public.presence_sessions
+  for update to public using (true) with check (true);
+
+create policy "anyone can delete presence" on public.presence_sessions
+  for delete to public using (true);
+
+-- RLS policies alone aren't sufficient — Postgres also requires the
+-- underlying SQL-level GRANT for the operation, independent of which rows
+-- a policy would allow.
+grant select, insert, update, delete on public.presence_sessions to public;
 
 -- Keep this in the same unit as EXPIRY_MS in src/lib/presence/aggregate.ts.
 create or replace function public.presence_rollup() returns void
@@ -73,3 +96,7 @@ $$;
 -- (every 1 minute) and raise HEARTBEAT_MS's effective staleness accordingly.
 select cron.schedule('presence-rollup', '15 seconds', $$select public.presence_rollup();$$);
 -- select cron.schedule('presence-rollup', '* * * * *', $$select public.presence_rollup();$$);
+
+-- Belt and suspenders: make sure the running API picks up the grants/policies
+-- above immediately rather than on its own cache-refresh schedule.
+notify pgrst, 'reload schema';

@@ -1,7 +1,9 @@
 import { ArrowUpRight } from '@/components/journal/Arrows';
+import { Picture } from '@/components/journal/Picture';
 import { RoomOfTheHour } from '@/components/journal/RoomOfTheHour';
 import { assetPath } from '@/lib/asset-path';
 import type { RoomMode } from '@/lib/channels';
+import { scenePhoto } from '@/lib/journal/photos';
 
 /** The way back into the room, over the photograph it is showing right now. */
 export function JournalInvite({
@@ -17,7 +19,17 @@ export function JournalInvite({
       className={`journal-invite journal-invite-${variant}`}
       aria-label={ambient ? 'The ambient room' : 'The focus room'}
     >
-      <RoomOfTheHour />
+      {ambient ? (
+        // Green, not Blue: the first sound post's own photo is the coast.
+        <Picture
+          photo={scenePhoto('forest')}
+          alt=""
+          sizes="(min-width: 64rem) 64rem, 100vw"
+          className="journal-invite-photo"
+        />
+      ) : (
+        <RoomOfTheHour />
+      )}
       <div className="journal-invite-text">
         <p className="journal-invite-title">The room is open.</p>
         <p>

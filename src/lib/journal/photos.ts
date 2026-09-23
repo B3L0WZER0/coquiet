@@ -2,6 +2,7 @@
  * A post's photograph: either one of its own (content/journal/images, encoded
  * by `npm run assets:journal`) or one of the room's.
  */
+import { getScene, type AmbientId } from '@/lib/ambient';
 import { assetPath } from '@/lib/asset-path';
 import { ROOMS } from '@/lib/background';
 import { JOURNAL_PHOTOS } from '@/lib/journal/photo-manifest';
@@ -25,6 +26,11 @@ export function roomPhoto(id: string): Photo {
   const r = ROOMS.find((x) => x.id === id);
   if (!r) throw new Error(`No room "${id}"`);
   return { dir: '/images/', id, widths: r.widths, lqip: r.lqip, focalX: r.focalX, focalY: r.focalY };
+}
+
+export function scenePhoto(id: AmbientId): Photo {
+  const s = getScene(id);
+  return { dir: '/ambient/', id, widths: s.posterWidths, lqip: s.lqip, focalX: s.focalX, focalY: 50 };
 }
 
 export function photoSrcSet(photo: Photo, format: 'avif' | 'webp'): string {

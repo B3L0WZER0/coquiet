@@ -21,7 +21,7 @@ export const AMBIENT_MANIFEST: Record<'coast' | 'forest' | 'snow', AmbientSceneF
     "focalX": 42,
     "chrome": "#544b42",
     "lqip": "data:image/webp;base64,UklGRlwAAABXRUJQVlA4IFAAAACQAwCdASogABIAPu1kqU2ppaOiMAgBMB2JZwCw7A8DYRp1d6ZAAMsN3ZKxchGm7M+qk9hiCBdOIfRvHotIJ/FEA8C0yJBCEUiM8NpRHAQAAA==",
-    "soundSeconds": 360
+    "soundSeconds": 222
   },
   "forest": {
     "posterWidths": [

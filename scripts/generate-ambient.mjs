@@ -35,12 +35,10 @@ const BRICKWALL = (hz) =>
 export const SCENES = {
   coast: {
     still: 11,
-    sound: { start: 30, loop: 360, fade: 8 },
-    // Crashes sit 26 dB over the body; a slow compressor rounds them off
-    // so the limiter after the level-up has almost nothing left to do.
-    // Something in the recording chirps at 7.5–11 kHz throughout; a brick
-    // wall at 6 kHz takes it out and leaves the waves alone.
-    eq: `highpass=f=60,${BRICKWALL(6000)},acompressor=threshold=0.05:ratio=3:attack=40:release=600`,
+    sound: { start: 6, loop: 222, fade: 8 },
+    // The cut above 16 kHz only removes faint clicks up there. Don't pull it
+    // lower: the foam's fizz lives in 6–12 kHz, and without it the waves go dull.
+    eq: `highpass=f=60,${BRICKWALL(16000)},acompressor=threshold=0.05:ratio=2:attack=40:release=600`,
     focalX: 42,
     gainDb: 0,
   },

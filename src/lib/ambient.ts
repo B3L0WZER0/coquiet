@@ -21,7 +21,7 @@ export const AMBIENT_SCENES: readonly AmbientScene[] = [
     id: 'coast',
     label: 'Blue',
     sound: 'Coastal waves',
-    description: 'A hazy mountain bay at evening. Slow, distant waves.',
+    description: 'A hazy mountain bay at evening. Gentle waves on a pebble shore.',
     ...AMBIENT_MANIFEST.coast,
   },
   {

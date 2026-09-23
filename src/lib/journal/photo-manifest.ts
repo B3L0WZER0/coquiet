@@ -17,6 +17,15 @@ export const JOURNAL_PHOTOS: readonly JournalPhotoEntry[] = [
     "lqip": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAAAQBACdASogABAAPu1orU2ppqSiMAgBMB2JYwC7AGBr2z8B4qmGTDreIAD+hHA1DTywGrNDAELlPShd2bzX+GnsF83vaDBru/VZSA1cMvKmaCfh80hlOcAA"
   },
   {
+    "id": "ambient-sound-for-focus",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "lqip": "data:image/webp;base64,UklGRlIAAABXRUJQVlA4IEYAAADQAwCdASogABIAPu1oq02ppiQiMAgBMB2JZQDG9CHN6X/6/szgnGAA3R/KrIsWjcsrpVHMbz7whHIe9di2I0aJtJPNOcAA"
+  },
+  {
     "id": "body-doubling",
     "widths": [
       640,

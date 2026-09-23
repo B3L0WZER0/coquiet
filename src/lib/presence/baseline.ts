@@ -82,7 +82,8 @@ export function rankedSplit(total: number, n: number, rand: () => number): numbe
   return counts;
 }
 
-function expand<T>(keys: readonly T[], counts: number[]): T[] {
+/** Turns per-key counts back into a flat list of that many of each key. */
+export function expand<T>(keys: readonly T[], counts: number[]): T[] {
   return keys.flatMap((key, i) => Array<T>(counts[i]).fill(key));
 }
 

@@ -1,56 +1,69 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { EXPIRY_MS } from '@/lib/presence/aggregate';
 import type { PresenceSnapshot } from '@/lib/presence/types';
 
-/** A stand-in for the one realtime channel the adapter opens. */
+/** A stand-in for the one realtime channel the adapter opens — it now only
+ *  carries the rollup broadcast, not raw presence sync. */
 const channel = {
-  syncHandler: null as null | (() => void),
-  state: {} as Record<string, unknown[]>,
-  on(_type: string, _filter: unknown, cb: () => void) {
-    channel.syncHandler = cb;
+  broadcastHandler: null as null | ((msg: { payload: unknown }) => void),
+  on(_type: string, _filter: unknown, cb: (msg: { payload: unknown }) => void) {
+    channel.broadcastHandler = cb;
     return channel;
   },
   subscribe(cb: (status: string) => void) {
     cb('SUBSCRIBED');
     return channel;
   },
-  presenceState() {
-    return channel.state;
-  },
-  track: vi.fn(async () => undefined),
-  untrack: vi.fn(async () => undefined),
 };
+
+/** A stand-in for the `presence_sessions` table the adapter upserts into —
+ *  the rollup itself is computed server-side, not by anything under test. */
+const upserts: unknown[] = [];
+const deletes: string[] = [];
 
 vi.mock('@supabase/supabase-js', () => ({
   createClient: () => ({
     channel: () => channel,
     removeChannel: () => undefined,
+    from: () => ({
+      upsert: async (row: { id: string }) => {
+        upserts.push(row);
+        return { error: null };
+      },
+      delete: () => ({
+        eq: async (_col: string, id: string) => {
+          deletes.push(id);
+          return { error: null };
+        },
+      }),
+    }),
   }),
 }));
 
 const { SupabasePresenceAdapter } = await import('@/lib/presence/supabase-adapter');
 
-function peer(id: string, at: number) {
-  return { id, activity: null, drink: null, channel: 'flow', at };
+/** A rollup broadcast reporting `count` people, none in any particular bucket
+ *  — the tests below only care about the total surviving reconstruction. */
+function rollup(count: number) {
+  return { count, activities: {}, drinks: {} };
 }
 
-describe('supabase presence expiry', () => {
+describe('supabase presence rollup', () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    channel.state = {};
-    channel.syncHandler = null;
+    channel.broadcastHandler = null;
+    upserts.length = 0;
+    deletes.length = 0;
   });
 
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  // The room only ever recomputes when something happens to it, and a peer who
-  // vanishes without untracking — a killed tab, a dead socket, a sleeping
-  // phone — is exactly the case where nothing does. The count has to retire
-  // them on its own rather than keep reporting a room that has emptied.
-  it('drops a peer that stopped heartbeating, with no further sync', () => {
+  // Expiry now happens server-side (the rollup function sweeps stale rows
+  // before aggregating) — the adapter just has to trust what the next
+  // broadcast says, with no client-side timer of its own to fall back on.
+  it('drops a peer once a rollup reports the room emptied', () => {
     const adapter = new SupabasePresenceAdapter();
     let snapshot: PresenceSnapshot = adapter.snapshot();
     adapter.subscribe((s) => {
@@ -58,19 +71,17 @@ describe('supabase presence expiry', () => {
     });
     adapter.observe();
 
-    channel.state = { someone: [peer('someone', Date.now())] };
-    channel.syncHandler?.();
+    channel.broadcastHandler?.({ payload: rollup(1) });
     expect(snapshot.sessions).toHaveLength(1);
 
-    // They go quiet. No leave event ever arrives.
-    vi.advanceTimersByTime(EXPIRY_MS + 10_000);
+    channel.broadcastHandler?.({ payload: rollup(0) });
     expect(snapshot.sessions).toHaveLength(0);
     expect(snapshot.available).toBe(true);
 
     adapter.destroy();
   });
 
-  it('keeps a peer that is still heartbeating', () => {
+  it('keeps a peer the rollup keeps reporting', () => {
     const adapter = new SupabasePresenceAdapter();
     let snapshot: PresenceSnapshot = adapter.snapshot();
     adapter.subscribe((s) => {
@@ -79,12 +90,25 @@ describe('supabase presence expiry', () => {
     adapter.observe();
 
     for (let i = 0; i < 8; i++) {
-      channel.state = { someone: [peer('someone', Date.now())] };
-      channel.syncHandler?.();
+      channel.broadcastHandler?.({ payload: rollup(1) });
       vi.advanceTimersByTime(15_000);
     }
 
     expect(snapshot.sessions).toHaveLength(1);
+    adapter.destroy();
+  });
+
+  it('upserts a heartbeat row on join and deletes it on leave', async () => {
+    const adapter = new SupabasePresenceAdapter();
+    adapter.observe();
+    adapter.join({ activity: 'working', drink: 'coffee', channel: 'flow' });
+    await vi.advanceTimersByTimeAsync(0);
+    expect(upserts).toHaveLength(1);
+
+    adapter.leave();
+    await vi.advanceTimersByTimeAsync(0);
+    expect(deletes).toHaveLength(1);
+
     adapter.destroy();
   });
 });

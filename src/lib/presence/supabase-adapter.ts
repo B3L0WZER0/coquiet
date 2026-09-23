@@ -6,21 +6,28 @@ import {
   type SupabaseClient,
 } from '@supabase/supabase-js';
 
-import { DEFAULT_CHANNEL, isChannelId } from '@/lib/channels';
-import { EXPIRY_MS, HEARTBEAT_MS, live } from '@/lib/presence/aggregate';
+import { DEFAULT_CHANNEL } from '@/lib/channels';
+import { HEARTBEAT_MS } from '@/lib/presence/aggregate';
+import { expand } from '@/lib/presence/baseline';
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from '@/lib/presence/config';
 import { documentSessionId } from '@/lib/presence/session-id';
 import {
-  isActivity,
-  isDrink,
+  ACTIVITIES,
+  DRINKS,
+  type Activity,
+  type Drink,
   type OwnPresence,
   type PresenceProvider,
   type PresenceSession,
   type PresenceSnapshot,
 } from '@/lib/presence/types';
 
-/** One room, one channel. */
+/** One room, one channel — carries the rollup broadcast, nothing else. */
 const ROOM = 'coquiet:room';
+
+/** The event a rollup tick broadcasts on `ROOM`. Matches the Postgres
+ *  function in supabase/migrations/0001_presence_rollup.sql. */
+const ROLLUP_EVENT = 'pulse';
 
 /** Reconnect backoff: quick first, then backing off so a dead server isn't
  *  hammered by every open tab. Someone sitting a 50-minute timer out has to be
@@ -31,15 +38,8 @@ const RETRY_MAX_MS = 30_000;
 /** How long a dropped connection keeps serving the room it last saw. Mobile
  *  Safari suspends the socket on every tab switch and lock; without this grace
  *  the presence line blinked out and back on each reconnect. The sessions it
- *  keeps showing are still the real ones, expired by the shared `live()` rule. */
+ *  keeps showing are still the real ones, from the last rollup received. */
 const OFFLINE_GRACE_MS = 40_000;
-
-/** How often expired sessions are swept out. The room's own expiry rule is
- *  only ever applied when something recomputes the snapshot, and a peer who
- *  vanishes without untracking — a killed tab, a dropped socket, a phone that
- *  went to sleep — sends nothing to recompute on. Without this the count keeps
- *  reporting people who have gone. */
-const SWEEP_MS = 5_000;
 
 /** One Supabase client for the page, not one per adapter or per reconnect —
  *  each `createClient` spins up its own auth client against the same storage
@@ -56,27 +56,59 @@ function getClient(): SupabaseClient {
   return sharedClient;
 }
 
-/** What one person publishes about themselves. */
-interface Payload {
+/** One row this visitor keeps upserted in `presence_sessions` while joined.
+ *  A scheduled Postgres job aggregates the table and broadcasts the rollup —
+ *  no client ever reads this table directly. */
+interface SessionRow {
   id: string;
-  activity: string | null;
-  drink: string | null;
+  activity: Activity | null;
+  drink: Drink | null;
   channel: string;
-  at: number;
+  last_seen: string;
 }
 
-/** Read someone else's payload defensively. */
-function toSession(raw: unknown): PresenceSession | null {
+/** What one rollup tick broadcasts: counts, not individual sessions. */
+interface Rollup {
+  count: number;
+  activities: Record<Activity, number>;
+  drinks: Record<Exclude<Drink, 'nothing'>, number>;
+}
+
+const DRINK_KEYS = DRINKS.filter((d): d is Exclude<Drink, 'nothing'> => d !== 'nothing');
+
+/** Read the rollup broadcast defensively — it crossed the network too. */
+function parseRollup(raw: unknown): Rollup | null {
   if (typeof raw !== 'object' || raw === null) return null;
-  const p = raw as Partial<Payload>;
-  if (typeof p.id !== 'string' || p.id.length === 0) return null;
+  const p = raw as Record<string, unknown>;
+  if (typeof p.count !== 'number') return null;
+
+  const num = (v: unknown): number => (typeof v === 'number' && v > 0 ? v : 0);
+  const activities = (typeof p.activities === 'object' && p.activities !== null
+    ? (p.activities as Record<string, unknown>)
+    : {});
+  const drinks = (typeof p.drinks === 'object' && p.drinks !== null
+    ? (p.drinks as Record<string, unknown>)
+    : {});
+
   return {
-    id: p.id,
-    activity: isActivity(p.activity) ? p.activity : null,
-    drink: isDrink(p.drink) ? p.drink : null,
-    channel: isChannelId(p.channel) ? p.channel : DEFAULT_CHANNEL,
-    lastSeen: typeof p.at === 'number' ? p.at : Date.now(),
+    count: Math.max(0, p.count),
+    activities: Object.fromEntries(ACTIVITIES.map((a) => [a, num(activities[a])])) as Record<
+      Activity,
+      number
+    >,
+    drinks: Object.fromEntries(DRINK_KEYS.map((d) => [d, num(drinks[d])])) as Record<
+      Exclude<Drink, 'nothing'>,
+      number
+    >,
   };
+}
+
+/** Pad or trim a reconstructed list to exactly `length`, so a rollup whose
+ *  bucket counts don't quite add up (a race between the sweep and a fresh
+ *  heartbeat) still yields the right number of sessions. */
+function fitToLength<T>(list: T[], length: number, fill: T): T[] {
+  if (list.length >= length) return list.slice(0, length);
+  return [...list, ...Array<T>(length - list.length).fill(fill)];
 }
 
 /** Compare on the fields the room actually renders, so a sync that changed
@@ -98,13 +130,12 @@ export class SupabasePresenceAdapter implements PresenceProvider {
   private channel: RealtimeChannel | null = null;
   private id: string;
   private own: PresenceSession;
-  private others = new Map<string, PresenceSession>();
+  private lastRollup: Rollup | null = null;
   private listeners = new Set<(snapshot: PresenceSnapshot) => void>();
   private heartbeat: number | null = null;
   private retry: number | null = null;
   private retryDelay = RETRY_MIN_MS;
   private graceTimer: number | null = null;
-  private sweep: number | null = null;
   private observing = false;
   private joined = false;
   private connected = false;
@@ -129,7 +160,6 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     if (typeof window === 'undefined') return;
     this.observing = true;
     this.bindVisibility();
-    this.startSweep();
     this.connect();
   }
 
@@ -137,11 +167,12 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     if (this.channel) return;
 
     const client = getClient();
-    this.channel = client.channel(ROOM, {
-      config: { presence: { key: this.id } },
-    });
+    this.channel = client.channel(ROOM);
 
-    this.channel.on('presence', { event: 'sync' }, () => this.readState());
+    this.channel.on('broadcast', { event: ROLLUP_EVENT }, ({ payload }: { payload: unknown }) => {
+      this.lastRollup = parseRollup(payload);
+      this.publish();
+    });
 
     this.channel.subscribe((status) => {
       this.connected = status === 'SUBSCRIBED';
@@ -150,14 +181,14 @@ export class SupabasePresenceAdapter implements PresenceProvider {
         this.offlineSince = null;
         this.retryDelay = RETRY_MIN_MS;
         this.clearGraceTimer();
-        // Joining before the channel was ready leaves nothing tracked, so the
-        // track is (re)issued here as well as in join().
+        // Reconnecting doesn't lose the heartbeat interval, but re-announcing
+        // now rather than waiting for the next tick keeps the row fresh.
         if (this.joined) void this.track();
       } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT' || status === 'CLOSED') {
         // The socket does not always come back on its own: the channel can
         // settle into an error state and stay there. Keep the last known room
         // on screen for the grace window rather than blinking it out — the
-        // sessions still expire on their own if the outage outlasts it.
+        // rollup catches up once a new one arrives.
         this.markOffline();
         this.scheduleReconnect();
       }
@@ -208,35 +239,58 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     }, delay);
   }
 
-  /** Replace what we know with what the server currently reports. */
-  private readState(): void {
-    if (!this.channel) return;
-    const state = this.channel.presenceState();
-    this.others.clear();
-    for (const entries of Object.values(state)) {
-      for (const entry of entries as unknown[]) {
-        const session = toSession(entry);
-        if (session && session.id !== this.id) this.others.set(session.id, session);
-      }
+  /** Rebuild `count` synthetic sessions from the last rollup, excluding this
+   *  visitor's own row (the server counted it; `own` is appended separately
+   *  in `build()` so it reflects instantly rather than on the next tick). */
+  private othersFromRollup(now: number): PresenceSession[] {
+    const rollup = this.lastRollup;
+    if (!rollup) return [];
+
+    const activities = { ...rollup.activities };
+    const drinks = { ...rollup.drinks };
+    let total = rollup.count;
+
+    if (this.joined) {
+      total = Math.max(0, total - 1);
+      const a = this.own.activity;
+      if (a && activities[a] > 0) activities[a] -= 1;
+      const d = this.own.drink;
+      if (d && d !== 'nothing' && drinks[d] > 0) drinks[d] -= 1;
     }
-    this.publish();
+
+    const activityList = fitToLength(
+      expand(ACTIVITIES, ACTIVITIES.map((a) => activities[a])),
+      total,
+      null,
+    );
+    const drinkList = fitToLength(
+      expand(DRINK_KEYS, DRINK_KEYS.map((d) => drinks[d])),
+      total,
+      null,
+    );
+
+    return Array.from({ length: total }, (_, i) => ({
+      id: `rollup-${i}`,
+      activity: activityList[i],
+      drink: drinkList[i],
+      channel: DEFAULT_CHANNEL,
+      lastSeen: now,
+    }));
   }
 
   private async track(): Promise<void> {
-    if (!this.channel || !this.connected) return;
     this.own = { ...this.own, lastSeen: Date.now() };
-    const payload: Payload = {
+    const row: SessionRow = {
       id: this.id,
       activity: this.own.activity,
       drink: this.own.drink,
       channel: this.own.channel,
-      at: this.own.lastSeen,
+      last_seen: new Date(this.own.lastSeen).toISOString(),
     };
     try {
-      await this.channel.track(payload);
+      await getClient().from('presence_sessions').upsert(row);
     } catch {
-      // The subscribe callback sees the drop and rebuilds the channel; the
-      // next beat re-tracks once it is back.
+      // The next heartbeat retries; the row is stale, not wrong.
     }
   }
 
@@ -246,21 +300,15 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     this.joined = true;
 
     this.bindVisibility();
-    this.startSweep();
     this.connect();
     void this.track();
 
-    // Keeps `lastSeen` fresh so a connection that has gone quiet without
-    // dropping is still expired by the shared rule rather than lingering.
+    // Keeps the row fresh so the next rollup still counts this session,
+    // rather than sweeping it out for having gone quiet.
     this.heartbeat = window.setInterval(() => void this.track(), HEARTBEAT_MS);
     window.addEventListener('pagehide', this.onPageHide);
 
     this.publish();
-  }
-
-  private startSweep(): void {
-    if (this.sweep !== null || typeof window === 'undefined') return;
-    this.sweep = window.setInterval(() => this.publish(), SWEEP_MS);
   }
 
   private onPageHide = () => this.leave();
@@ -302,9 +350,9 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     this.joined = false;
     this.stopTimers();
     try {
-      void this.channel?.untrack();
+      void getClient().from('presence_sessions').delete().eq('id', this.id);
     } catch {
-      // Tearing down; the server drops us when the socket closes anyway.
+      // Tearing down; the row expires via the next rollup sweep anyway.
     }
     this.publish();
   }
@@ -330,12 +378,7 @@ export class SupabasePresenceAdapter implements PresenceProvider {
       return { sessions: [], joined: false, available: false };
     }
     const now = Date.now();
-    const others = live([...this.others.values()], now);
-    // Prune as well as report, so a long-lived tab does not accumulate entries
-    // for sessions that ended hours ago.
-    for (const [id, session] of this.others) {
-      if (now - session.lastSeen >= EXPIRY_MS) this.others.delete(id);
-    }
+    const others = this.othersFromRollup(now);
     const sessions = this.joined ? [...others, { ...this.own, lastSeen: now }] : others;
     return { sessions, joined: this.joined, available: true };
   }
@@ -352,13 +395,6 @@ export class SupabasePresenceAdapter implements PresenceProvider {
     this.heartbeat = null;
   }
 
-  /** Only on teardown — leaving the room still leaves an observer watching a
-   *  room that has to keep retiring the people who have gone. */
-  private stopSweep(): void {
-    if (this.sweep !== null) window.clearInterval(this.sweep);
-    this.sweep = null;
-  }
-
   /** Only on teardown — leaving the room still leaves an observer watching. */
   private stopRetry(): void {
     if (this.retry !== null) window.clearTimeout(this.retry);
@@ -369,7 +405,6 @@ export class SupabasePresenceAdapter implements PresenceProvider {
   destroy(): void {
     this.leave();
     this.stopTimers();
-    this.stopSweep();
     this.stopRetry();
     this.clearGraceTimer();
     if (typeof window !== 'undefined') {

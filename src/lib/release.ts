@@ -54,7 +54,6 @@ export const RELEASES: Release[] = [
         text: 'Ambient is here: ocean waves, wind in a forest, and falling snow.',
         link: { phrase: 'Ambient', path: '/ambient/' },
       },
-      'Fourteen new rooms and seven new pieces of music.',
       'More focus notes and break ideas.',
     ],
   },

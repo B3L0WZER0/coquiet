@@ -67,6 +67,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAwBQCdASogABIAPuVio02pJaMiMAwBIByJZQC3uCPSOnHSHXBHYe5LjMyit23I7wCTIAD+s3bnemTIgkIcWw1+FjrsZQtpZcj+5BiG/WK0DI6wJ5oXjw33UVziSv6ypCJbk9wcuM01omSJLssneSgq3DewNJNIhAA=",
   },
   {
+    id: "atlantic-fold-library",
+    widths: [640, 1024, 1600],
+    focalX: 40,
+    focalY: 50,
+    chrome: "#715c49",
+    lqip: "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAABQBQCdASogABIAPu1mp02ppaOiMBgMATAdiWcAtsgMnEkyMZB/vdpjjtXtB2TgVsquIwwA/tEMMFO8DG1FEveV7UwNo3vrLDIf/x9a20qnBqnTKCWBjuVwTuSEWafJlwNKL+Y3PcCXwDB0zTI+TIhCN7Ouksej4TAAAA==",
+  },
+  {
     id: "autumn-courtyard-cafe",
     widths: [640, 1024, 1600],
     focalX: 50,
@@ -169,6 +177,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#483d35",
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASogABIAPuFWpU2opKOiN/qoARAcCWUAvzgh3Kt1+V91C1lIFLSqzoAA/u6AhfAK+NseSPf7k/S8qKHAo/Etku2Ycwig7qQXYo4C7lVpp/RDDQaamL4DY0nwn97igAAA",
+  },
+  {
+    id: "cliffside-coffee-house",
+    widths: [640, 1024, 1600],
+    focalX: 45,
+    focalY: 50,
+    chrome: "#998f88",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABQBQCdASogABIAPu1orE+ppiQiMBgIATAdiWcAuwARRGsIMenAfq/3lwXZ2UzlIbZmaDgA+RGKNAXd0DkeocSKSyOzLm1UEkDzJ19cbhK1USVQhRDTv+VMAgduJz1aallHrJ2gQb4AvcAA",
   },
   {
     id: "cloudline-walnut-study",
@@ -331,6 +347,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAABwBQCdASogABIAPu1kqk2ppaQiMBgMATAdiWcAtsgN0fj9B76yQ0nWkTbvAKZ0bx3x6SIAAP655f02lVSRih4x340xDHArpht6av2a72F/hBqR1iPfYRLGQ9O+IBUaGw0LV7mAAAA=",
   },
   {
+    id: "heather-cottage-study",
+    widths: [640, 1024, 1600],
+    focalX: 80,
+    focalY: 50,
+    chrome: "#4a3829",
+    lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwBACdASogABIAPt1WpU2opKOiN/qoARAbiWcAAFpNst/bhWaquDhz4QggDw7LrgAA/unK2mJbeTJ0QjBCD33/0HxNXZLVT3XhAQvQxT+V+MERwNjyjnfosjUOKuj85kAAAA==",
+  },
+  {
     id: "lake-window-library",
     widths: [640, 1024, 1600],
     focalX: 82,
@@ -475,6 +499,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQBACdASogABIAPu1kqE2ppaOiMAgBMB2JYwDCgB5e8rW4/agZydfRiOAT3eg0MAD+2X+VcMDmgnZh+nTwf8TNFLlGjmmbuy9WKOisrQwPTarsFZk6q0YPu9h28HDP101nHZqE20AAAA==",
   },
   {
+    id: "rain-on-the-cottage",
+    widths: [640, 1024, 1600],
+    focalX: 15,
+    focalY: 50,
+    chrome: "#3a291a",
+    lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADQBACdASogABIAPu1gp02ppSOiMAgBMB2JZQC2yB5TOUsQMjrZf8dU413kE5GuAAD+2Uz81iCTiiku2WaUMhVKIJLyqn2zKppnuIBK+RmXHKqKF0De9lMEe4756GrKRQqeYAAA",
+  },
+  {
     id: "rainfall-ridge-studio",
     widths: [640, 1024, 1600],
     focalX: 55,
@@ -497,6 +529,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#715a41",
     lqip: "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAwBQCdASogABIAPu1krVAppSQisBgIATAdiWMAACkQOhSv1+kQF/FZrjzG21orgBfeAAD+z0o2gI7d4QyaT5PYZtLosay8v3J+l77LSMbLGa8G3sC83L2aIFQC9IezqOHjmpjG2mP63kFSQOwEkFsD1fFcAAAA",
+  },
+  {
+    id: "sea-arch-reading-room",
+    widths: [640, 1024, 1600],
+    focalX: 30,
+    focalY: 50,
+    chrome: "#4a382a",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADwBACdASogABIAPu1ssFCppiSiqAqpMB2JZwAAKf1aJtQ1MsRt/vvYJR5kwkU5nCAAzjdGVSyGkkLKM7xlnP7Lu0Sz9ydb3tkTVa4euQg//T/AyEZovpbeTG06n59U8gyncVqvaZIMgAAA",
   },
   {
     id: "snow-valley-monastery-study",

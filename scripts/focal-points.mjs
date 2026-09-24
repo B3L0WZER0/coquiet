@@ -25,6 +25,8 @@ export const FOCAL_X = {
   'arched-tree-cafe': 55,
   'architecture-canyon': 73,
   'architecture-fireplace-lake': 65,
+  // The woman at the table by the glass, with the cliffs falling to the sea.
+  'atlantic-fold-library': 40,
   // The woman at the tall window, with the cloister and its copper trees.
   'autumn-courtyard-cafe': 50,
   // The waterfall over the rocks. The one figure sits against the far-left
@@ -44,6 +46,8 @@ export const FOCAL_X = {
   'circular-window-studio': 65,
   'cliff-cave': 50,
   'cliffside-cafe-focus': 68,
+  // The reader at his table, with the headland and the surf behind him.
+  'cliffside-coffee-house': 45,
   // The man at the desk against the window onto the cloud in the valley.
   'cloudline-walnut-study': 60,
   'coastal-grotto-writer': 60,
@@ -80,6 +84,8 @@ export const FOCAL_X = {
   // The man at the desk by the shelves, with the pool and the autumn trees.
   'granite-garden-study': 74,
   'granite-pool-reading-room': 45,
+  // The man at the lamp-lit desk in the window, with the sea beyond it.
+  'heather-cottage-study': 80,
   // The woman at the window desk, with the lake filling the rest.
   'lake-window-library': 82,
   'library-in-jungle': 80,
@@ -116,6 +122,8 @@ export const FOCAL_X = {
   'olive-vault-cafe': 25,
   'open-ocean-reading-room': 16,
   'rain-garden-pavilion': 64,
+  // The figure at the far end of the window desks, down the lit row.
+  'rain-on-the-cottage': 15,
   // The man at the desk, with the rain coming down the wooded ridge.
   'rainfall-ridge-studio': 55,
   // The window wall and its maples, with the two at the tables below them.
@@ -123,6 +131,9 @@ export const FOCAL_X = {
   // The terraces the room is named for barely survive a portrait slice; this
   // keeps the woman at her desk instead, and the valley to the landscape view.
   'rice-terrace-focus-pavilion': 20,
+  // The sea arch at sunset, over the curved shelves. Both readers sit hard
+  // against the edges, so this takes what the room is built to look at.
+  'sea-arch-reading-room': 30,
   // The desk and its lamp. The arched window is the better photograph, but it
   // is the only frame here with anyone in it.
   'snow-valley-monastery-study': 40,

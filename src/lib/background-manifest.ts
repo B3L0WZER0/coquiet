@@ -331,6 +331,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADQBACdASogABIAPu1mq04ppaQiMAgBMB2JZQC2yCFoUFbAMkzwnCJ0WQSkemlasAD+7ov2KavS/hRIE2QlTnj/CN1NADUWdGs0KtMvxNPj3l2K93YqUdFHqOSfYPzr7+AqZL8dp1PoFZzy/rJpVl7gAAA=",
   },
   {
+    id: "ginkgo-courtyard-studio",
+    widths: [640, 1024, 1600],
+    focalX: 20,
+    focalY: 50,
+    chrome: "#a7a2a1",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABQBQCdASogABIAPu1grFCppKQisBgIATAdiWUAt7gR6R1cb9d39TNt2ignATGynY8dagAA/F0JyKuOkZtciMh/f+9iLoHp8SwWPxh/pN9zxKTWURe/7d+sAKjBwKzkbrcEHUQQxgAAAA==",
+  },
+  {
     id: "granite-garden-study",
     widths: [640, 1024, 1600],
     focalX: 74,
@@ -523,6 +531,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwBQCdASogABIAPu1kp02ppaOiMBgMATAdiWUAguUDPsC5HMszMNcWae8xpmn63olKAAD+y+zBsRLPoCI1HVVfP/eSez9zQ+tABfua6p0Xp1yQjoiRJVfTf50q9Qnszc/Xs9OsazL7jJYgf0PRQAAA",
   },
   {
+    id: "redwood-lantern-library",
+    widths: [640, 1024, 1600],
+    focalX: 75,
+    focalY: 50,
+    chrome: "#9a8a80",
+    lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAADQBACdASogABIAPu1kqk4ppaQiMAgBMB2JZQC7ABK5m3ITUy4jiY10fd0tZK9xAAD56QnSLoqXaj6DUy7JMG1tB5S6e2eHbPhrqRq3a3Bi5kDnIgoOUdeGAoidgasEwf17c1IL/55OWucSyGFoAAAA",
+  },
+  {
     id: "rice-terrace-focus-pavilion",
     widths: [640, 1024, 1600],
     focalX: 20,
@@ -569,6 +585,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#624e3d",
     lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACwBACdASogABIAPu1kpk4ppaMiMBgMATAdiWUAuwAMdRM9ek9K8VFP6L8F5p2AAP6pCU1Wp71jY3CZGu0znWjW7+B80t8Bp8h5lDC72ljkQkAydN28ZWK7n40eKsdrFCHW6T1E+kHJ4htwNcAAAA==",
+  },
+  {
+    id: "tidepool-stone-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 80,
+    focalY: 50,
+    chrome: "#4e3723",
+    lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAACQBACdASogABIAPu1iqE2ppaOiMAgBMB2JZQAAWp9Aq7n2Oa4XIhnEg68oXZAA/hdYu3SUwFuLY03R/yebZWn9ygMT+dj0Q7eyLPLuYhNQph+awdwK+17rv4Esm2++XlhhFGAAAAA=",
   },
   {
     id: "valley-vault",

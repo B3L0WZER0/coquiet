@@ -80,6 +80,9 @@ export const FOCAL_X = {
   // built around. Centred on the view instead; in portrait they fall outside.
   'forest-waterfall-salon': 18,
   'garden-pool': 66,
+  // The ginkgo over the water court. The two working here are small and far
+  // back; the tree is what the room is built around.
+  'ginkgo-courtyard-studio': 20,
   // The reader by the fire, doubled in the pool below.
   // The man at the desk by the shelves, with the pool and the autumn trees.
   'granite-garden-study': 74,
@@ -128,6 +131,8 @@ export const FOCAL_X = {
   'rainfall-ridge-studio': 55,
   // The window wall and its maples, with the two at the tables below them.
   'rainlit-maple-cafe': 55,
+  // The woman at the lit desk, with the redwood trunks through the glass.
+  'redwood-lantern-library': 75,
   // The terraces the room is named for barely survive a portrait slice; this
   // keeps the woman at her desk instead, and the valley to the landscape view.
   'rice-terrace-focus-pavilion': 20,
@@ -143,6 +148,8 @@ export const FOCAL_X = {
   'tidal-oculus-cafe': 85,
   // The woman at the table, with the dune grass and the sea through the doors.
   'tideline-cafe': 32,
+  // The woman at the window table, with the rocks and the surf behind her.
+  'tidepool-stone-cafe': 80,
   'valley-vault': 34,
   // Off the desk a little, so the slice carries some of the lake it looks at.
   'work-lake-view': 26,

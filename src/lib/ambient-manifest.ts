@@ -10,6 +10,8 @@ export interface AmbientSceneFiles {
   /** The browser toolbar's colour while this scene shows. */
   chrome: string;
   lqip: string;
+  /** The moving loop's file stem under /audio, or null for a still. */
+  loop: string | null;
 }
 
 export const AMBIENT_MANIFEST: Record<'coast' | 'forest' | 'snow', AmbientSceneFiles> = {
@@ -21,7 +23,8 @@ export const AMBIENT_MANIFEST: Record<'coast' | 'forest' | 'snow', AmbientSceneF
     "focalX": 55,
     "chrome": "#544b42",
     "lqip": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAADwAwCdASogABIAPu1kqk2ppaQiMAgBMB2JZQDE2CHYUkySBG2HUowAAN0f2wvOnEXQckKBxWMC7LpZ35q7R4ZJzNLJguuTgAA=",
-    "soundSeconds": 222
+    "soundSeconds": 222,
+    "loop": null
   },
   "forest": {
     "posterWidths": [
@@ -31,7 +34,8 @@ export const AMBIENT_MANIFEST: Record<'coast' | 'forest' | 'snow', AmbientSceneF
     "focalX": 55,
     "chrome": "#655c54",
     "lqip": "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAACQBACdASogABIAPu1mqU2ppaOiMAgBMB2JZwDE2BinVQnrUqiH/7Y8Qj/0cFAA/tsiZkD0eXOBBeVPCYedH+DWKAjyd1Kh4fC/lezl16RnnEDAMGv0j6oogMRQGV2shVQAAA==",
-    "soundSeconds": 280
+    "soundSeconds": 280,
+    "loop": null
   },
   "snow": {
     "posterWidths": [
@@ -41,6 +45,7 @@ export const AMBIENT_MANIFEST: Record<'coast' | 'forest' | 'snow', AmbientSceneF
     "focalX": 15,
     "chrome": "#424242",
     "lqip": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAABwBACdASogABIAPu1orE+ppiQiMBgIATAdiWcAv+wLdHG/4dXv8vUY3idYwACEwa9ft/mcFcUJ9GbJP9Gz6r9GhkU1WHhcrV7qGfKK5Ad7gAAA",
-    "soundSeconds": 270
+    "soundSeconds": 270,
+    "loop": null
   }
 };

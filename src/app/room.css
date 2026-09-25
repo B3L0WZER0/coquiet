@@ -560,6 +560,22 @@
   }
 }
 
+/* The moving loop fades in over the still once it is really playing. */
+.ambient-loop {
+  opacity: 0;
+  transition: opacity 1600ms var(--ease-quiet);
+}
+
+.ambient-loop[data-moving] {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ambient-loop {
+    display: none;
+  }
+}
+
 /* Tuned per scene by `npm run contrast`. */
 .ambient-shade {
   --shade-top: 40%;

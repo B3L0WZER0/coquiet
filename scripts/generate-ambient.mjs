@@ -3,9 +3,13 @@
  *
  * Usage: npm run assets:ambient              every scene
  *        npm run assets:ambient -- coast     just one
+ *        npm run assets:ambient -- --loop    only the moving loops, then upload them
  *
  * Each scene needs `<id>.<webp|png|jpg>` (a picture — it wins over footage)
  * or `<id>.mp4` (footage to take one frame from at `still` seconds) and `<id>-sound.<ext>` (a field recording).
+ * Footage beside a picture becomes the scene's moving loop, played over it:
+ * its tail is crossfaded into its head like the sound's, and the files go to
+ * R2 (served at /audio/*) rather than GitHub Pages. `--no-upload` skips that.
  * The sound runs [start, start + loop + fade], and its last `fade` seconds are
  * crossfaded into its first, so the last sample leads back into the first.
  *
@@ -13,6 +17,7 @@
  */
 
 import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
@@ -22,6 +27,9 @@ const ROOT = path.resolve(import.meta.dirname, '..');
 const INBOX = path.join(ROOT, 'ambient-inbox/src');
 const OUT = path.join(ROOT, 'public/ambient');
 const MANIFEST = path.join(ROOT, 'src/lib/ambient-manifest.ts');
+/** Gitignored, and served by `next dev`; production reads the same names from R2. */
+const LOOP_OUT = path.join(ROOT, 'public/audio');
+const R2 = 'r2:coquiet-audio';
 
 /** A steep FIR low-pass: flat to `hz`, −90 dB by 13% above it. */
 const BRICKWALL = (hz) =>
@@ -73,9 +81,12 @@ const TALL_FIT = (focalX) => `crop=ih*3/4:ih:(iw-ih*3/4)*${focalX / 100}:0,scale
 const only = process.argv.slice(2).filter((a) => !a.startsWith('-'));
 /** `--sound` re-cuts only the audio, keeping the videos and posters as they are. */
 const SOUND_ONLY = process.argv.includes('--sound');
+const LOOP_ONLY = process.argv.includes('--loop');
+const NO_UPLOAD = process.argv.includes('--no-upload');
 await mkdir(OUT, { recursive: true });
 
-const ff = (args) => execFileSync('ffmpeg', ['-v', 'error', '-y', ...args], { stdio: 'inherit' });
+const ff = (args) =>
+  execFileSync('ffmpeg', ['-v', 'error', '-y', ...args], { stdio: 'inherit', env: { ...process.env, SVT_LOG: '1' } });
 const probe = (file) =>
   Number(
     execFileSync('ffprobe', ['-v', 'error', '-show_entries', 'format=duration', '-of', 'csv=p=0', file])
@@ -106,6 +117,63 @@ function seamless(kind, { loop, fade }) {
   ].join(';');
 }
 
+/** Seconds of footage folded back into the start of a loop. */
+const LOOP_FADE = 1.5;
+const LOOP_FPS = 24;
+/** Bump to re-encode every loop; part of each file's name. */
+const LOOP_ENCODE = 'v2';
+// Capped so a busy clip (spray, snowfall) can't balloon: about 3 MB a loop wide.
+const LOOP_SHAPES = {
+  wide: { kbps: 2800, fit: () => 'scale=1920:1080:force_original_aspect_ratio=increase:flags=lanczos,crop=1920:1080' },
+  tall: { kbps: 1400, fit: (focalX) => `crop=ih*3/4:ih:(iw-ih*3/4)*${focalX / 100}:0,scale=768:1024:flags=lanczos` },
+};
+const LOOP_CODECS = {
+  av1: (kbps) => ['-c:v', 'libsvtav1', '-crf', '36', '-preset', '5', '-svtav1-params', `tune=0:mbr=${kbps}`],
+  h264: (kbps) => ['-c:v', 'libx264', '-crf', '24', '-preset', 'slow', '-profile:v', 'high',
+    '-maxrate', `${kbps}k`, '-bufsize', `${kbps * 2}k`, '-movflags', '+faststart'],
+};
+
+/** The footage beside a picture, if there is any. */
+function footage(id) {
+  const files = readdirSync(INBOX);
+  if (!STILLS.some((e) => files.includes(`${id}.${e}`))) return null;
+  const hit = ['mp4', 'mov', 'webm'].map((e) => `${id}.${e}`).find((f) => files.includes(f));
+  return hit ? path.join(INBOX, hit) : null;
+}
+
+/**
+ * Encodes one scene's loop in both shapes and codecs. Names carry a hash of
+ * the footage and settings, since R2 serves them as immutable.
+ */
+function encodeLoop(id, cfg, src) {
+  const hash = createHash('sha256')
+    .update(readFileSync(src))
+    .update(JSON.stringify([LOOP_ENCODE, cfg.focalX, LOOP_FADE, LOOP_FPS]))
+    .digest('hex')
+    .slice(0, 8);
+  const base = `ambient-${id}-${hash}`;
+  const loop = probe(src) - LOOP_FADE - 0.1;
+  const F = LOOP_FADE;
+  const graph = (fit) =>
+    [
+      `[0:v]fps=${LOOP_FPS},format=yuv420p,split=3[b][t][h]`,
+      `[b]trim=${F}:${loop},setpts=PTS-STARTPTS[body]`,
+      `[t]trim=${loop}:${loop + F},setpts=PTS-STARTPTS[tail]`,
+      `[h]trim=0:${F},setpts=PTS-STARTPTS[head]`,
+      `[tail][head]xfade=transition=fade:duration=${F}:offset=0[seam]`,
+      `[body][seam]concat=n=2:v=1:a=0,${fit}[out]`,
+    ].join(';');
+  for (const [shape, { kbps, fit }] of Object.entries(LOOP_SHAPES)) {
+    for (const [codec, args] of Object.entries(LOOP_CODECS)) {
+      const out = path.join(LOOP_OUT, `${base}-${shape}.${codec}.mp4`);
+      if (existsSync(out)) continue;
+      ff(['-i', src, '-filter_complex', graph(fit(cfg.focalX)), '-map', '[out]', '-an', ...args(kbps), out]);
+      console.log(`  loop ${path.basename(out)} ${(readFileSync(out).length / 1e6).toFixed(1)} MB`);
+    }
+  }
+  return base;
+}
+
 // Keep scenes that were not rebuilt this run.
 let previous = {};
 if (existsSync(MANIFEST)) {
@@ -124,7 +192,7 @@ for (const [id, cfg] of Object.entries(SCENES)) {
   console.log(`\n${id}`);
 
   // --- picture ----------------------------------------------------------
-  const kept = SOUND_ONLY ? previousScene(id) : null;
+  const kept = SOUND_ONLY || LOOP_ONLY ? previousScene(id) : null;
   if (!kept) {
   // A still for now: one frame of the footage, wide and in a 3:4 crop for
   // portrait phones. Moving loops come later.
@@ -152,6 +220,13 @@ for (const [id, cfg] of Object.entries(SCENES)) {
   } else {
     manifest[id] = kept;
   }
+
+  // --- loop -------------------------------------------------------------
+  if (!SOUND_ONLY) {
+    const src = footage(id);
+    manifest[id] = { ...manifest[id], loop: src ? encodeLoop(id, cfg, src) : null };
+  }
+  if (LOOP_ONLY) continue;
 
   // --- sound ------------------------------------------------------------
   const sound = source(id, '-sound', ['wav', 'flac', 'mp3', 'm4a', 'ogg', 'aif', 'aiff']);
@@ -203,9 +278,23 @@ export interface AmbientSceneFiles {
   /** The browser toolbar's colour while this scene shows. */
   chrome: string;
   lqip: string;
+  /** The moving loop's file stem under /audio, or null for a still. */
+  loop: string | null;
 }
 
 export const AMBIENT_MANIFEST: Record<'coast' | 'forest' | 'snow', AmbientSceneFiles> = ${JSON.stringify(merged, null, 2)};
 `,
 );
 console.log(`\nWrote ${path.relative(ROOT, MANIFEST)}`);
+
+const loops = Object.values(merged).map((m) => m.loop).filter(Boolean);
+if (loops.length && !SOUND_ONLY && !NO_UPLOAD) {
+  // copy, never sync: the bucket holds the music too.
+  console.log(`\nUploading loops to ${R2}…`);
+  execFileSync('rclone', [
+    'copy', LOOP_OUT, R2, '--ignore-existing',
+    ...loops.flatMap((l) => ['--include', `${l}-*.mp4`]),
+    '--header-upload', 'Cache-Control: public, max-age=31536000, immutable',
+    '--header-upload', 'Content-Type: video/mp4',
+  ], { stdio: 'inherit' });
+}

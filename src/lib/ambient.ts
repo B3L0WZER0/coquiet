@@ -1,6 +1,6 @@
 /** The Ambient room: three landscapes, each with its own sound. */
 
-import { assetPath } from '@/lib/asset-path';
+import { assetPath, audioPath } from '@/lib/asset-path';
 import { AMBIENT_MANIFEST, type AmbientSceneFiles } from '@/lib/ambient-manifest';
 
 export type AmbientId = 'coast' | 'forest' | 'snow';
@@ -63,4 +63,9 @@ export function scenePosterSet(scene: AmbientScene, format: 'avif' | 'webp'): st
 
 export function sceneSound(scene: AmbientScene): string {
   return assetPath(`/ambient/${scene.id}.m4a`);
+}
+
+/** A scene's moving loop. Served beside the music, off GitHub Pages. */
+export function sceneLoop(scene: AmbientScene, shape: 'wide' | 'tall', codec: 'av1' | 'h264'): string | null {
+  return scene.loop ? audioPath(`/audio/${scene.loop}-${shape}.${codec}.mp4`) : null;
 }

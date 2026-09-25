@@ -89,7 +89,7 @@ No sound before deliberate interaction. On press:
 6. Briefly show the current focus note
 7. No onboarding form
 
-If presence sync is unavailable: `The quiet room is open.` If nobody else is present: `You're opening the room. Others will join.` The live number is the standing room (420–680 simulated people, following the hour of the day) plus real sessions.
+If presence sync is unavailable: `The quiet room is open.` If nobody else is present: `You're opening the room. Others will join.` The live number is the standing room (570–830 simulated people, following the hour of the day) plus real sessions.
 
 ## Music selector
 
@@ -161,7 +161,7 @@ Keep this behind the interface so a real cross-device backend (Supabase Realtime
 
 ## Quiet presence (display)
 
-Bottom left, one persistent line: `● [n] here now` — the standing room (420–680 simulated people, following the hour of the day) plus currently-entered sessions from the active adapter, never raw page views.
+Bottom left, one persistent line: `● [n] here now` — the standing room (570–830 simulated people, following the hour of the day) plus currently-entered sessions from the active adapter, never raw page views.
 
 Tap/click opens a compact **Room pulse** panel: `[n] working · [n] studying · [n] creating · [n] reading` and `[n] coffee · [n] tea · [n] water`. If groups are extremely small, suppress the detailed breakdown for privacy. No flags, maps, rankings, or identities.
 
@@ -197,7 +197,7 @@ No chat, comments, DMs, video/voice, profiles, accounts, avatars, followers, pub
 12. Presence updates in real time between simultaneous tabs in the same browser (v1 scope — see note below).
 13. Disconnected/stale sessions disappear automatically.
 14. Activity/drink selections update aggregate counts without identifying anyone.
-15. The count is always the 420–680 standing room plus real sessions, including when only one tab is open.
+15. The count is always the 570–830 standing room plus real sessions, including when only one tab is open.
 16. Layout stays uncluttered from 320px through large desktop.
 17. Every interactive element is keyboard accessible.
 18. Reduced-motion mode disables unnecessary movement.

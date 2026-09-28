@@ -46,6 +46,15 @@ export const JOURNAL_PHOTOS: readonly JournalPhotoEntry[] = [
     "lqip": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADQAwCdASogAA0APu1iqk2ppaQiMAgBMB2JZACdAB2Oqn6h1lhKuZAA/i3DfI3zahDYgvHI0Fhygna6GuHRyLaZzhRCBht8Ecng1fqTPEolQzKKH1X70nAA"
   },
   {
+    "id": "make-it-easy-to-come-back",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "lqip": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADwBACdASogABUAPu1qrlAppiQiqAqpMB2JZwDBzAzoqZnwF5I2zNICubN0Mr3PYEAA/o034fjd6WWBWMo8R7/hfvDa0NRmZaU6c23H3MmIsM8Lu3Lt8BJGYV+DvcoN4ReSobrho23wgAAA"
+  },
+  {
     "id": "music-for-focus",
     "widths": [
       640,

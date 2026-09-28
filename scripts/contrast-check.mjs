@@ -205,12 +205,16 @@ async function audit(page, label) {
     return out;
   });
 
-  // Hide the text, leaving exactly what sits behind it.
+  // Hide the text, leaving exactly what sits behind it. Decorations go too:
+  // an underline given its own colour does not follow `color`, so it stayed
+  // lit under the hidden line and was read as the background behind it —
+  // a cream rule scoring 2.36:1 against the cream text drawn over it.
   await page.evaluate(() => {
     document.querySelectorAll('*').forEach((el) => {
       if ([...el.childNodes].some((n) => n.nodeType === 3 && n.textContent.trim())) {
         el.style.setProperty('color', 'transparent', 'important');
         el.style.setProperty('text-shadow', 'none', 'important');
+        el.style.setProperty('text-decoration-color', 'transparent', 'important');
       }
     });
   });
@@ -277,7 +281,12 @@ async function audit(page, label) {
  */
 async function settle(page) {
   await page.evaluate(async () => {
+    const frame = () => new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
     for (let round = 0; round < 4; round++) {
+      // A transition begins on the frame after the click, so a scan run
+      // straight away sees nothing running and returns while the panel is
+      // still fading in.
+      await frame();
       // Only what is about to be over: a long ambient drift would otherwise
       // hold the audit for its whole cycle.
       const moving = document.getAnimations().filter((a) => {

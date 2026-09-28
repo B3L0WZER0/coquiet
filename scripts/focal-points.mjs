@@ -43,6 +43,8 @@ export const FOCAL_X = {
   // No person in frame; centred on the lamp and the shelf above the bench.
   'cave-forest': 70,
   'cave-working': 65,
+  // The craftsperson at the bench, with the tool wall and the bamboo light.
+  'cedar-craft-atelier': 45,
   'circular-window-studio': 65,
   'cliff-cave': 50,
   'cliffside-cafe-focus': 68,
@@ -89,6 +91,8 @@ export const FOCAL_X = {
   'granite-pool-reading-room': 45,
   // The man at the lamp-lit desk in the window, with the sea beyond it.
   'heather-cottage-study': 80,
+  // The man at the desk by the shelves, with the mist off the lake behind.
+  'lake-shoji-library': 25,
   // The woman at the window desk, with the lake filling the rest.
   'lake-window-library': 82,
   'library-in-jungle': 80,
@@ -97,6 +101,8 @@ export const FOCAL_X = {
   // The pair at the window tables, with the maples and the pond still behind
   // them. Framed on the garden alone the room reads as empty.
   'maple-garden-cafe': 62,
+  // The woman reading in her chair, with the maples turning behind her.
+  'maple-reading-pavilion': 30,
   'meditating-ocean': 20,
   // The barista at the counter. The reader on the terrace sits low enough in
   // the frame that no horizontal framing lifts him clear of the headline, and
@@ -107,6 +113,9 @@ export const FOCAL_X = {
   'misty-lake-cafe': 60,
   // The woman at the lamp-lit desk at the back, rather than the misty lake.
   'misty-lake-work-alcove': 85,
+  // The pine over the moss court. The one figure sits at the far right edge,
+  // small and in the copy's band; the garden is the room.
+  'moss-court-study': 15,
   // The reader at the table under the mountain window.
   'mountain-boulder-library': 65,
   'mountain-cavern': 55,
@@ -131,6 +140,8 @@ export const FOCAL_X = {
   'rainfall-ridge-studio': 55,
   // The window wall and its maples, with the two at the tables below them.
   'rainlit-maple-cafe': 55,
+  // The woman at her table, with the wet bamboo through the glass beside her.
+  'rainy-bamboo-cafe': 45,
   // The woman at the lit desk, with the redwood trunks through the glass.
   'redwood-lantern-library': 75,
   // The terraces the room is named for barely survive a portrait slice; this

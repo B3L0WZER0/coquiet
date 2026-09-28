@@ -155,6 +155,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAADwBACdASobABIAPu1wr1KppiQiqAgBMB2JZwC4MAtZZwJgAUxBOq8iJdBCI+3RPCAA/tDNRpD6mBMQlelutjYmBa+Jl05MkxWJmwSEMsthVpISZrI0SkPvve2UAdyiXRMwNo0d51leaixYLoAAAA==",
   },
   {
+    id: "cedar-craft-atelier",
+    widths: [640, 1024, 1600],
+    focalX: 45,
+    focalY: 50,
+    chrome: "#847c75",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAACQBACdASogABIAPu1opU2ppqMiMBgMATAdiWUAuwAQ2D/SVpBWHl8+hCHCC0AA/m8JIslanMrWqGpDPeIwyE7A/shCa5K9DQK/ez+knjjmRzDHF+GBDM2df7EJ/dOsCV6zdndGtDUAAA==",
+  },
+  {
     id: "circular-window-studio",
     widths: [640, 1024, 1600],
     focalX: 65,
@@ -363,6 +371,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwBACdASogABIAPt1WpU2opKOiN/qoARAbiWcAAFpNst/bhWaquDhz4QggDw7LrgAA/unK2mJbeTJ0QjBCD33/0HxNXZLVT3XhAQvQxT+V+MERwNjyjnfosjUOKuj85kAAAA==",
   },
   {
+    id: "lake-shoji-library",
+    widths: [640, 1024, 1600],
+    focalX: 25,
+    focalY: 50,
+    chrome: "#978877",
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACQBACdASogABIAPu1mqU4ppaOiMAgBMB2JZQCxH2jDNZVWCeQ0ZJn9Qn5vpmAA/hDqt9t25oh3bMfqCMvY178/UNJGX89OwNmkF7UYdIKjMyYykuWmf1fVOwYtkFE+QBgds1sZ7ltll+tTHAAAAA==",
+  },
+  {
     id: "lake-window-library",
     widths: [640, 1024, 1600],
     focalX: 82,
@@ -385,6 +401,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#7f6856",
     lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAQBQCdASogABIAPu1urFGppiQiqAqpMB2JZQDIx8CA1qVfDW7CDU1g4bApg5vy8E/AAP7cYG3/DxlVi99mPt4ZZpTiCqSheNIqALs4tFKMBED4VFi9ZIqLPVw5tYkw5irwO5aXW2VKxNUXEngAAA==",
+  },
+  {
+    id: "maple-reading-pavilion",
+    widths: [640, 1024, 1600],
+    focalX: 30,
+    focalY: 50,
+    chrome: "#866a59",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAAAQBQCdASogABIAPu1qsFAppiUiqAqpMB2JYwCsAA93QUBznprs4LduQGN2m6WJVYCwAP4/Tqf2llzeBRzRu0Ikip4YwmO61X7emXVqQrJ9hIrL2zLcYAO/Kdu6Ya0h66vV/C6d80wlAIAA",
   },
   {
     id: "meditating-ocean",
@@ -425,6 +449,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#615246",
     lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABwBQCdASogABIAPu1qq08ppiOiMBgIATAdiWcAvOAQMXgODI2BJk5VITrUjm0rBQfdW2VAAPxdrxXyMsJR0zoG+DPvqw99rLR7jTI/+f+VE5VY+vHvrnr5knqcruzp0Kbhwrhr5MhYAAAA",
+  },
+  {
+    id: "moss-court-study",
+    widths: [640, 1024, 1600],
+    focalX: 15,
+    focalY: 50,
+    chrome: "#443324",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADwBACdASogABIAPuVgpU2pJaOiMAwBIByJZQC7M1XC9HE0ueumJNsxyryXehHZkgAA/kvK20aCQH8MW2R2ca3GaqWJMNcDdIHemILbZScsc1cfxmHkNUogBn5blUC8LwQjTgsnk7uAAA==",
   },
   {
     id: "mountain-boulder-library",
@@ -529,6 +561,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#958378",
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAAAwBQCdASogABIAPu1kp02ppaOiMBgMATAdiWUAguUDPsC5HMszMNcWae8xpmn63olKAAD+y+zBsRLPoCI1HVVfP/eSez9zQ+tABfua6p0Xp1yQjoiRJVfTf50q9Qnszc/Xs9OsazL7jJYgf0PRQAAA",
+  },
+  {
+    id: "rainy-bamboo-cafe",
+    widths: [640, 1024, 1600],
+    focalX: 45,
+    focalY: 50,
+    chrome: "#9c9189",
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAwBQCdASogABIAPu1qqk+ppiOiMBgIATAdiWUAuwAMbLaYNEi5aqBlFTigvFiKeqZggAD+5mAmwHQ7e/837a0bPYmf7/Z9HHfYic/avL4IElDnvilKzUE2s/eNMQtkAjwYjLhb71iWn/eMw4gAAA==",
   },
   {
     id: "redwood-lantern-library",

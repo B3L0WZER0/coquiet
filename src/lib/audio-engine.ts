@@ -223,7 +223,7 @@ export class AudioEngine {
     }
   }
 
-  /** The room's context, where one exists — currently iOS only. Shared so the
+  /** The room's context, once sound has been asked for. Shared so the
    *  chime can ring through the same audio session as the music rather than
    *  opening its own, which iOS silences with the ring switch. */
   sharedContext(): AudioContext | null {
@@ -277,6 +277,8 @@ export class AudioEngine {
     this.segueToken++;
     this.segueing = false;
     this.gaveUpOn = null;
+    // Nothing is handed over while the room is not playing.
+    this.switching = false;
   }
 
   // --- volume -------------------------------------------------------------
@@ -535,9 +537,12 @@ export class AudioEngine {
         await incoming.el.play();
       } catch {
         // The next piece would not start. Fall back to the plain step, which
-        // re-asks the station on the deck already in hand.
+        // re-asks the station on the deck already in hand — and bring that deck
+        // back up, or the room carries on at the bottom of its fade.
+        outgoing.cancel?.();
         this.segueing = false;
         await this.advance();
+        if (mine()) await this.fadeDeck(outgoing, 1, FADE.trackIn);
         return;
       }
       if (!mine()) {
@@ -550,19 +555,7 @@ export class AudioEngine {
       this.activeIndex = this.activeIndex === 0 ? 1 : 0;
       const inPromise = this.fadeDeck(incoming, 1, FADE.trackIn, (t) => t * t * (3 - 2 * t));
 
-      const outDone = await outPromise;
-      if (this.disposed) return;
-      if (outDone && outgoing.el instanceof HTMLAudioElement) {
-        // Release the finished deck: stopped, silent, and holding no source,
-        // so it stops buffering and is ready to be prepared afresh.
-        outgoing.el.pause();
-        outgoing.el.removeAttribute('src');
-        outgoing.el.load();
-        outgoing.el.preload = 'none';
-        outgoing.loaded = null;
-        outgoing.fade = 0;
-      }
-
+      if (await outPromise) this.release(outgoing);
       await inPromise;
     } finally {
       if (this.segueToken === token) this.segueing = false;
@@ -772,14 +765,19 @@ export class AudioEngine {
       return;
     }
 
-    // A segue may be mid-flight on the very deck we are about to take; tell it
-    // to let go before we touch anything.
-    this.segueToken++;
+    // A segue, or an earlier switch still in flight, may be working the very
+    // decks we are about to take; tell it to let go before we touch anything.
+    // A pause bumps the token too, so `mine` also means "still playing".
+    const token = ++this.segueToken;
     this.segueing = false;
+    const mine = () => !this.disposed && this.segueToken === token && this.status === 'playing';
 
     const outgoing = this.active;
     const incoming = this.idle;
     const channel = getChannel(next);
+    // The idle deck may still be fading out for the switch this one overtook;
+    // stop that fade, or it would release the deck out from under us.
+    incoming.cancel?.();
 
     this.switching = true;
     this.emit();
@@ -788,13 +786,11 @@ export class AudioEngine {
     // the fade first would mean a slow network turning the handover into a
     // silence of unpredictable length.
     const loaded = await this.prepare(incoming, channel);
-    if (this.disposed) return;
+    if (!mine()) return;
     // The new channel will not load. Nothing has faded yet, so the piece in
     // hand keeps playing and only the switch is abandoned.
     if (!loaded) {
-      this.channelId = outgoing.loaded?.channel ?? this.channelId;
-      this.switching = false;
-      this.emit();
+      this.abandonSwitch(outgoing);
       return;
     }
 
@@ -809,7 +805,7 @@ export class AudioEngine {
       : this.fadeDeck(outgoing, 0, FADE.channelOut, (t) => outFrom * (1 - t) ** 2);
 
     if (!blend) await sleep(Math.max(0, FADE.channelOut - FADE.channelOverlap));
-    if (this.disposed) return;
+    if (!mine()) return;
 
     this.route(incoming);
     incoming.fade = 0;
@@ -818,13 +814,14 @@ export class AudioEngine {
     try {
       await incoming.el.play();
     } catch {
-      // Could not start the new channel — stay where we are rather than
-      // leaving the room silent.
-      this.channelId = outgoing.loaded?.channel ?? this.channelId;
-      this.switching = false;
-      this.emit();
+      // Could not start the new channel — stay where we are, brought back up,
+      // rather than leaving the room silent.
+      if (!mine()) return;
+      void this.fadeDeck(outgoing, 1, FADE.channelIn);
+      this.abandonSwitch(outgoing);
       return;
     }
+    if (!mine()) return;
 
     // Hand over the active role now, so a pause pressed mid-handover acts on
     // the deck the visitor is actually starting to hear.
@@ -835,25 +832,19 @@ export class AudioEngine {
       ? this.fadeDeck(incoming, 1, FADE.scene, (t) => Math.sin((t * Math.PI) / 2))
       : this.fadeDeck(incoming, 1, FADE.channelIn, (t) => t * t * (3 - 2 * t));
 
-    const outDone = await outPromise;
-
-    // If another switch overtook this one, that switch now owns the outgoing
-    // deck and will release it. Releasing it here would cut its audio.
-    if (this.disposed) return;
-    if (outDone && outgoing.el instanceof HTMLAudioElement) {
-      // Release the outgoing deck: silent, stopped, and holding no source, so
-      // it stops buffering and cannot be heard again until prepared afresh.
-      outgoing.el.pause();
-      outgoing.el.removeAttribute('src');
-      outgoing.el.load();
-      outgoing.el.preload = 'none';
-      outgoing.loaded = null;
-      outgoing.fade = 0;
-    }
-
+    // A switch that overtook this one cancels the outgoing fade before taking
+    // the deck, so a completed fade means the deck is still ours to release.
+    if (await outPromise) this.release(outgoing);
     await inPromise;
-    if (this.disposed) return;
+    if (!mine()) return;
 
+    this.switching = false;
+    this.emit();
+  }
+
+  /** Give up on a switch and stay on the piece still in hand. */
+  private abandonSwitch(outgoing: Deck) {
+    this.channelId = outgoing.loaded?.channel ?? this.channelId;
     this.switching = false;
     this.emit();
   }
@@ -909,8 +900,6 @@ function withTimeout(promise: Promise<unknown>, ms: number): Promise<boolean> {
   });
 }
 
-/** Whether the graph is available at all. Decided before any deck has a source,
- *  because it settles whether that source needs to be fetched CORS-clean. */
 /** Tell the browser this is long-form playback rather than a UI sound.
  *
  *  Everything the room plays now goes through the graph, and a graph is the
@@ -935,6 +924,8 @@ function declarePlayback(): void {
   }
 }
 
+/** Whether the graph is available at all. Decided before any deck has a source,
+ *  because it settles whether that source needs to be fetched CORS-clean. */
 function hasWebAudio(): boolean {
   if (typeof window === 'undefined') return false;
   return Boolean(

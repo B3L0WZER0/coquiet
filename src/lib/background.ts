@@ -40,15 +40,6 @@ export function fallbackSrc(room: Room): string {
   return largestSrc(room, 'webp');
 }
 
-/** Look a room up by id. */
-export function roomById(id: string | undefined, now: number = Date.now()): Room {
-  if (process.env.NODE_ENV !== 'production' && id) {
-    const found = ROOMS.find((r) => r.id === id);
-    if (found) return found;
-  }
-  return roomForHour(now);
-}
-
 /**
  * The room the visitor is in, as chosen by the inline chooser below.
  *
@@ -94,9 +85,7 @@ export function roomChooserScript(): string {
     AMBIENT_SCENES.map((s) => [s.id, [scenePosterSet(s, 'avif'), `${scenePoster(s, 'avif', 'tall')} 1080w`, s.chrome]]),
   );
 
-  // The journal shows no room, so it starts no photograph downloading.
   return `(function(){try{
-if(/\\/journal(\\/|$)/.test(location.pathname))return;
 var R=${JSON.stringify(rooms)},W=${JSON.stringify(widths)},P=${JSON.stringify(prefix)};
 var i=Math.floor(Date.now()/3600000)%R.length;if(i<0)i+=R.length;var r=R[i];
 ${dev ? `var q=/[?&]room=([^&]*)/.exec(location.search);if(q){var f=R.find(function(x){return x[0]===decodeURIComponent(q[1])});if(f)r=f}` : ''}

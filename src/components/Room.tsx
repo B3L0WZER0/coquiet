@@ -193,7 +193,6 @@ export function Room({ initialMode }: { initialMode?: RoomMode } = {}) {
     note.show();
     // `note.show` is stable and re-running this on every note change would
     // re-show it constantly.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entered]);
 
   /** Starting a focus session shows a new note; the music comes back up below. */
@@ -228,8 +227,6 @@ export function Room({ initialMode }: { initialMode?: RoomMode } = {}) {
 
   return (
     <main className="fixed inset-0 h-[100dvh] w-full">
-      {/* Before the grid, so any panel the room opens paints over it. */}
-
       <div
         className="room-grid transition-opacity duration-[1200ms] ease-[var(--ease-quiet)]"
         style={{ opacity: entered ? 1 : 0 }}

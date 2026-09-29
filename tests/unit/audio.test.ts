@@ -144,7 +144,6 @@ function stubMedia() {
   });
 }
 
-/** The <audio> elements the engine created, in creation order. */
 /**
  * Give an element a real duration and a currentTime that moves with the fake
  * clock, so the engine can see a piece running out.
@@ -162,6 +161,7 @@ function playFrom(el: HTMLMediaElement, durationSeconds: number, atSeconds: numb
   });
 }
 
+/** The <audio> elements the engine created, in creation order. */
 function decks(engine: AudioEngine): HTMLAudioElement[] {
   return (engine as unknown as { decks: { el: HTMLAudioElement }[] }).decks.map((d) => d.el);
 }
@@ -527,6 +527,80 @@ describe('audio engine state', () => {
     vi.spyOn(HTMLMediaElement.prototype, 'play').mockRejectedValue(new Error('NotAllowedError'));
     await engine.enter();
     expect(engine.snapshot().status).toBe('blocked');
+  });
+
+  it('survives a second channel pick landing mid-handover', async () => {
+    await runFade(engine.enter(), FADE.entry);
+
+    void engine.setChannel('still');
+    await vi.advanceTimersByTimeAsync(10);
+    const promise = engine.setChannel('momentum');
+    await vi.advanceTimersByTimeAsync(FADE.channelOut + FADE.channelIn + 500);
+    await promise;
+
+    const running = decks(engine).filter((el) => !el.paused);
+    expect(running).toHaveLength(1);
+    expect(running[0].getAttribute('src')).toBe(getChannel('momentum').tracks[0].src);
+    expect(running[0].volume).toBeCloseTo(0.6, 3);
+    expect(engine.snapshot().switching).toBe(false);
+
+    // And pause still reaches the deck being heard.
+    await runFade(engine.pause(), FADE.playPause);
+    expect(decks(engine).every((el) => el.paused)).toBe(true);
+  });
+
+  it('stays paused when paused while a new channel is still loading', async () => {
+    await runFade(engine.enter(), FADE.entry);
+    const [a, b] = decks(engine);
+    const idle = a.paused ? a : b;
+    // The new channel takes a moment to report its metadata.
+    let ready = false;
+    Object.defineProperty(idle, 'readyState', { get: () => (ready ? 4 : 0), configurable: true });
+
+    const switching = engine.setChannel('still');
+    await vi.advanceTimersByTimeAsync(10);
+    await runFade(engine.pause(), FADE.playPause);
+
+    ready = true;
+    idle.dispatchEvent(new Event('loadedmetadata'));
+    await vi.advanceTimersByTimeAsync(FADE.channelOut + FADE.channelIn + 500);
+    await switching;
+
+    expect(engine.snapshot().status).toBe('paused');
+    expect(engine.snapshot().switching).toBe(false);
+    expect(decks(engine).every((el) => el.paused)).toBe(true);
+  });
+
+  it('keeps the old channel audible when the new one refuses to start', async () => {
+    await runFade(engine.enter(), FADE.entry);
+    const before = decks(engine).find((el) => !el.paused)!;
+    vi.mocked(HTMLMediaElement.prototype.play).mockImplementationOnce(() => Promise.reject(new Error('NotAllowedError')));
+
+    const promise = engine.setChannel('still');
+    await vi.advanceTimersByTimeAsync(FADE.channelOut + FADE.channelIn + 500);
+    await promise;
+
+    expect(engine.snapshot().channel).toBe('flow');
+    expect(before.paused).toBe(false);
+    expect(before.volume).toBeCloseTo(0.6, 3);
+  });
+
+  it('comes back up after a boundary whose next piece refuses to start', async () => {
+    await runFade(engine.enter(), FADE.entry);
+    const flow = getChannel('flow');
+    const audible = decks(engine).find((el) => !el.paused)!;
+    playFrom(audible, flow.tracks[0].durationSeconds, flow.tracks[0].durationSeconds - 10);
+    await vi.advanceTimersByTimeAsync(600);
+
+    // The next piece's deck will not start from a timer.
+    vi.mocked(HTMLMediaElement.prototype.play).mockImplementationOnce(() => Promise.reject(new Error('NotAllowedError')));
+    await vi.advanceTimersByTimeAsync(10_000);
+    await vi.advanceTimersByTimeAsync(FADE.trackIn + 500);
+
+    const running = decks(engine).filter((el) => !el.paused);
+    expect(running).toHaveLength(1);
+    expect(running[0].volume).toBeCloseTo(0.6, 3);
+    expect(engine.snapshot().status).toBe('playing');
   });
 });
 

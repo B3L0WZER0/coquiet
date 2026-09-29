@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Background } from "@/components/Background";
 import { Room } from "@/components/Room";
+import { RoomChooser } from "@/components/RoomChooser";
 import { roomForHour } from "@/lib/background";
 
 const TITLE = "Ambient sounds for focus · Coquiet";
@@ -41,6 +42,7 @@ export const metadata: Metadata = {
 export default function AmbientPage() {
   return (
     <>
+      <RoomChooser />
       <Background buildRoom={roomForHour()} />
       <Room initialMode="ambient" />
     </>

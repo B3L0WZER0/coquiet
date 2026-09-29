@@ -46,9 +46,7 @@ export const STORAGE_KEYS = {
   ambientScene: 'ambient-scene',
   volume: 'volume',
   timer: 'timer',
-  timerPreset: 'timer-preset',
   presence: 'personal-presence',
   /** Retired: the one-time Ambient poll. Only ever removed. */
   ambientPoll: 'ambient-poll',
-  sessionId: 'session-id',
 } as const;

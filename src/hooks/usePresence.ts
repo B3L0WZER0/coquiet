@@ -74,7 +74,6 @@ export function usePresence(entered: boolean, channel: ChannelId) {
     providerRef.current?.join({ ...NOTHING_SET, channel });
     // `channel` is deliberately not a dependency: joining happens once, and
     // later channel changes are published through `update` below instead.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [entered]);
 
   // Keep the room's view of which channel we are on current.

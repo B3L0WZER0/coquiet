@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Playfair_Display } from 'next/font/google';
 
-import { roomChooserScript } from '@/lib/background';
 import { CF_BEACON_TOKEN, SITE_URL } from '@/lib/site';
 
 import './globals.css';
@@ -74,9 +73,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={displaySerif.variable}>
       <body>
-        {/* First thing in the document: it starts the room's photograph
-            downloading before anything below it has been parsed. */}
-        <script dangerouslySetInnerHTML={{ __html: roomChooserScript() }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }}

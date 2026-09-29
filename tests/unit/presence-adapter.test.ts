@@ -133,6 +133,27 @@ describe('worker presence', () => {
     expect(socket.sent).toContain('ping');
     adapter.destroy();
   });
+
+  it('rejoins when the page comes back from the back/forward cache', () => {
+    const adapter = new WorkerPresenceAdapter();
+    adapter.observe();
+    const socket = FakeSocket.last!;
+    socket.open();
+    adapter.join({ activity: 'reading', drink: null, channel: 'flow' });
+
+    const transition = (type: string) =>
+      Object.assign(new Event(type), { persisted: true });
+    window.dispatchEvent(transition('pagehide'));
+    expect(adapter.snapshot().joined).toBe(false);
+
+    socket.sent = [];
+    window.dispatchEvent(transition('pageshow'));
+    expect(adapter.snapshot().joined).toBe(true);
+    expect(socket.sent.map((m) => JSON.parse(m))).toContainEqual(
+      expect.objectContaining({ t: 'here', activity: 'reading' }),
+    );
+    adapter.destroy();
+  });
 });
 
 describe('tab identity', () => {

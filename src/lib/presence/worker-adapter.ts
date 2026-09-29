@@ -298,11 +298,25 @@ export class WorkerPresenceAdapter implements PresenceProvider {
     this.connect();
     this.announce();
     window.addEventListener('pagehide', this.onPageHide);
+    window.addEventListener('pageshow', this.onPageShow);
 
     this.publish();
   }
 
-  private onPageHide = () => this.leave();
+  /** Set when a hide into the back/forward cache took this visitor out, so a
+   *  restore puts them back rather than leaving them watching, uncounted. */
+  private rejoinOnShow = false;
+
+  private onPageHide = (event: PageTransitionEvent) => {
+    this.rejoinOnShow = event.persisted && this.joined;
+    this.leave();
+  };
+
+  private onPageShow = (event: PageTransitionEvent) => {
+    if (!event.persisted || !this.rejoinOnShow) return;
+    this.rejoinOnShow = false;
+    this.join(this.own);
+  };
 
   private visibilityBound = false;
 
@@ -393,6 +407,7 @@ export class WorkerPresenceAdapter implements PresenceProvider {
     this.clearGraceTimer();
     if (typeof window !== 'undefined') {
       window.removeEventListener('pagehide', this.onPageHide);
+      window.removeEventListener('pageshow', this.onPageShow);
     }
     if (typeof document !== 'undefined') {
       document.removeEventListener('visibilitychange', this.onVisible);

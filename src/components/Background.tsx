@@ -17,8 +17,8 @@ import {
 export function Background({ buildRoom }: { buildRoom: Room }) {
   // Null until the visitor's own room is known, on both the server and the
   // first client render — so hydration matches, and no photograph is requested
-  // for the room the build happened to fall in. The chooser script in the
-  // document's head has the right one downloading long before this runs; by
+  // for the room the build happened to fall in. The chooser script at the
+  // top of the page has the right one downloading long before this runs; by
   // the time the <picture> appears its bytes are usually already here.
   const [room, setRoom] = useState<Room | null>(null);
   const { channel } = useAudioState();

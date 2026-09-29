@@ -97,11 +97,25 @@ export class LocalPresenceAdapter implements PresenceProvider {
     // A closed or backgrounded-then-killed tab should vanish promptly rather
     // than lingering for the whole expiry window.
     window.addEventListener('pagehide', this.onPageHide);
+    window.addEventListener('pageshow', this.onPageShow);
 
     this.publish();
   }
 
-  private onPageHide = () => this.leave();
+  /** Set when a hide into the back/forward cache took this visitor out, so a
+   *  restore puts them back. */
+  private rejoinOnShow = false;
+
+  private onPageHide = (event: PageTransitionEvent) => {
+    this.rejoinOnShow = event.persisted && this.joined;
+    this.leave();
+  };
+
+  private onPageShow = (event: PageTransitionEvent) => {
+    if (!event.persisted || !this.rejoinOnShow) return;
+    this.rejoinOnShow = false;
+    this.join(this.own);
+  };
 
   update(patch: Partial<OwnPresence>): void {
     this.own = { ...this.own, ...patch, lastSeen: Date.now() };
@@ -208,7 +222,10 @@ export class LocalPresenceAdapter implements PresenceProvider {
     this.leave();
     this.observing = false;
     this.stopTimers();
-    if (typeof window !== 'undefined') window.removeEventListener('pagehide', this.onPageHide);
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('pagehide', this.onPageHide);
+      window.removeEventListener('pageshow', this.onPageShow);
+    }
     this.channel?.close();
     this.channel = null;
     this.listeners.clear();

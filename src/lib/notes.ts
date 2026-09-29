@@ -31,6 +31,8 @@ export const FOCUS_NOTES: readonly string[] = [
   'Start with the part that scares you least.',
   'Begin with a question you can answer.',
   'Read what you wrote last time, then continue.',
+  'Open the file. The rest can wait a minute.',
+  'Start with the part you already understand.',
 
   // Staying with it
   'Stay with the work.',
@@ -59,6 +61,8 @@ export const FOCUS_NOTES: readonly string[] = [
   'Let the rhythm come. Do not chase it.',
   'Keep the same pace when it gets dull.',
   'Nothing to do but the next thing.',
+  'Let the next sentence lead the way.',
+  'Keep the pen on the page a while longer.',
 
   // When it is hard
   'The difficult part is usually the next part.',
@@ -86,6 +90,8 @@ export const FOCUS_NOTES: readonly string[] = [
   'It is fine to reread the same page.',
   'Leave it a while. It will look different.',
   'Nobody understands it all at once.',
+  'Look for the smallest seam and open that.',
+  'Write down what you know so far.',
 
   // Pace
   'Slow is fine. Stopping is fine too.',
@@ -111,6 +117,8 @@ export const FOCUS_NOTES: readonly string[] = [
   'Ease in. There is no starting gun.',
   'Some things only go at their own speed.',
   'Take the next minute as it comes.',
+  'Go slowly enough to notice things.',
+  'Walking pace still crosses the country.',
 
   // Letting it be unfinished
   'Let it be unfinished for now.',
@@ -132,6 +140,7 @@ export const FOCUS_NOTES: readonly string[] = [
   'Something to revise beats nothing to perfect.',
   'Write the placeholder and keep moving.',
   'It does not have to be good yet.',
+  'Leave it rough. Rough can be shaped.',
 
   // Coming back
   'Return to it without comment.',
@@ -150,6 +159,7 @@ export const FOCUS_NOTES: readonly string[] = [
   'No need to explain where you went.',
   'Try again from the last thing that worked.',
   'Return to the breath, then the page.',
+  'Every return is a small beginning.',
 
   // Attention
   'Attention is the whole of it.',
@@ -176,6 +186,8 @@ export const FOCUS_NOTES: readonly string[] = [
   'Whatever pulled at you can wait an hour.',
   'Follow the thought all the way to its end.',
   'The quiet is doing some of the work.',
+  'Give the next ten minutes to one thing.',
+  'Let everything else become background.',
 
   // The body
   'Soften your shoulders.',
@@ -196,6 +208,7 @@ export const FOCUS_NOTES: readonly string[] = [
   'Unknot your brow.',
   'A slower breath is always available.',
   'Let the chair do the holding.',
+  'Let your tongue rest away from your teeth.',
 
   // Mood
   'Trust the work more than the mood.',
@@ -217,6 +230,7 @@ export const FOCUS_NOTES: readonly string[] = [
   'Be kind to the part of you that is tired.',
   'A flat mood can still do good work.',
   'Worry can wait outside for an hour.',
+  'Calm is something you do, not wait for.',
 
   // Progress
   'Small progress is still progress.',
@@ -236,6 +250,7 @@ export const FOCUS_NOTES: readonly string[] = [
   'Some days the progress is only that you stayed.',
   'You will not notice the day it gets easier.',
   'Foundations are mostly out of sight.',
+  'Every line written is one fewer to write.',
 
   // Company
   //
@@ -252,6 +267,7 @@ export const FOCUS_NOTES: readonly string[] = [
   'Everyone here is minding their own page.',
   'A full room can still be a quiet one.',
   'Each of us is doing a small thing in silence.',
+  'Somewhere a lamp is on for the same reason.',
 
   // Stopping
   'You are allowed to stop.',
@@ -273,6 +289,7 @@ export const FOCUS_NOTES: readonly string[] = [
   'Give yourself credit before you go.',
   'Close the tabs. Close the day.',
   'Nothing you leave undone now is lost.',
+  'Note where you are before you stand up.',
 ];
 
 export const BREAK_SUGGESTIONS: readonly string[] = [

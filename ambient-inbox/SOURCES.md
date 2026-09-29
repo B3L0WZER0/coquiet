@@ -3,6 +3,9 @@
 Stills — supplied by Diego, 2026-09-23
 - coast.webp, forest.webp, snow.webp
 
+Footage — made by Diego, 2026-09-29
+- snow.mp4  from his Snow.mp4: fade-out trimmed, slowed to 0.67× with interpolated frames
+
 Audio — Pixabay Content License (free, no attribution required)
 - coast-sound.mp3       "Gentle Waves on Pebble Beach"   https://pixabay.com/sound-effects/nature-gentle-waves-on-pebble-beach-32-bit-float-field-recording-559229/
 - forest-sound.mp3      "Birds singing in and leaves rustling with the wind" https://pixabay.com/sound-effects/nature-birds-singing-in-and-leaves-rustling-with-the-wind-14557/

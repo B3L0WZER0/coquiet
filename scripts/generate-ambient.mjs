@@ -62,6 +62,9 @@ export const SCENES = {
     still: 7,
     sound: { start: 5, loop: 270, fade: 8 },
     eq: 'highpass=f=40,acompressor=threshold=0.05:ratio=2.5:attack=40:release=600',
+    // The loop is a slightly wider frame than the still; this lines them up,
+    // so the poster doesn't jump when the footage fades in.
+    crop: '1672:920:0:10',
     focalX: 15,
     gainDb: 1,
   },
@@ -194,8 +197,8 @@ for (const [id, cfg] of Object.entries(SCENES)) {
   // --- picture ----------------------------------------------------------
   const kept = SOUND_ONLY || LOOP_ONLY ? previousScene(id) : null;
   if (!kept) {
-  // A still for now: one frame of the footage, wide and in a 3:4 crop for
-  // portrait phones. Moving loops come later.
+  // The poster, wide and in a 3:4 crop for portrait phones — also all that
+  // shows under reduced motion, and until a loop is playing.
   const video = source(id, '', [...STILLS, 'mp4', 'mov', 'webm']);
   const seek = STILLS.includes(path.extname(video).slice(1)) ? [] : ['-ss', String(cfg.still)];
   const frame = path.join(OUT, `.${id}-frame.png`);

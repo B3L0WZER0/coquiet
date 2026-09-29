@@ -44,8 +44,8 @@ export const AMBIENT_MANIFEST: Record<'coast' | 'forest' | 'snow', AmbientSceneF
     ],
     "focalX": 15,
     "chrome": "#424242",
-    "lqip": "data:image/webp;base64,UklGRl4AAABXRUJQVlA4IFIAAABwBACdASogABIAPu1orE+ppiQiMBgIATAdiWcAv+wLdHG/4dXv8vUY3idYwACEwa9ft/mcFcUJ9GbJP9Gz6r9GhkU1WHhcrV7qGfKK5Ad7gAAA",
-    "soundSeconds": 270,
-    "loop": null
+    "lqip": "data:image/webp;base64,UklGRmIAAABXRUJQVlA4IFYAAAAwBACdASogABIAPu1qrE8ppiQiMBgIATAdiWcAyjMhgJfkL8u37NT7VxQAhMGtG4T4gv6s9WKTenNLZv6HlMkI91mB1X3lbflHAKy6mdgegNFOwAAAAA==",
+    "loop": "ambient-snow-2457fdd9",
+    "soundSeconds": 270
   }
 };

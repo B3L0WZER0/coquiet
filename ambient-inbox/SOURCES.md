@@ -4,6 +4,7 @@ Stills — supplied by Diego, 2026-09-23
 - coast.webp, forest.webp, snow.webp
 
 Footage — made by Diego, 2026-09-29
+- coast.mp4 from his LTX_2.3_i2v_00013_.mp4 via scripts/cinemagraph.sh (command in its header); coast.png is its first frame, replacing the 2026-09-23 still (kept as coast-2026-09-23.webp)
 - snow.mp4  from his Snow.mp4: fade-out trimmed, slowed to 0.67× with interpolated frames
 
 Audio — Pixabay Content License (free, no attribution required)

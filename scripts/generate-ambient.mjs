@@ -8,7 +8,8 @@
  * Each scene needs `<id>.<webp|png|jpg>` (a picture — it wins over footage)
  * or `<id>.mp4` (footage to take one frame from at `still` seconds) and `<id>-sound.<ext>` (a field recording).
  * Footage beside a picture becomes the scene's moving loop, played over it:
- * its tail is crossfaded into its head like the sound's, and the files go to
+ * its tail is crossfaded into its head like the sound's (unless the scene is
+ * `looped` already, as scripts/cinemagraph.sh makes it), and the files go to
  * R2 (served at /audio/*) rather than GitHub Pages. `--no-upload` skips that.
  * The sound runs [start, start + loop + fade], and its last `fade` seconds are
  * crossfaded into its first, so the last sample leads back into the first.
@@ -47,6 +48,8 @@ export const SCENES = {
     // The cut above 16 kHz only removes faint clicks up there. Don't pull it
     // lower: the foam's fizz lives in 6–12 kHz, and without it the waves go dull.
     eq: `highpass=f=60,${BRICKWALL(16000)},acompressor=threshold=0.05:ratio=2:attack=40:release=600`,
+    // A cinemagraph that already loops (forward then back), so no fold.
+    looped: true,
     focalX: 55,
     gainDb: 0,
   },
@@ -158,7 +161,7 @@ function encodeLoop(id, cfg, src) {
   const loop = probe(src) - LOOP_FADE - 0.1;
   const F = LOOP_FADE;
   const graph = (fit) =>
-    [
+    cfg.looped ? `[0:v]fps=${LOOP_FPS},format=yuv420p,${fit}[out]` : [
       `[0:v]fps=${LOOP_FPS},format=yuv420p,split=3[b][t][h]`,
       `[b]trim=${F}:${loop},setpts=PTS-STARTPTS[body]`,
       `[t]trim=${loop}:${loop + F},setpts=PTS-STARTPTS[tail]`,

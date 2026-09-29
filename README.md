@@ -338,7 +338,7 @@ There are two ways to be attached to the room, and the difference matters:
 
 The count shown is a **standing room of simulated people plus real
 sessions**. The standing room ([`baseline.ts`](src/lib/presence/baseline.ts))
-follows the clock — about 570 around 03:00 UTC, about 830 twelve hours later,
+follows the clock — about 620 around 03:00 UTC, about 880 twelve hours later,
 wandering a few either side — and is the same for every visitor at the same
 moment. It is added once, in `usePresence`; adapters report real sessions only,
 and nothing else pads the figure. `npm run room` shows the real part alone.

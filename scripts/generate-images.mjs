@@ -113,12 +113,15 @@ for (const file of sources) {
   // actually shows, and only the bottom eighth, where the bar meets the room.
   const focal = FOCAL_X[id] / 100;
   const sw = Math.max(1, Math.round(meta.width * 0.3));
+  // Height from what's left below `top`: rounding both halves separately
+  // overran an odd-height frame (940 → 823 + 118) by a pixel.
+  const top = Math.min(Math.round(meta.height * 0.875), meta.height - 1);
   const chromeRaw = await sharp(source)
     .extract({
       left: Math.round(Math.min(Math.max(meta.width * focal - sw / 2, 0), meta.width - sw)),
-      top: Math.round(meta.height * 0.875),
+      top,
       width: sw,
-      height: Math.max(1, Math.round(meta.height * 0.125)),
+      height: meta.height - top,
     })
     .resize(1, 1, { fit: 'fill' })
     .raw()

@@ -171,6 +171,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADQBACdASogABIAPu1kqU2ppaQiMAgBMB2JZwDGQB6IpNs5tB83PsZftX56DuTyMADgIOGxsOtDDOTQtWazvSpZga8jeqRsVEfOVdGSbaShrwDEmdKK6jwbCD3XmomJkYcm/ayOCAA=",
   },
   {
+    id: "clay-and-quiet",
+    widths: [640, 1024, 1600],
+    focalX: 15,
+    focalY: 50,
+    chrome: "#4b453f",
+    lqip: "data:image/webp;base64,UklGRmgAAABXRUJQVlA4IFwAAAAQBQCdASogABIAPu1qrVCppaQiqAqpMB2JZwDKtAxN8Dilj0zr8ytekIu6KKXIKVUwAP46+wk3ofzQKrhH80o8wFvkAu52NtYnNuDi07S/fhJe9T/wxjcAAAAAAA==",
+  },
+  {
     id: "cliff-cave",
     widths: [640, 1024, 1600],
     focalX: 50,
@@ -345,6 +353,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#a7a2a1",
     lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABQBQCdASogABIAPu1grFCppKQisBgIATAdiWUAt7gR6R1cb9d39TNt2ignATGynY8dagAA/F0JyKuOkZtciMh/f+9iLoHp8SwWPxh/pN9zxKTWURe/7d+sAKjBwKzkbrcEHUQQxgAAAA==",
+  },
+  {
+    id: "grain-and-patience",
+    widths: [640, 1024, 1600],
+    focalX: 80,
+    focalY: 50,
+    chrome: "#5d4936",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQBACdASogABIAPu1oqE2ppqOiMBgMATAdiWUAyywQr4E/uBPRmstLhCX/cvapAAD7HGRsId/7O5vDgi/qvkTHOD6DwiuzxY49fVURloKqogylrc95zMCYUXhbiA0ONUYQMBIjEV+d5fAA",
   },
   {
     id: "granite-garden-study",
@@ -531,6 +547,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASogABIAPuVipE2pJaMiMAwBIByJZwDCgBP6daKCoPBgUDogiYvnInAA/VCZ7CAebzTNB4rSpmdesU0g5Z4+Dq8FkhRWZNxoAYYsTPxJ6NW+fQ6rwuOynzhF0tzPacAA",
   },
   {
+    id: "paper-in-the-light",
+    widths: [640, 1024, 1600],
+    focalX: 50,
+    focalY: 50,
+    chrome: "#88807a",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQBACdASogABIAPulgo02pJaMiMAwBIB0JZQAAMRTgoEQSnskpkgR1SeBNGRTpEAD+cSO/5/l3z86IT/IFJGeLe+vtqgmk266O41y322AQlKSwaTDW5CdJwbOmCJdJLhU8HIp7G2gAAA==",
+  },
+  {
     id: "rain-garden-pavilion",
     widths: [640, 1024, 1600],
     focalX: 64,
@@ -609,6 +633,22 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#6c645e",
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBQCdASogABIAPuVipE2pJaOiMAwBIByJZwDC+CPaZEwH0A4mZy4bwN+l44nyb14AAP4H2V0g5u7Qm4qZ6fW6SBled3MF/mLVePiRouCP1cpyesU/ahbcTnZAQiWSV0YFMAAA",
+  },
+  {
+    id: "the-first-wash",
+    widths: [640, 1024, 1600],
+    focalX: 80,
+    focalY: 50,
+    chrome: "#635b55",
+    lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASogABIAPtFUoU2oJKMiN+gBABoJZwC06C1kNBXeRwxkkVE5AmVpjsgA/qUVdPDa0cAlDZ0iq2M2X/ktNiVwzuwkWKJ9Erro/HuMPdw3Tr3v4GMk7JCzF1MsbAsUAAAA",
+  },
+  {
+    id: "the-woodland-easel",
+    widths: [640, 1024, 1600],
+    focalX: 50,
+    focalY: 50,
+    chrome: "#89857f",
+    lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAABwBACdASogABIAPu1mqk2ppaQiMAgBMB2JZwC3uBiXrF/wNvZUgpuLZdNAAAD+7P0AFLJ/N1JMAj2AVl1yThpEF/aVOSFEbxsXytbMfcbeYO5wkxW4P8raRoaanuSvnmcAAA==",
   },
   {
     id: "tidal-oculus-cafe",

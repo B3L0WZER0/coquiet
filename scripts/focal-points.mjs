@@ -46,6 +46,10 @@ export const FOCAL_X = {
   // The craftsperson at the bench, with the tool wall and the bamboo light.
   'cedar-craft-atelier': 45,
   'circular-window-studio': 65,
+  // The potter at his table by the glass and the mossy rocks. He sits under
+  // the headline in every tile that has him (20 cut him at the edge); the only
+  // other choice is an empty bench, so this keeps him.
+  'clay-and-quiet': 15,
   'cliff-cave': 50,
   'cliffside-cafe-focus': 68,
   // The reader at his table, with the headland and the surf behind him.
@@ -85,6 +89,8 @@ export const FOCAL_X = {
   // The ginkgo over the water court. The two working here are small and far
   // back; the tree is what the room is built around.
   'ginkgo-courtyard-studio': 20,
+  // The woodworker at his bench, with the river through the long window.
+  'grain-and-patience': 80,
   // The reader by the fire, doubled in the pool below.
   // The man at the desk by the shelves, with the pool and the autumn trees.
   'granite-garden-study': 74,
@@ -133,6 +139,8 @@ export const FOCAL_X = {
   // The woman at her table under the arch, with the olive tree in the court.
   'olive-vault-cafe': 25,
   'open-ocean-reading-room': 16,
+  // The papermaker at her table, with the arched window and the sea.
+  'paper-in-the-light': 50,
   'rain-garden-pavilion': 64,
   // The figure at the far end of the window desks, down the lit row.
   'rain-on-the-cottage': 15,
@@ -155,6 +163,11 @@ export const FOCAL_X = {
   'snow-valley-monastery-study': 40,
   // The woman at the table, with the quarry wall and the autumn tree.
   'stone-courtyard-cafe': 35,
+  // The painter at the lit drawing board, with the autumn trees behind her.
+  // Her head meets the headline at every framing; the lit board carries it.
+  'the-first-wash': 80,
+  // The painter at her easel, with the misty forest through the glass.
+  'the-woodland-easel': 50,
   // The woman at the table by the glass, with the cliffs and the sea.
   'tidal-oculus-cafe': 85,
   // The woman at the table, with the dune grass and the sea through the doors.

@@ -2,7 +2,7 @@
 
 Act as a senior product designer and full-stack engineer. Design and implement a polished, production-quality MVP for **Coquiet**, a minimal website where people quietly focus together while listening to synchronized instrumental music.
 
-Build the working experience — responsive design, audio behavior, focus timer, and locally-synced anonymous presence — not a description of one.
+Build the working experience — responsive design, audio behavior, focus timer, and anonymous cross-device presence — not a description of one.
 
 Core promise: **Quiet company for focused work.**
 
@@ -81,7 +81,7 @@ Primary button: **Enter the room**. Underneath: `Sound begins gently.`
 
 No sound before deliberate interaction. On press:
 
-1. Register the anonymous visitor as present (local adapter — see Presence)
+1. Register the anonymous visitor as present (see Presence implementation)
 2. Dissolve the entry layer
 3. Load the default Flow channel
 4. Begin at zero volume, fade in over ~4s
@@ -151,13 +151,16 @@ Small, secondary, upper-right. Default 25/5 (focus/break); presets 50/10, 90/15,
 
 On focus end: play the chime, lower (don't stop) the music, transition into the break duration, show **Take ten. The room will be here.** with one rotating suggestion (*"Look at something far away." / "Stretch your hands and shoulders." / "Make a tea."* etc.). At break end: **Welcome back.** / **Begin again**, restoring normal music level smoothly when the next session starts.
 
-## Presence implementation (v1)
+## Presence implementation
 
-No Supabase or other external realtime service in this version. Build a `PresenceProvider` interface with one working implementation: a **local adapter** using `BroadcastChannel` to sync anonymous session state across tabs in the same browser. Expiry window ~60–90s after a tab stops sending heartbeats, same as the eventual production behavior — just scoped to one browser for now.
+Presence sits behind a `PresenceProvider` interface, so the UI never knows which adapter is running:
 
-Store only, per session: anonymous session id, current activity, current drink, selected music channel, last heartbeat. No names, emails, precise location, or history.
+- **Production — Worker adapter.** One WebSocket per visitor to a Cloudflare Durable Object at `coquiet.app/presence` (`workers/presence`), same origin as the page. An open socket is the heartbeat: nothing is written per visitor per tick, which keeps it on the Workers free plan. Sockets silent for ~150s are dropped; the room receives one rollup of counts when it changes.
+- **Local dev and tests — local adapter.** `BroadcastChannel` across tabs of one browser, with the same ~60–90s expiry. No service needed to run the app.
 
-Keep this behind the interface so a real cross-device backend (Supabase Realtime, Pusher, PartyKit, etc.) can be added later as a second implementation with zero UI changes.
+Per session the server holds only: current activity, current drink, and when it was last heard from — kept in memory against the open socket, gone when it closes. It sends out counts, never an individual session. No names, emails, precise location, or history.
+
+A different backend can be added as another adapter with zero UI changes.
 
 ## Quiet presence (display)
 
@@ -194,7 +197,7 @@ No chat, comments, DMs, video/voice, profiles, accounts, avatars, followers, pub
 9. Focus notes rotate without reload and fade after ~10s.
 10. Timer stays accurate through backgrounding, sleep, and refresh.
 11. Timer completion produces the chime and calm break flow.
-12. Presence updates in real time between simultaneous tabs in the same browser (v1 scope — see note below).
+12. Presence updates in real time across different visitors' devices (within one rollup, ~2s).
 13. Disconnected/stale sessions disappear automatically.
 14. Activity/drink selections update aggregate counts without identifying anyone.
 15. The count is always the 570–830 standing room plus real sessions, including when only one tab is open.
@@ -204,15 +207,12 @@ No chat, comments, DMs, video/voice, profiles, accounts, avatars, followers, pub
 19. Media causes no layout shift.
 20. No decorative controls that do nothing.
 
-**Known v1 scope note on #12:** presence syncs live across tabs in one browser, not yet across different visitors' devices — that requires a real backend, deliberately deferred (see `CLAUDE.md`).
-
 ## Deliverables
 
 - Complete working implementation, responsive desktop and mobile
-- Concise setup instructions (no external service required to run v1)
+- Concise setup instructions (no external service required to run locally)
 - Replaceable configuration for music sources (per-channel `src`/`epochMs`/`durationSeconds`)
 - Replaceable focus notes and break suggestions
 - Short music-licensing note documenting the placeholder track's status
-- Focused tests: timer accuracy, audio/channel state, presence expiry (against the local adapter)
+- Focused tests: timer accuracy, audio/channel state, presence expiry and the Worker's rollup
 - Instructions for replacing the background image and audio assets
-- A short note on how to add a real presence backend later behind `PresenceProvider`, without naming a specific vendor as a requirement

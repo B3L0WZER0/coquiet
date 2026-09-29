@@ -55,12 +55,15 @@ Drop the file in `/design-reference/` — the filename becomes the room's perman
 Then:
 
 1. `npm run assets:crops` — renders a sheet per image with no focal point yet, into `/crops`. That is exactly the set you just dropped, so this is also how you ask "what's new?". Each tile is the slice the CSS will really take on a tall phone, with the entry copy's own footprint shaded on top.
-2. Pick the tile that keeps the room legible and put its number in `FOCAL_X` in `scripts/focal-points.mjs`. Favour a frame where a person is visible, and prefer one who is *not* in the shaded band — the headline sits over the bottom half of a phone screen. Leave a comment when the choice is a compromise.
+2. Pick the tile that keeps the room legible and put its number in `FOCAL_X` in `scripts/focal-points.mjs`. Favour a frame where a person is visible, and prefer one who is *not* in the shaded band — the headline sits over the bottom half of a phone screen. The tiles step by 10, but any number works — when the tile you want cuts the person at its edge, try the number between. Leave a comment when the choice is a compromise.
 3. `npm run assets:images` — encodes the sizes and rewrites `src/lib/background-manifest.ts`. It skips rooms whose files are already newer than their source, so this costs about three seconds per new room; `--force` re-encodes everything, for when the encoder settings change.
-4. `npm run contrast` (needs a dev server) — the text sits over the photograph, so a new room can fail AA on its own. Every element must pass, except the few deliberately shipped failures listed in `ACCEPTED` in the script — each pinned to one room, one text and a floor it may not drop below. It audits only what has changed since it last passed: a new room costs about fifteen seconds, while touching a token or the veil re-audits all of them (three minutes, four at a time).
-5. Look at it: `http://localhost:3000/?room=<id>` at a phone size. Screenshot at full scale — a downscaled capture can catch the blurred placeholder and read as a bug that isn't there.
+4. `npm run contrast` (needs a dev server) — the text sits over the photograph, so a new room can fail AA on its own. Every element must pass, except the few deliberately shipped failures listed in `ACCEPTED` in the script — each pinned to one room, one text and a floor it may not drop below. It audits only what has changed since it last passed: a new room costs about fifteen seconds, while changing anything under `src/` re-audits all of them (three minutes, four at a time) — the cache is keyed on the room's image plus all of `src/` except the manifest.
+5. Look at it: `http://localhost:3000/?room=<id>` at a phone size, once the photograph has loaded (the blurred placeholder shows first). Screenshot at full scale — a downscaled capture can catch the placeholder and read as a bug that isn't there. The crop sheet's shaded band is approximate: check on the real page whether a head clears the headline.
+6. Commit the source image, `public/images/<id>-*`, `focal-points.mjs` and the manifest together, and push.
 
 `FOCAL_Y` exists but is almost never worth setting: a 16:9 photograph fills the height exactly on a phone and on any window narrower than 16:9, so nothing is cropped vertically there. It only bites past 16:9 — an ultrawide 2560×1080 loses about a fifth of the height. `npm run assets:crops -- --wide` sweeps that axis.
+
+The Ambient scenes (coast, forest, snow) are not rooms and don't go through this: they are built from `/ambient-inbox/src` by `npm run assets:ambient`, with their own focal point in `src/lib/ambient-manifest.ts`.
 
 ## The journal
 

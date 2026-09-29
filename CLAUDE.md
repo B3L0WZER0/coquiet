@@ -9,7 +9,7 @@ Full product detail lives in `SPEC.md`. The build order lives in `PLAN.md`. Read
 - Next.js (App Router) + TypeScript
 - Tailwind CSS
 - Vitest for logic tests, Playwright for interaction tests
-- No external backend in v1 (see Presence below)
+- No database or accounts; the only backends are two Cloudflare Workers (music and presence, below)
 
 ## Non-negotiables (apply in every milestone)
 
@@ -83,14 +83,38 @@ hostname. Range requests are load-bearing, not a nicety — the room seeks into 
 middle of a piece to land everyone at the same point in the programme. Runbook
 and the two traps are in `workers/audio/README.md`.
 
-## Presence (v1) — no Supabase, no external service
+## Presence
 
-Build presence behind a `PresenceProvider` interface with exactly one implementation for now: a **local adapter** using the browser's `BroadcastChannel` API to sync state across tabs open in the same browser. This gives real, honest multi-tab presence (open two tabs, watch the count and pulse panel update) with zero backend setup.
+Presence sits behind the `PresenceProvider` interface
+(`src/lib/presence/types.ts`), and `usePresence` picks the adapter:
 
-- In this adapter, the real part of "people here now" reflects open tabs; the standing room is added on top in `usePresence`, never inside an adapter.
-- If only one tab is open, say so honestly rather than implying company.
-- The entry screen *observes* the room without joining it, so it can report how many people are already working without counting someone who is still reading the front door.
-- Keep the interface generic enough that a real multi-device backend (Supabase Realtime, Pusher, PartyKit, or similar) can be dropped in later as a second implementation without touching any UI code. Don't build that second implementation now — just don't paint the UI into a corner that assumes only one adapter will ever exist.
+- **`WorkerPresenceAdapter`** when `NEXT_PUBLIC_PRESENCE_URL` is set (a GitHub
+  repository variable, `/presence` in production). One WebSocket to
+  `workers/presence` — a Cloudflare Durable Object at `coquiet.app/presence`,
+  same origin as the page, like the music.
+- **`LocalPresenceAdapter`** otherwise: `BroadcastChannel`, real across tabs of
+  one browser. Local dev and the Playwright suite use this, so tests count only
+  the pages they open.
+
+How the Worker stays on the free plan, which is the reason it exists (Supabase
+heartbeats outgrew theirs): an open socket *is* the heartbeat, so nothing is
+written per visitor per tick. Clients ping every 30s and the runtime answers
+without waking the object; a minute's alarm drops sockets silent for 150s;
+changes settle for 2s and go out as one rollup of counts — never anyone's own
+session. Don't add per-visitor polling or storage writes.
+
+- Adapters report real sessions only; the standing room is added on top in
+  `usePresence`, never inside an adapter.
+- The entry screen *observes* the room without joining it, so it can say how
+  many are already working without counting someone still reading the door.
+- A dropped socket keeps showing the last room for a 40s grace window (iOS
+  suspends it on every tab switch), then says the room is unavailable rather
+  than empty.
+- `npm run room` (`-- --watch`) prints the live count; `npm run
+  presence:worker` deploys. Cloudflare is the diego.beglinger@gmail.com
+  account — wrangler logged into any other fails with auth error 10000.
+- Free plan: 100,000 Durable Object requests a day. Metrics are under Workers
+  & Pages → coquiet-presence; past that, Workers Paid is $5 a month.
 
 ## Working style
 

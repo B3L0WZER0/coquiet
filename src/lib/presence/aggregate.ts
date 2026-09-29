@@ -8,7 +8,8 @@ import {
   type PresenceSession,
 } from '@/lib/presence/types';
 
-/** How often a session announces itself. */
+/** How often a local-adapter tab announces itself. The Worker adapter has no
+ *  heartbeat: its open socket is one (workers/presence). */
 export const HEARTBEAT_MS = 15_000;
 
 /** How long a session survives without a heartbeat. */

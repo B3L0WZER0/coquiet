@@ -18,6 +18,7 @@
     "audio:intake": "node scripts/audio-intake.mjs",
     "audio:upload": "node scripts/audio-intake.mjs --upload-only",
     "audio:worker": "npx wrangler deploy --config workers/audio/wrangler.jsonc",
+    "presence:worker": "npx wrangler deploy --config workers/presence/wrangler.jsonc",
     "assets:og": "node --experimental-strip-types scripts/generate-og-image.mjs",
     "assets:icons": "node scripts/generate-app-icons.mjs",
     "assets:journal": "node --experimental-strip-types scripts/generate-journal-cards.mjs",

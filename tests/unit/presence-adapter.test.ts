@@ -2,113 +2,135 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import type { PresenceSnapshot } from '@/lib/presence/types';
 
-/** A stand-in for the one realtime channel the adapter opens — it now only
- *  carries the rollup broadcast, not raw presence sync. */
-const channel = {
-  broadcastHandler: null as null | ((msg: { payload: unknown }) => void),
-  on(_type: string, _filter: unknown, cb: (msg: { payload: unknown }) => void) {
-    channel.broadcastHandler = cb;
-    return channel;
-  },
-  subscribe(cb: (status: string) => void) {
-    cb('SUBSCRIBED');
-    return channel;
-  },
-};
+vi.mock('@/lib/presence/config', () => ({ PRESENCE_URL: 'ws://presence.test/presence' }));
 
-/** A stand-in for the `presence_sessions` table the adapter upserts into —
- *  the rollup itself is computed server-side, not by anything under test. */
-const upserts: unknown[] = [];
-const deletes: string[] = [];
+/** A stand-in for the browser WebSocket, recording what the adapter sends. */
+class FakeSocket {
+  static OPEN = 1;
+  static last: FakeSocket | null = null;
+  readyState = 0;
+  sent: string[] = [];
+  onopen: (() => void) | null = null;
+  onmessage: ((e: { data: string }) => void) | null = null;
+  onclose: (() => void) | null = null;
+  constructor(public url: string) {
+    FakeSocket.last = this;
+  }
+  send(data: string) {
+    this.sent.push(data);
+  }
+  close() {
+    this.readyState = 3;
+  }
+  open() {
+    this.readyState = 1;
+    this.onopen?.();
+  }
+  receive(payload: unknown) {
+    this.onmessage?.({ data: JSON.stringify(payload) });
+  }
+}
+vi.stubGlobal('WebSocket', FakeSocket);
 
-vi.mock('@supabase/supabase-js', () => ({
-  createClient: () => ({
-    channel: () => channel,
-    removeChannel: () => undefined,
-    from: () => ({
-      upsert: async (row: { id: string }) => {
-        upserts.push(row);
-        return { error: null };
-      },
-      delete: () => ({
-        eq: async (_col: string, id: string) => {
-          deletes.push(id);
-          return { error: null };
-        },
-      }),
-    }),
-  }),
-}));
+const { WorkerPresenceAdapter } = await import('@/lib/presence/worker-adapter');
 
-const { SupabasePresenceAdapter } = await import('@/lib/presence/supabase-adapter');
-
-/** A rollup broadcast reporting `count` people, none in any particular bucket
- *  — the tests below only care about the total surviving reconstruction. */
+/** A rollup reporting `count` people, none in any particular bucket. */
 function rollup(count: number) {
   return { count, activities: {}, drinks: {} };
 }
 
-describe('supabase presence rollup', () => {
+describe('worker presence', () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    channel.broadcastHandler = null;
-    upserts.length = 0;
-    deletes.length = 0;
+    FakeSocket.last = null;
   });
 
   afterEach(() => {
     vi.useRealTimers();
   });
 
-  // Expiry now happens server-side (the rollup function sweeps stale rows
-  // before aggregating) — the adapter just has to trust what the next
-  // broadcast says, with no client-side timer of its own to fall back on.
-  it('drops a peer once a rollup reports the room emptied', () => {
-    const adapter = new SupabasePresenceAdapter();
+  it('shows whatever the latest rollup reports', () => {
+    const adapter = new WorkerPresenceAdapter();
     let snapshot: PresenceSnapshot = adapter.snapshot();
     adapter.subscribe((s) => {
       snapshot = s;
     });
     adapter.observe();
+    const socket = FakeSocket.last!;
+    expect(socket.url).toBe('ws://presence.test/presence');
+    socket.open();
 
-    channel.broadcastHandler?.({ payload: rollup(1) });
+    socket.receive(rollup(1));
     expect(snapshot.sessions).toHaveLength(1);
 
-    channel.broadcastHandler?.({ payload: rollup(0) });
+    socket.receive(rollup(0));
     expect(snapshot.sessions).toHaveLength(0);
     expect(snapshot.available).toBe(true);
 
     adapter.destroy();
   });
 
-  it('keeps a peer the rollup keeps reporting', () => {
-    const adapter = new SupabasePresenceAdapter();
+  it('announces on join, not on observe, and withdraws on leave', () => {
+    const adapter = new WorkerPresenceAdapter();
+    adapter.observe();
+    const socket = FakeSocket.last!;
+    socket.open();
+    expect(socket.sent).toHaveLength(0);
+
+    adapter.join({ activity: 'working', drink: 'coffee', channel: 'flow' });
+    expect(JSON.parse(socket.sent.at(-1)!)).toEqual({
+      t: 'here',
+      activity: 'working',
+      drink: 'coffee',
+    });
+
+    adapter.leave();
+    expect(JSON.parse(socket.sent.at(-1)!)).toEqual({ t: 'away' });
+    adapter.destroy();
+  });
+
+  it('does not count itself twice', () => {
+    const adapter = new WorkerPresenceAdapter();
+    let snapshot: PresenceSnapshot = adapter.snapshot();
+    adapter.subscribe((s) => {
+      snapshot = s;
+    });
+    adapter.join({ activity: null, drink: null, channel: 'flow' });
+    const socket = FakeSocket.last!;
+    socket.open();
+    socket.receive(rollup(3));
+    expect(snapshot.sessions).toHaveLength(3);
+    adapter.destroy();
+  });
+
+  it('keeps the room through a short drop, then reconnects', () => {
+    const adapter = new WorkerPresenceAdapter();
     let snapshot: PresenceSnapshot = adapter.snapshot();
     adapter.subscribe((s) => {
       snapshot = s;
     });
     adapter.observe();
+    const first = FakeSocket.last!;
+    first.open();
+    first.receive(rollup(2));
 
-    for (let i = 0; i < 8; i++) {
-      channel.broadcastHandler?.({ payload: rollup(1) });
-      vi.advanceTimersByTime(15_000);
-    }
+    first.onclose?.();
+    expect(snapshot.available).toBe(true);
+    vi.advanceTimersByTime(1_000);
+    expect(FakeSocket.last).not.toBe(first);
 
-    expect(snapshot.sessions).toHaveLength(1);
+    vi.advanceTimersByTime(40_000);
+    expect(snapshot.available).toBe(false);
     adapter.destroy();
   });
 
-  it('upserts a heartbeat row on join and deletes it on leave', async () => {
-    const adapter = new SupabasePresenceAdapter();
+  it('pings to keep the socket alive', () => {
+    const adapter = new WorkerPresenceAdapter();
     adapter.observe();
-    adapter.join({ activity: 'working', drink: 'coffee', channel: 'flow' });
-    await vi.advanceTimersByTimeAsync(0);
-    expect(upserts).toHaveLength(1);
-
-    adapter.leave();
-    await vi.advanceTimersByTimeAsync(0);
-    expect(deletes).toHaveLength(1);
-
+    const socket = FakeSocket.last!;
+    socket.open();
+    vi.advanceTimersByTime(30_000);
+    expect(socket.sent).toContain('ping');
     adapter.destroy();
   });
 });

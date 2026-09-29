@@ -58,10 +58,11 @@ jobs:
           npm run build
         env:
           STATIC_EXPORT: '1'
-          # Cross-device presence. Both are public values — the anon key is
-          # meant to be shipped to browsers — so they are repository variables
-          # rather than secrets. Unset, the build still succeeds and the room
-          # falls back to presence across tabs of one browser.
+          # Cross-device presence: `/presence`, served by workers/presence.
+          # Unset, the room falls back to presence across tabs of one browser.
+          NEXT_PUBLIC_PRESENCE_URL: ${{ vars.NEXT_PUBLIC_PRESENCE_URL }}
+          # The Ambient poll. Public values — the anon key is meant to be
+          # shipped to browsers — so repository variables, not secrets.
           NEXT_PUBLIC_SUPABASE_URL: ${{ vars.NEXT_PUBLIC_SUPABASE_URL }}
           NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ vars.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
           # Where the music is served from. Leave this UNSET in production: the

@@ -4,9 +4,9 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import type { ChannelId } from '@/lib/channels';
 import { withBaseline } from '@/lib/presence/baseline';
-import { BASELINE_ENABLED, hasSupabase } from '@/lib/presence/config';
+import { BASELINE_ENABLED, hasPresenceServer } from '@/lib/presence/config';
 import { LocalPresenceAdapter } from '@/lib/presence/local-adapter';
-import { SupabasePresenceAdapter } from '@/lib/presence/supabase-adapter';
+import { WorkerPresenceAdapter } from '@/lib/presence/worker-adapter';
 import type {
   Activity,
   Drink,
@@ -23,7 +23,7 @@ const BASELINE_TICK_MS = 20_000;
 
 /** The room's presence provider. */
 function createProvider(): PresenceProvider {
-  if (hasSupabase()) return new SupabasePresenceAdapter();
+  if (hasPresenceServer()) return new WorkerPresenceAdapter();
   return new LocalPresenceAdapter();
 }
 

@@ -1,0 +1,17 @@
+{
+  "name": "coquiet-presence",
+  "main": "src/index.js",
+  "compatibility_date": "2026-09-09",
+
+  // Same origin as the page, like the audio: nothing for a proxy to block.
+  "routes": [{ "pattern": "coquiet.app/presence", "zone_name": "coquiet.app" }],
+  "workers_dev": false,
+
+  "durable_objects": {
+    "bindings": [{ "name": "ROOM", "class_name": "Room" }]
+  },
+  // SQLite-backed classes are the ones the Workers Free plan allows.
+  "migrations": [{ "tag": "v1", "new_sqlite_classes": ["Room"] }],
+
+  "observability": { "enabled": true }
+}

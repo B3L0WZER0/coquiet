@@ -10,7 +10,8 @@ anonymous presence. No accounts, no chat, no dashboards.
 ## Running it
 
 No external service, API key, database or realtime provider is required. Clone,
-install, run.
+install, run. Locally, presence is shared between tabs of one browser; the live
+site's cross-device presence comes from a Cloudflare Worker (see Presence).
 
 ```bash
 npm install
@@ -36,6 +37,8 @@ audio is first allowed to exist.
 | `npm run contrast` | WCAG AA audit of every room that has changed (dev server must be running) |
 | `npm run assets:images` | Regenerate the responsive background set |
 | `npm run assets:audio` | Rebuild the audio manifest from `public/audio` |
+| `npm run room` | How many real people are in the live room (`-- --watch` to follow it) |
+| `npm run presence:worker` | Deploy the presence Worker to Cloudflare |
 
 `npm run test:e2e` needs browsers once: `npx playwright install chromium`.
 
@@ -234,12 +237,15 @@ src/
     timer.ts          pure timer logic over a serialisable session
     notes.ts          focus notes, break suggestions
     chime.ts          synthesised two-tone chime
-    presence/         provider interface, local adapter, aggregation, copy
+    presence/         provider interface, Worker and local adapters, standing room, copy
+workers/
+  audio/          serves the music at coquiet.app/audio/*
+  presence/       the room's Durable Object at coquiet.app/presence
 scripts/
   generate-images.mjs  responsive AVIF/WebP from a source image
   contrast-check.mjs   WCAG AA audit against the rendered background
 tests/
-  unit/           Vitest: timer, audio/channel state, presence expiry
+  unit/           Vitest: timer, audio/channel state, presence, the Worker's rollup
   e2e/            Playwright: the critical path, keyboard access, reduced
                   motion, no-scroll, layout shift
 ```
@@ -292,69 +298,58 @@ whichever of the two happened most recently.
 
 ---
 
-## Presence, and adding a real backend later
+## Presence
 
-Presence in v1 is **real, but scoped to one browser**. Every tab announces
-itself on a `BroadcastChannel`, heartbeats every 15s, and is forgotten 75s after
-it goes quiet. Open two tabs and the count and the Room pulse are genuinely
-live.
+Presence sits behind one interface,
+[`PresenceProvider`](src/lib/presence/types.ts), and
+[`usePresence`](src/hooks/usePresence.ts) picks the adapter. No component knows
+which one is running.
+
+- **On the live site — `WorkerPresenceAdapter`.** Each visitor keeps one
+  WebSocket open to a Cloudflare Durable Object at `coquiet.app/presence`
+  ([`workers/presence`](workers/presence)), on the page's own origin. The open
+  socket *is* the heartbeat, so nothing is written per visitor per tick and the
+  Worker stays on Cloudflare's free plan. The browser pings every 30s; sockets
+  silent for 150s are dropped. When the room changes, every visitor gets one
+  rollup of counts, never anyone's own session.
+- **Locally and in tests — `LocalPresenceAdapter`.** Tabs of one browser share
+  a `BroadcastChannel`, heartbeat every 15s and are forgotten 75s after they
+  go quiet. Open two tabs and the count and the Room pulse are genuinely live.
+
+The build uses the Worker when `NEXT_PUBLIC_PRESENCE_URL` is set — a GitHub
+repository variable, `/presence` in production. To try the Worker locally:
+
+```bash
+cd workers/presence && npx wrangler dev --local --port 8787
+```
+
+then put `NEXT_PUBLIC_PRESENCE_URL=ws://localhost:8787/presence` in
+`.env.local` and restart `npm run dev`.
 
 There are two ways to be attached to the room, and the difference matters:
 
-- **Observing** (`observe()`) opens the channel and listens, announcing nothing.
-  The entry screen does this, so its badge can say how many people are already
+- **Observing** (`observe()`) connects and listens, announcing nothing. The
+  entry screen does this, so its badge can say how many people are already
   working. A watcher is not in the room and is not in its count.
 - **Joining** (`join()`) announces this visitor. That happens on pressing
   *Enter the room*, and not before.
 
-Getting that boundary wrong would put a number in front of everyone else that
-included people who never came in. **No number is ever invented**: with no adapter running the room says "The
-quiet room is open.", and with only your own tab it says "The room is yours for
-now." Neither line promises that anyone else is coming, because the room has no
-way to know that.
+### What the number means
 
-To make presence work across different people's devices, add a **second
-implementation of `PresenceProvider`** — the interface in
-[`src/lib/presence/types.ts`](src/lib/presence/types.ts):
+The count shown is a **standing room of simulated people plus real
+sessions**. The standing room ([`baseline.ts`](src/lib/presence/baseline.ts))
+follows the clock — about 570 around 03:00 UTC, about 830 twelve hours later,
+wandering a few either side — and is the same for every visitor at the same
+moment. It is added once, in `usePresence`; adapters report real sessions only,
+and nothing else pads the figure. `npm run room` shows the real part alone.
+`NEXT_PUBLIC_PRESENCE_BASELINE=off` removes the standing room, which the
+Playwright suite does so it can count the pages it opens.
 
-```ts
-interface PresenceProvider {
-  join(own: OwnPresence): void;
-  update(own: Partial<OwnPresence>): void;
-  leave(): void;
-  subscribe(fn: (snapshot: PresenceSnapshot) => void): () => void;
-  snapshot(): PresenceSnapshot;
-  destroy(): void;
-}
-```
-
-Then change the one line in [`src/hooks/usePresence.ts`](src/hooks/usePresence.ts)
-that constructs it:
-
-```ts
-function createProvider(): PresenceProvider {
-  return new LocalPresenceAdapter();
-}
-```
-
-No component needs to change. Any hosted realtime service with presence or
-pub/sub will do — this is a deliberately ordinary requirement and nothing in the
-codebase assumes a particular vendor. Keep the same ~60–90s expiry window so
-behaviour does not change, keep storing only the fields in `PresenceSession`
-(anonymous id, activity, drink, channel, last seen), and keep stamping
-`lastSeen` with the receiving client's clock rather than trusting the sender's.
-
-### The honesty rule
-
-A count is rendered only when it came from sessions actually heard from. There
-is no seeding, no minimum, and no fallback figure. The Room pulse breakdown is
-also withheld below three people (`MIN_GROUP_FOR_BREAKDOWN`), because
-"1 reading · 1 tea" describes a person rather than a room.
-
-(There used to be a `?simulate=300` dev-only adapter for eyeballing a busy
-room at a scale real testing can't reach. It was removed once the real
-adapter was verified working across devices; rebuild it behind the same
-`PresenceProvider` interface if that's needed again.)
+The server keeps, per socket, only the chosen activity and drink and when it
+last heard from it — in memory, gone when the socket closes. The Room pulse
+breakdown is withheld below three people (`MIN_GROUP_FOR_BREAKDOWN`), because
+"1 reading · 1 tea" describes a person rather than a room; with the standing
+room on, that only matters in tests.
 
 ---
 

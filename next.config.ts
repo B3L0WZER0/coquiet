@@ -43,7 +43,7 @@ const nextConfig: NextConfig = {
       }),
   // Next locks a dev server to <distDir>/lock and refuses a second one in the
   // same directory. The e2e suite needs its own server — different port, no
-  // Supabase — so it gets its own dist dir and can run beside the one you are
+  // presence Worker — so it gets its own dist dir and can run beside the one you are
   // already developing in. Unset everywhere else, which means .next as always.
   ...(process.env.NEXT_DIST_DIR ? { distDir: process.env.NEXT_DIST_DIR } : {}),
 };

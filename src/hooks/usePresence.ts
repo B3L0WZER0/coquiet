@@ -41,11 +41,12 @@ export function usePresence(entered: boolean, channel: ChannelId) {
   const [snapshot, setSnapshot] = useState<PresenceSnapshot>(EMPTY);
   const [own, setOwn] = useState<OwnState>(NOTHING_SET);
 
-  // Earlier versions kept this in localStorage. Clear anything they left
-  // behind rather than abandoning it in the visitor's browser — it is personal
-  // data the room has decided not to keep.
+  // Earlier versions kept these in localStorage (the Ambient poll's voter id
+  // among them). Clear anything they left behind rather than abandoning it in
+  // the visitor's browser — it is data the room has decided not to keep.
   useEffect(() => {
     removeStored(STORAGE_KEYS.presence);
+    removeStored(STORAGE_KEYS.ambientPoll);
   }, []);
 
   // Start watching straight away, from the entry screen. Observing announces

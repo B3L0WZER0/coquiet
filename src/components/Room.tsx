@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-import { AmbientPoll } from '@/components/AmbientPoll';
 import { BreakLayer } from '@/components/BreakLayer';
 import { EntryLayer } from '@/components/EntryLayer';
 import { FocusNote } from '@/components/FocusNote';
@@ -230,7 +229,6 @@ export function Room({ initialMode }: { initialMode?: RoomMode } = {}) {
   return (
     <main className="fixed inset-0 h-[100dvh] w-full">
       {/* Before the grid, so any panel the room opens paints over it. */}
-      <AmbientPoll active={entered && mode === 'ambient'} scene={audio.state.channel} />
 
       <div
         className="room-grid transition-opacity duration-[1200ms] ease-[var(--ease-quiet)]"

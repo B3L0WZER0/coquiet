@@ -7,14 +7,14 @@ import { defineConfig, devices } from '@playwright/test';
  * Both halves of that matter. The presence tests assert on an empty room —
  * "Room open" with no count, then exactly one person, then two — which is only
  * true if the room contains nothing but the pages the test opened. Pointed at
- * the Supabase backend, every real visitor to the live site counts too, so the
+ * the presence Worker, every real visitor to the live site counts too, so the
  * numbers were whatever the internet happened to be doing.
  *
- * Unsetting the two Supabase variables drops presence to the local
- * BroadcastChannel adapter, which never leaves the browser Playwright is
- * driving. The separate port is what makes that stick: on 3000 the config would
- * happily reuse a `npm run dev` already running from .env.local, and quietly
- * test against Supabase again.
+ * Unsetting the presence URL drops presence to the local BroadcastChannel
+ * adapter, which never leaves the browser Playwright is driving. The separate
+ * port is what makes that stick: on 3000 the config would happily reuse a
+ * `npm run dev` already running from .env.local, and quietly test against the
+ * Worker again.
  */
 const PORT = 3100;
 const ORIGIN = `http://localhost:${PORT}`;
@@ -38,9 +38,8 @@ export default defineConfig({
     timeout: 60_000,
     env: {
       // Empty, not absent: Next.js leaves an already-defined variable alone, so
-      // this is what stops .env.local putting Supabase back.
-      NEXT_PUBLIC_SUPABASE_URL: '',
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: '',
+      // this is what stops .env.local putting the Worker back.
+      NEXT_PUBLIC_PRESENCE_URL: '',
       // The standing room drifts with the clock; the presence tests count only
       // the pages they open. Its behaviour is covered by unit tests.
       NEXT_PUBLIC_PRESENCE_BASELINE: 'off',

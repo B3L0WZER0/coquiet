@@ -1,8 +1,9 @@
 # The music route
 
 `coquiet.app/audio/*` is served by this Worker, out of the `coquiet-audio` R2
-bucket. Everything else on the domain is still GitHub Pages and never touches
-it.
+bucket. Its one neighbour on the zone is the presence Worker at
+`coquiet.app/presence` ([`../presence`](../presence/README.md)); everything else
+is still GitHub Pages and never touches either.
 
 It exists for one reason: the music has to come from the **same origin as the
 page**. The audio graph reads the samples to shape the fade, so a cross-origin
@@ -19,7 +20,11 @@ middle of a piece to land every listener at the same point in the programme.
 npm run audio:worker
 ```
 
-`npx wrangler login` first, once, if you have never authenticated on this Mac.
+`npx wrangler login` first if this Mac is not authenticated — as
+**diego.beglinger@gmail.com**, the account that owns the `coquiet.app` zone and
+the bucket. Logged in as anyone else, the deploy fails with `Authentication
+error [code: 10000]`; `npx wrangler whoami` shows which account is active. Run
+the login in a terminal that stays open until the browser confirms.
 
 To exercise it without deploying, `npx wrangler dev --local` from this folder
 gives you a Worker over a local bucket — seed it with `wrangler r2 object put

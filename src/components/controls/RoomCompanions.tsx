@@ -254,7 +254,7 @@ export function QuoteButton({ mobile = false }: { mobile?: boolean }) {
               Today’s line
             </p>
             <blockquote
-              className="text-[1.0625rem] leading-snug font-light text-balance"
+              className="text-[0.8125rem] leading-relaxed text-balance"
               style={{ color: 'var(--text-primary)' }}
             >
               “{quote.text}”

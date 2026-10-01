@@ -443,8 +443,10 @@ async function auditRoom(roomId) {
       [/What the (channels|scenes) are/, 'channel info'],
       [/Focus timer/, 'timer panel'],
       [/presence/i, 'presence panel'],
+      [/Quote of the day/, 'quote panel'],
     ]) {
-      await page.getByRole('button', { name }).first().click();
+      // The phone's copy of a control sits earlier in the DOM, hidden at desk size.
+      await page.getByRole('button', { name }).locator('visible=true').first().click();
       await settle(page);
       await at(`${roomId} · ${label}`);
       await page.keyboard.press('Escape');

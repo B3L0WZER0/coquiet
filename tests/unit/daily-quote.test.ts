@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { QUOTES, quoteOfTheDay } from '@/lib/daily-quote';
+import { QUOTES, quoteOfTheDay, quoteShareText } from '@/lib/daily-quote';
 
 const utc = (y: number, m: number, d: number, h = 12) => new Date(Date.UTC(y, m - 1, d, h));
 
@@ -38,5 +38,13 @@ describe('quoteOfTheDay', () => {
   it('comes round again after the last line, and works before the start', () => {
     expect(quoteOfTheDay(new Date(utc(2026, 10, 1).getTime() + QUOTES.length * 86_400_000))).toBe(QUOTES[0]);
     expect(quoteOfTheDay(utc(2026, 9, 30))).toBe(QUOTES[QUOTES.length - 1]);
+  });
+});
+
+describe('quoteShareText', () => {
+  it('is the line and its author, nothing else', () => {
+    expect(quoteShareText({ text: 'Simplify, simplify.', author: 'Henry David Thoreau', source: 'Walden, 1854' })).toBe(
+      '“Simplify, simplify.” — Henry David Thoreau',
+    );
   });
 });

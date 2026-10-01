@@ -109,6 +109,11 @@ export const QUOTES: Quote[] = [
   { text: 'What good shall I do this day?', author: 'Benjamin Franklin', source: 'Autobiography, 1791' },
 ];
 
+/** What a shared quote says: the line and who said it, nothing more. */
+export function quoteShareText(quote: Quote): string {
+  return `“${quote.text}” — ${quote.author}`;
+}
+
 const DAY = 24 * 60 * 60 * 1000;
 
 /** The list starts on 1 October 2026 and comes round again once it runs out. */

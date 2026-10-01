@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Popover } from '@/components/ui/Popover';
-import { quoteOfTheDay } from '@/lib/daily-quote';
+import { quoteOfTheDay, quoteShareText, type Quote } from '@/lib/daily-quote';
 import { googleCalendarUrl, icsFile, planEnd, roomLink, suggestedSlots } from '@/lib/plan';
 import { readStored, writeStored } from '@/lib/storage';
 
@@ -250,9 +250,12 @@ export function QuoteButton({ mobile = false }: { mobile?: boolean }) {
         triggerClassName={circle}
         panel={
           <figure className="flex flex-col gap-3 py-1">
-            <p className="text-[0.6875rem] uppercase tracking-[0.14em]" style={{ color: 'var(--text-muted)' }}>
-              Today’s line
-            </p>
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[0.6875rem] uppercase tracking-[0.14em]" style={{ color: 'var(--text-muted)' }}>
+                Today’s line
+              </p>
+              <ShareQuote quote={quote} />
+            </div>
             <blockquote
               className="text-[0.8125rem] leading-relaxed"
               style={{ color: 'var(--text-primary)' }}
@@ -278,6 +281,58 @@ export function QuoteButton({ mobile = false }: { mobile?: boolean }) {
         </span>
       )}
     </div>
+  );
+}
+
+/** A phone opens its share sheet; elsewhere the line and the room's link are copied. */
+function ShareQuote({ quote }: { quote: Quote }) {
+  const [note, say] = useNote();
+
+  async function share() {
+    const text = quoteShareText(quote);
+    const url = roomLink(window.location);
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ text, url });
+      } catch {
+        // A dismissed share sheet is not worth mentioning.
+      }
+      return;
+    }
+    try {
+      await navigator.clipboard.writeText(`${text}\n${url}`);
+      say('Copied');
+    } catch {
+      say('Couldn’t copy');
+    }
+  }
+
+  return (
+    <span className="flex items-center gap-1">
+      <span className="text-[0.6875rem]" style={{ color: 'var(--text-muted)' }} aria-live="polite">
+        {note}
+      </span>
+      {/* A 44px target around a 16px mark; the negative margin keeps the header row slim. */}
+      <button
+        type="button"
+        aria-label="Share today’s line"
+        onClick={share}
+        className="-my-3 -mr-3 flex h-11 w-11 items-center justify-center rounded-full opacity-70 transition-opacity duration-[var(--duration-control)] hover:opacity-100"
+        style={{ color: 'var(--text-secondary)' }}
+      >
+        <ShareMark />
+      </button>
+    </span>
+  );
+}
+
+/** A box with an arrow leaving it — the share mark phones already use. */
+function ShareMark() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M10 12.4V3.2M6.8 6.2 10 3l3.2 3.2" {...stroke} />
+      <path d="M7 9H5.6a1.2 1.2 0 0 0-1.2 1.2v6a1.2 1.2 0 0 0 1.2 1.2h8.8a1.2 1.2 0 0 0 1.2-1.2v-6A1.2 1.2 0 0 0 14.4 9H13" {...stroke} />
+    </svg>
   );
 }
 

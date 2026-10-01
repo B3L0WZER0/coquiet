@@ -916,6 +916,15 @@ test("today's quote is new once, then just a quote", async ({ page }) => {
   const panel = page.getByRole('dialog', { name: /Quote of the day/ });
   await expect(panel.locator('blockquote')).not.toBeEmpty();
   await expect(panel.locator('figcaption')).not.toBeEmpty();
+
+  // No share sheet on a desktop browser, so the line and the room's link are copied.
+  await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
+  await page.evaluate(() => Object.defineProperty(navigator, 'share', { value: undefined }));
+  await panel.getByRole('button', { name: 'Share today’s line' }).click();
+  await expect(panel.getByText('Copied')).toBeVisible();
+  const copied = await page.evaluate(() => navigator.clipboard.readText());
+  expect(copied).toMatch(/^“.+” — .+\nhttp:\/\/localhost:\d+\/$/);
+
   await page.keyboard.press('Escape');
   await expect(panel).toHaveCount(0);
 

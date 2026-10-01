@@ -114,6 +114,13 @@ export function quoteShareText(quote: Quote): string {
   return `“${quote.text}” — ${quote.author}\n\nShared from coquiet.app`;
 }
 
+const escape = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+/** The same message for rich editors, where "coquiet.app" can be a real link. */
+export function quoteShareHtml(quote: Quote): string {
+  return `<p>“${escape(quote.text)}” — ${escape(quote.author)}</p><p>Shared from <a href="https://coquiet.app">coquiet.app</a></p>`;
+}
+
 const DAY = 24 * 60 * 60 * 1000;
 
 /** The list starts on 1 October 2026 and comes round again once it runs out. */

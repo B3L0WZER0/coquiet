@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Popover } from '@/components/ui/Popover';
-import { quoteOfTheDay, quoteShareText, type Quote } from '@/lib/daily-quote';
+import { quoteOfTheDay, quoteShareHtml, quoteShareText, type Quote } from '@/lib/daily-quote';
 import { googleCalendarUrl, icsFile, planEnd, roomLink, suggestedSlots } from '@/lib/plan';
 import { readStored, writeStored } from '@/lib/storage';
 
@@ -284,13 +284,32 @@ export function QuoteButton({ mobile = false }: { mobile?: boolean }) {
   );
 }
 
-/** Copies the quote as a message would carry it — ready to paste to a friend. */
+/** Shares the quote as a message — text only, so apps don't swap it for a link
+ *  card. Without a share sheet it is copied, with coquiet.app as a real link. */
 function ShareQuote({ quote }: { quote: Quote }) {
   const [note, say] = useNote();
 
   async function share() {
+    const text = quoteShareText(quote);
+    if (typeof navigator.share === 'function') {
+      try {
+        await navigator.share({ text });
+      } catch {
+        // A dismissed share sheet is not worth mentioning.
+      }
+      return;
+    }
     try {
-      await navigator.clipboard.writeText(quoteShareText(quote));
+      if (typeof ClipboardItem === 'function') {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/plain': new Blob([text], { type: 'text/plain' }),
+            'text/html': new Blob([quoteShareHtml(quote)], { type: 'text/html' }),
+          }),
+        ]);
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
       say('Copied');
     } catch {
       say('Couldn’t copy');
@@ -305,7 +324,7 @@ function ShareQuote({ quote }: { quote: Quote }) {
       {/* A 44px target around a 16px mark; the negative margin keeps the header row slim. */}
       <button
         type="button"
-        aria-label="Copy today’s line to share"
+        aria-label="Share today’s line"
         onClick={share}
         className="-my-3 -mr-3 flex h-11 w-11 items-center justify-center rounded-full opacity-70 transition-opacity duration-[var(--duration-control)] hover:opacity-100"
         style={{ color: 'var(--text-secondary)' }}

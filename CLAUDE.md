@@ -67,7 +67,7 @@ The Ambient scenes (coast, forest, snow) are not rooms and don't go through this
 
 ## Today's line
 
-The quote button in the room (`src/lib/daily-quote.ts`): one real quote a day, the same for everyone, starting 1 October 2026 and wrapping round when the list runs out (94 lines, so early January 2027). Every entry needs an author and a source with its year — if you can't source it, leave it out; quote sites are full of fakes. Alternate calm lines with energising ones, never hustle, and never the same author two days running (a test checks). Sharing copies `“line” — Author` and a `Shared from coquiet.app` credit (`quoteShareText`) — natural text, never a bare link.
+The quote button in the room (`src/lib/daily-quote.ts`): one real quote a day, the same for everyone, starting 1 October 2026 and wrapping round when the list runs out (94 lines, so early January 2027). Every entry needs an author and a source with its year — if you can't source it, leave it out; quote sites are full of fakes. Alternate calm lines with energising ones, never hustle, and never the same author two days running (a test checks). Sharing sends `“line” — Author` and a `Shared from coquiet.app` credit (`quoteShareText`) as text only — never a `url`, which apps turn into a link card; the clipboard fallback also carries HTML so coquiet.app is a link.
 
 ## The journal
 

@@ -917,8 +917,23 @@ test("today's quote is new once, then just a quote", async ({ page }) => {
   await expect(panel.locator('blockquote')).not.toBeEmpty();
   await expect(panel.locator('figcaption')).not.toBeEmpty();
 
+  // With a share sheet: text only — a url field would turn it into a link card.
+  await page.evaluate(() => {
+    const w = window as unknown as { shared?: ShareData };
+    Object.defineProperty(navigator, 'share', {
+      configurable: true,
+      value: async (data: ShareData) => void (w.shared = data),
+    });
+  });
+  const share = panel.getByRole('button', { name: 'Share today’s line' });
+  await share.click();
+  const shared = await page.evaluate(() => (window as unknown as { shared?: ShareData }).shared);
+  expect(shared).toEqual({ text: expect.stringMatching(/^“.+” — .+\n\nShared from coquiet\.app$/) });
+
+  // Without one, it is copied.
   await page.context().grantPermissions(['clipboard-read', 'clipboard-write']);
-  await panel.getByRole('button', { name: 'Copy today’s line to share' }).click();
+  await page.evaluate(() => Object.defineProperty(navigator, 'share', { configurable: true, value: undefined }));
+  await share.click();
   await expect(panel.getByText('Copied')).toBeVisible();
   const copied = await page.evaluate(() => navigator.clipboard.readText());
   expect(copied).toMatch(/^“.+” — .+\n\nShared from coquiet\.app$/);

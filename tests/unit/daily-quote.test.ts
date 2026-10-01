@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { QUOTES, quoteOfTheDay, quoteShareText } from '@/lib/daily-quote';
+import { QUOTES, quoteOfTheDay, quoteShareHtml, quoteShareText } from '@/lib/daily-quote';
 
 const utc = (y: number, m: number, d: number, h = 12) => new Date(Date.UTC(y, m - 1, d, h));
 
@@ -45,6 +45,14 @@ describe('quoteShareText', () => {
   it('is the line, its author and a quiet credit — no bare link', () => {
     expect(quoteShareText({ text: 'Simplify, simplify.', author: 'Henry David Thoreau', source: 'Walden, 1854' })).toBe(
       '“Simplify, simplify.” — Henry David Thoreau\n\nShared from coquiet.app',
+    );
+  });
+});
+
+describe('quoteShareHtml', () => {
+  it('links coquiet.app and escapes the line', () => {
+    expect(quoteShareHtml({ text: 'Less <is> more & so on', author: 'A. N. Other', source: 'x' })).toBe(
+      '<p>“Less &lt;is&gt; more &amp; so on” — A. N. Other</p><p>Shared from <a href="https://coquiet.app">coquiet.app</a></p>',
     );
   });
 });

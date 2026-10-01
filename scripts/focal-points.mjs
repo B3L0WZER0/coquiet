@@ -21,6 +21,10 @@ export const FOCAL_X = {
   // The peaks over the larch valley and an empty desk. Framed on the man, a
   // stone pillar filled the slice and put him behind the headline.
   'alpine-peak-library': 40,
+  // The painter at her easel, with the orchard window beside her. She sits
+  // almost against the left edge, so the slice starts further left than the
+  // sheet's tiles suggest to keep her off it.
+  'applelight-atelier': 5,
   // The reader under the great arch, with the mountains behind him.
   'arched-tree-cafe': 55,
   'architecture-canyon': 73,
@@ -139,6 +143,8 @@ export const FOCAL_X = {
   // The woman at her table under the arch, with the olive tree in the court.
   'olive-vault-cafe': 25,
   'open-ocean-reading-room': 16,
+  // The binder at the lamp-lit bench under the vault.
+  'orchard-hands': 55,
   // The papermaker at her table, with the arched window and the sea.
   'paper-in-the-light': 50,
   'rain-garden-pavilion': 64,
@@ -152,6 +158,8 @@ export const FOCAL_X = {
   'rainy-bamboo-cafe': 45,
   // The woman at the lit desk, with the redwood trunks through the glass.
   'redwood-lantern-library': 75,
+  // The man at the long window desk, with the reedbeds and the water.
+  'reedwater-observatory': 85,
   // The terraces the room is named for barely survive a portrait slice; this
   // keeps the woman at her desk instead, and the valley to the landscape view.
   'rice-terrace-focus-pavilion': 20,
@@ -168,6 +176,10 @@ export const FOCAL_X = {
   'the-first-wash': 80,
   // The painter at her easel, with the misty forest through the glass.
   'the-woodland-easel': 50,
+  // The reader in the armchair by the orchard window.
+  'the-cider-loft': 78,
+  // The woman at her drafting table, in the curve of the estuary window.
+  'the-estuary-sketchroom': 75,
   // The woman at the table by the glass, with the cliffs and the sea.
   'tidal-oculus-cafe': 85,
   // The woman at the table, with the dune grass and the sea through the doors.

@@ -43,6 +43,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAABwBACdASogABIAPuVepE2pJSOiMAwBIByJZQC06BYuAB4kVny3zM3ZbFuKwAD+tlmd5m3GeL3R6RV9tGfNUgAyRuSqrTomDUXieZtqHXX6TMXzr4a9m+EUxhCji0MczA1whGC9MYAAAA==",
   },
   {
+    id: "applelight-atelier",
+    widths: [640, 1024, 1600],
+    focalX: 5,
+    focalY: 50,
+    chrome: "#827263",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADwBACdASogABIAPu1kqU2ppaOiMAgBMB2JYwCsAB6XERre3f9nirqBRgKkf+JWpwAA/r0koQsgVFbmgrLqEx9c3e0xZGsVsosRQy3JKry498B5+ZlZ+chA+ta2vD+CKqnzedgjszDqOYAA",
+  },
+  {
     id: "arched-tree-cafe",
     widths: [640, 1024, 1600],
     focalX: 55,
@@ -547,6 +555,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASogABIAPuVipE2pJaMiMAwBIByJZwDCgBP6daKCoPBgUDogiYvnInAA/VCZ7CAebzTNB4rSpmdesU0g5Z4+Dq8FkhRWZNxoAYYsTPxJ6NW+fQ6rwuOynzhF0tzPacAA",
   },
   {
+    id: "orchard-hands",
+    widths: [640, 1024, 1600],
+    focalX: 55,
+    focalY: 50,
+    chrome: "#8f7d70",
+    lqip: "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADwBACdASogABIAPuVipU2pJiOiMAwBIByJYwCw7B40sO2f1rZOiuqW2X6Kc9OtVlAA/p7q+0B0dpQ2GdKXZul5xUCH2WkQgtk7UQSTEd66TNIRbJOTuxepk0TyS4nD43G565FEWc8XWB5uuA8kvCMIAAA=",
+  },
+  {
     id: "paper-in-the-light",
     widths: [640, 1024, 1600],
     focalX: 50,
@@ -603,6 +619,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAADQBACdASogABIAPu1kqk4ppaQiMAgBMB2JZQC7ABK5m3ITUy4jiY10fd0tZK9xAAD56QnSLoqXaj6DUy7JMG1tB5S6e2eHbPhrqRq3a3Bi5kDnIgoOUdeGAoidgasEwf17c1IL/55OWucSyGFoAAAA",
   },
   {
+    id: "reedwater-observatory",
+    widths: [640, 1024, 1600],
+    focalX: 85,
+    focalY: 50,
+    chrome: "#6c5b4f",
+    lqip: "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAABQBACdASogABIAPu1ip02ppaOiMAgBMB2JZwC7ACHWrfpa0hKKyUwgOw8AAP6i0aKWGy28SYiwOhKvPetM6jkaTln+VypVY9+aGWZ0E4/Rua1PFqecvjHftlj5IzSgAAA=",
+  },
+  {
     id: "rice-terrace-focus-pavilion",
     widths: [640, 1024, 1600],
     focalX: 20,
@@ -633,6 +657,22 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#6c645e",
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBQCdASogABIAPuVipE2pJaOiMAwBIByJZwDC+CPaZEwH0A4mZy4bwN+l44nyb14AAP4H2V0g5u7Qm4qZ6fW6SBled3MF/mLVePiRouCP1cpyesU/ahbcTnZAQiWSV0YFMAAA",
+  },
+  {
+    id: "the-cider-loft",
+    widths: [640, 1024, 1600],
+    focalX: 78,
+    focalY: 50,
+    chrome: "#674937",
+    lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAADQBACdASogABIAPu1irVAppSQisBgIATAdiWUAv+wNaOMRJHGWjhJoZlHy++xAaADh8N/fCVQ//BMZCyLAtawvfARuO9yxBALUE+bEoCWjFroy+IOIHJIoCPdo0fuTOeTlrBT4f13onQRFhzBAAAAA",
+  },
+  {
+    id: "the-estuary-sketchroom",
+    widths: [640, 1024, 1600],
+    focalX: 75,
+    focalY: 50,
+    chrome: "#806e5c",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAACQBACdASogABIAPulep02pJSOiN/VYASAdCWcAwNwRAUNU3A/uslm0rij/RUAA/ZjAgWFJclZNXrjUpGjvvbRHlYmwLqrfCEWCv7L1WLDWW84a1N4b8hn+kW4VQGBB2qo4GJWcOiAAAA==",
   },
   {
     id: "the-first-wash",

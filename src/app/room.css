@@ -322,6 +322,7 @@
     grid-area: personal;
     justify-self: end;
     min-width: 0;
+    gap: 0.5rem;
   }
 }
 

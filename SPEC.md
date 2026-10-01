@@ -59,7 +59,7 @@ One immersive, full-viewport room, not a scrolling dashboard.
 - Center: transient focus note
 - Bottom left: live room presence
 - Bottom center: play/pause and volume
-- Bottom right: optional personal presence
+- Bottom right: today's line (a quote button), then optional personal presence
 
 Translucent warm-toned controls, fine borders, restrained backdrop blur. Controls may dim after ~8s of inactivity but return immediately on pointer move, touch, or keyboard use. Keyboard focus is never hidden.
 
@@ -137,6 +137,10 @@ Bottom center: refined circular play/pause button; discreet volume control that 
 ## Focus notes
 
 Short original notes, not clichés or misattributed quotes. Shown briefly after entering, briefly at the start of a new focus session, and at the start of each global hour — fading after ~8–10s. Same note for everyone during a given global hour, chosen deterministically from a local collection (no API needed). Example tone: *"One thing at a time." / "Stay with the work." / "Begin gently. Continue steadily."* Never permanently visible.
+
+## Today's line
+
+A quotation-mark button opens one real, attributed quote — the same for everyone on a given UTC day, from a local list (`src/lib/daily-quote.ts`, about three months long, wrapping round). Unlike the focus notes these are other people's words, so each names its author and its source with a year; nothing unsourced. Calm lines alternate with gently energising ones — encouraging, never hustle. A small **New** tag shows on the button until a visitor first opens it. On desktop it sits left of **Set your presence**; on a phone it joins Invite and Plan in the top-right row. No sharing, no "next quote", no history.
 
 ## Focus timer
 

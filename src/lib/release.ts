@@ -5,9 +5,7 @@
  * so trimming it to two is how it stays a chip and not a changelog page.
  */
 
-import { JOURNAL_PUBLIC } from '@/lib/journal/config';
-
-export const VERSION = '0.5.0';
+export const VERSION = '0.6.0';
 
 /** Where a request goes. A dedicated inbox, not a personal one — the address
  *  is in the page source of a public site, so it will be scraped. */
@@ -47,6 +45,11 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    version: '0.6.0',
+    date: 'October 2026',
+    notes: ['A line a day: one real quote, the same for everyone in the room.'],
+  },
+  {
     version: '0.5.0',
     date: 'September 2026',
     notes: [
@@ -55,19 +58,6 @@ export const RELEASES: Release[] = [
         link: { phrase: 'Ambient', path: '/ambient/' },
       },
       'More focus notes and break ideas.',
-    ],
-  },
-  {
-    version: '0.3.0',
-    date: 'September 2026',
-    notes: [
-      'Share the room with friends. Focus comes easier in good company.',
-      'Plan your next session and add it straight to your calendar.',
-      {
-        text: 'The journal is here: short reads on focus, rest and small habits.',
-        // No link while the journal is switched off — it would lead nowhere.
-        link: JOURNAL_PUBLIC ? { phrase: 'journal', path: '/journal/' } : undefined,
-      },
     ],
   },
 ];

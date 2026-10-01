@@ -65,6 +65,10 @@ Then:
 
 The Ambient scenes (coast, forest, snow) are not rooms and don't go through this: they are built from `/ambient-inbox/src` by `npm run assets:ambient`, with their own focal point in `src/lib/ambient-manifest.ts`. A scene moves when `<id>.mp4` sits beside its still: the script folds the clip into a seamless loop and uploads it to R2, where it plays over the still (never under reduced motion or Save-Data). Snow moves; coast and forest are still. If the footage is framed differently from the still, set `crop` on the scene so the poster doesn't jump when the video fades in.
 
+## Today's line
+
+The quote button in the room (`src/lib/daily-quote.ts`): one real quote a day, the same for everyone, starting 1 October 2026 and wrapping round when the list runs out (94 lines, so early January 2027). Every entry needs an author and a source with its year — if you can't source it, leave it out; quote sites are full of fakes. Alternate calm lines with energising ones, never hustle, and never the same author two days running (a test checks).
+
 ## The journal
 
 `/journal/` — short reads on focus, rest and small habits, for people and for search. Indexed, in the sitemap, and linked from the entry screen's top-right corner — not from inside the room (`JOURNAL_PUBLIC` in `src/lib/journal/config.ts` turns all three off). Share is the only action on a post: no votes, likes or comments.

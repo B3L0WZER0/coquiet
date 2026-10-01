@@ -3,7 +3,9 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { Popover } from '@/components/ui/Popover';
+import { quoteOfTheDay } from '@/lib/daily-quote';
 import { googleCalendarUrl, icsFile, planEnd, roomLink, suggestedSlots } from '@/lib/plan';
+import { readStored, writeStored } from '@/lib/storage';
 
 const circle =
   'control-surface flex h-11 w-11 items-center justify-center rounded-full transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]';
@@ -12,12 +14,14 @@ const action =
   'rounded-full border border-[var(--hairline)] px-3 py-1.5 text-[0.8125rem] transition-colors duration-[var(--duration-control)] hover:border-[var(--hairline-strong)] hover:bg-[var(--surface-strong)]';
 
 /** Invite a friend, and plan the next session. `mobile`: top-right of a phone,
- *  so panels drop down from the right edge and lead with the phone's own tools. */
+ *  so panels drop down from the right edge and lead with the phone's own tools.
+ *  A phone keeps today's quote in this row too; a desk shows it bottom-right. */
 export function RoomCompanions({ mobile = false }: { mobile?: boolean }) {
   return (
     <>
       <InviteButton mobile={mobile} />
       <PlanButton mobile={mobile} />
+      {mobile && <QuoteButton mobile />}
     </>
   );
 }
@@ -26,6 +30,7 @@ export function RoomCompanions({ mobile = false }: { mobile?: boolean }) {
 const PANEL_WIDTH = {
   invite: { desk: 'w-[17.5rem]', phone: 'w-[min(17.5rem,calc(100vw-2rem))]' },
   plan: { desk: 'w-[19rem]', phone: 'w-[min(19rem,calc(100vw-2rem))]' },
+  quote: { desk: 'w-[20rem]', phone: 'w-[min(20rem,calc(100vw-2rem))]' },
 };
 
 function panelPlacement(mobile: boolean, panel: keyof typeof PANEL_WIDTH) {
@@ -217,6 +222,74 @@ const stroke = {
   strokeLinecap: 'round' as const,
   strokeLinejoin: 'round' as const,
 };
+
+const QUOTE_SEEN = 'quote-seen';
+
+/** Today's line. On a desk it sits beside "Set your presence", by the right edge. */
+export function QuoteButton({ mobile = false }: { mobile?: boolean }) {
+  // Read after mount, so the server render and the first client render agree.
+  const [seen, setSeen] = useState(true);
+  useEffect(() => setSeen(readStored(QUOTE_SEEN, (raw) => raw === '1', false)), []);
+  const quote = useMemo(() => quoteOfTheDay(), []);
+
+  return (
+    <div
+      className="relative"
+      onClickCapture={() => {
+        if (seen) return;
+        setSeen(true);
+        writeStored(QUOTE_SEEN, '1');
+      }}
+    >
+      <Popover
+        label={seen ? 'Quote of the day' : 'Quote of the day (new)'}
+        revealOnHoverAndFocus={false}
+        {...panelPlacement(mobile, 'quote')}
+        align="end"
+        offset={10}
+        triggerClassName={circle}
+        panel={
+          <figure className="flex flex-col gap-3 py-1">
+            <p className="text-[0.6875rem] uppercase tracking-[0.14em]" style={{ color: 'var(--text-muted)' }}>
+              Today’s line
+            </p>
+            <blockquote
+              className="text-[1.0625rem] leading-snug font-light text-balance"
+              style={{ color: 'var(--text-primary)' }}
+            >
+              “{quote.text}”
+            </blockquote>
+            <figcaption className="text-[0.8125rem]" style={{ color: 'var(--text-secondary)' }}>
+              {quote.author}
+              <span style={{ color: 'var(--text-muted)' }}> · {quote.source}</span>
+            </figcaption>
+          </figure>
+        }
+      >
+        <QuoteMark />
+      </Popover>
+      {!seen && (
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -top-1.5 -right-2 rounded-full border border-[var(--hairline)] px-1.5 py-px text-[0.5625rem] uppercase tracking-[0.12em]"
+          style={{ backgroundColor: 'var(--surface-panel)', color: 'var(--text-primary)' }}
+        >
+          New
+        </span>
+      )}
+    </div>
+  );
+}
+
+/** Two open quotation marks, drawn in the same single stroke as the others. */
+function QuoteMark() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true">
+      <path d="M8.2 6.2C5.6 7 4.2 8.9 4.2 11.6v2.6h3.6v-3.6H5.4" {...stroke} />
+      <path d="M15.6 6.2c-2.6.8-4 2.7-4 5.4v2.6h3.6v-3.6h-2.4" {...stroke} />
+    </svg>
+  );
+}
 
 function PersonPlusMark() {
   return (

@@ -158,6 +158,11 @@ once an hour.
 - Focus notes and break suggestions: [`src/lib/notes.ts`](src/lib/notes.ts).
   Both are plain arrays; add, remove or rewrite freely. The note for a given
   hour is chosen from the hour number, so everyone sees the same one.
+- Today's line: [`src/lib/daily-quote.ts`](src/lib/daily-quote.ts). Real quotes,
+  one per UTC day from 1 October 2026, wrapping round when the list runs out —
+  add to the end to extend it. Every entry needs an author and a source with its
+  year: quote sites are full of misattributions, and an unsourced line doesn't
+  go in. Calm lines alternate with energising ones; never hustle.
 - Presence copy: [`src/lib/presence/copy.ts`](src/lib/presence/copy.ts). Every
   string about who is in the room comes from here, so there is exactly one place
   a number could be invented — and it cannot be.
@@ -170,7 +175,7 @@ empty string and it does not render at all, which is the right behaviour for a
 fork that has no such page.
 
 It is deliberately not in the room. `SPEC.md` lists in-room advertising under
-its non-goals, all six control positions are spoken for, and a room built for
+its non-goals, every control position is spoken for, and a room built for
 concentration should not ask its visitors for anything while they are
 concentrating. The entry screen is the one surface a visitor sees before any of
 that begins.
@@ -178,7 +183,8 @@ that begins.
 ### What is remembered between visits
 
 Only the music channel and the volume, which `SPEC.md` asks for and which are
-genuine preferences. Everything else is a statement about the current visit and
+genuine preferences — plus whether you've opened today's line once, so its "New"
+tag goes away. Everything else is a statement about the current visit and
 resets: the focus timer, its durations, and your personal presence. A stored
 value written by an earlier version is cleared on load rather than adopted.
 
@@ -236,6 +242,7 @@ src/
     audio-engine.ts   two-deck playback, fades, channel handover
     timer.ts          pure timer logic over a serialisable session
     notes.ts          focus notes, break suggestions
+    daily-quote.ts    today's line: one sourced quote a day
     chime.ts          synthesised two-tone chime
     presence/         provider interface, Worker and local adapters, standing room, copy
 workers/

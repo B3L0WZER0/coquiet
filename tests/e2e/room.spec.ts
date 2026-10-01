@@ -907,6 +907,25 @@ test('the name in the room leads back to the door', async ({ page }) => {
   await expect(page.getByRole('button', { name: 'Enter the room' })).toBeVisible();
 });
 
+test("today's quote is new once, then just a quote", async ({ page }) => {
+  await page.locator('.coquiet-cta').click();
+  const trigger = page.getByRole('button', { name: 'Quote of the day (new)' }).locator('visible=true');
+  await expect(trigger).toBeVisible({ timeout: 3000 });
+  await trigger.click();
+
+  const panel = page.getByRole('dialog', { name: /Quote of the day/ });
+  await expect(panel.locator('blockquote')).not.toBeEmpty();
+  await expect(panel.locator('figcaption')).not.toBeEmpty();
+  await page.keyboard.press('Escape');
+  await expect(panel).toHaveCount(0);
+
+  await page.reload();
+  await page.locator('.coquiet-cta').click();
+  await expect(page.getByRole('button', { name: 'Quote of the day' }).locator('visible=true')).toBeVisible({
+    timeout: 3000,
+  });
+});
+
 test.describe('the support link', () => {
   test('sits on the way in, and nowhere inside the room', async ({ page }) => {
     const link = page.locator('.coquiet-support');

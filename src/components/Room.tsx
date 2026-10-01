@@ -14,7 +14,7 @@ import { MusicSelector } from '@/components/controls/MusicSelector';
 import { PersonalPresence } from '@/components/controls/PersonalPresence';
 import { PlaybackBar } from '@/components/controls/PlaybackBar';
 import { PresenceLine } from '@/components/controls/PresenceLine';
-import { RoomCompanions } from '@/components/controls/RoomCompanions';
+import { QuoteButton, RoomCompanions } from '@/components/controls/RoomCompanions';
 import { VolumeControl } from '@/components/controls/VolumeControl';
 import { useAudio } from '@/hooks/useAudio';
 import { usePresence } from '@/hooks/usePresence';
@@ -351,6 +351,7 @@ export function Room({ initialMode }: { initialMode?: RoomMode } = {}) {
 
           <div className="area-personal" data-dim={dimmed || undefined}>
             <span className="only-desktop">
+              <QuoteButton />
               <PersonalPresence
                 activity={presence.own.activity}
                 drink={presence.own.drink}

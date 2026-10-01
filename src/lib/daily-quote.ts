@@ -109,9 +109,9 @@ export const QUOTES: Quote[] = [
   { text: 'What good shall I do this day?', author: 'Benjamin Franklin', source: 'Autobiography, 1791' },
 ];
 
-/** What a shared quote says: the line and who said it, nothing more. */
+/** What a shared quote says: the line, who said it, and where it came from. */
 export function quoteShareText(quote: Quote): string {
-  return `“${quote.text}” — ${quote.author}`;
+  return `“${quote.text}” — ${quote.author}\n\nShared from coquiet.app`;
 }
 
 const DAY = 24 * 60 * 60 * 1000;

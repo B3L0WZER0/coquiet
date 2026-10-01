@@ -42,9 +42,9 @@ describe('quoteOfTheDay', () => {
 });
 
 describe('quoteShareText', () => {
-  it('is the line and its author, nothing else', () => {
+  it('is the line, its author and a quiet credit — no bare link', () => {
     expect(quoteShareText({ text: 'Simplify, simplify.', author: 'Henry David Thoreau', source: 'Walden, 1854' })).toBe(
-      '“Simplify, simplify.” — Henry David Thoreau',
+      '“Simplify, simplify.” — Henry David Thoreau\n\nShared from coquiet.app',
     );
   });
 });

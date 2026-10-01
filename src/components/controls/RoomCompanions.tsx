@@ -284,23 +284,13 @@ export function QuoteButton({ mobile = false }: { mobile?: boolean }) {
   );
 }
 
-/** A phone opens its share sheet; elsewhere the line and the room's link are copied. */
+/** Copies the quote as a message would carry it — ready to paste to a friend. */
 function ShareQuote({ quote }: { quote: Quote }) {
   const [note, say] = useNote();
 
   async function share() {
-    const text = quoteShareText(quote);
-    const url = roomLink(window.location);
-    if (typeof navigator.share === 'function') {
-      try {
-        await navigator.share({ text, url });
-      } catch {
-        // A dismissed share sheet is not worth mentioning.
-      }
-      return;
-    }
     try {
-      await navigator.clipboard.writeText(`${text}\n${url}`);
+      await navigator.clipboard.writeText(quoteShareText(quote));
       say('Copied');
     } catch {
       say('Couldn’t copy');
@@ -315,7 +305,7 @@ function ShareQuote({ quote }: { quote: Quote }) {
       {/* A 44px target around a 16px mark; the negative margin keeps the header row slim. */}
       <button
         type="button"
-        aria-label="Share today’s line"
+        aria-label="Copy today’s line to share"
         onClick={share}
         className="-my-3 -mr-3 flex h-11 w-11 items-center justify-center rounded-full opacity-70 transition-opacity duration-[var(--duration-control)] hover:opacity-100"
         style={{ color: 'var(--text-secondary)' }}

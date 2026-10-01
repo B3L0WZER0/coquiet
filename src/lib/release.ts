@@ -59,7 +59,7 @@ export const RELEASES: Release[] = [
         text: 'Snow now drifts in Ambient.',
         link: { phrase: 'Ambient', path: '/ambient/' },
       },
-      '17 new focus notes, and smoother switching between channels.',
+      'Fresh focus notes, and smoother switching between channels.',
     ],
   },
 ];

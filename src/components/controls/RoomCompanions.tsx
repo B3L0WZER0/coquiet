@@ -30,7 +30,7 @@ export function RoomCompanions({ mobile = false }: { mobile?: boolean }) {
 const PANEL_WIDTH = {
   invite: { desk: 'w-[17.5rem]', phone: 'w-[min(17.5rem,calc(100vw-2rem))]' },
   plan: { desk: 'w-[19rem]', phone: 'w-[min(19rem,calc(100vw-2rem))]' },
-  quote: { desk: 'w-[20rem]', phone: 'w-[min(20rem,calc(100vw-2rem))]' },
+  quote: { desk: 'w-max max-w-[18rem]', phone: 'w-max max-w-[min(18rem,calc(100vw-2rem))]' },
 };
 
 function panelPlacement(mobile: boolean, panel: keyof typeof PANEL_WIDTH) {
@@ -254,7 +254,7 @@ export function QuoteButton({ mobile = false }: { mobile?: boolean }) {
               Today’s line
             </p>
             <blockquote
-              className="text-[0.8125rem] leading-relaxed text-balance"
+              className="text-[0.8125rem] leading-relaxed"
               style={{ color: 'var(--text-primary)' }}
             >
               “{quote.text}”

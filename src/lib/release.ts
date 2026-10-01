@@ -49,6 +49,7 @@ export const RELEASES: Release[] = [
     date: 'October 2026',
     notes: [
       'Today’s line: a new quote every day, from Seneca to Toni Morrison. Find it beside “Set your presence.”',
+      'Share today’s quote with a friend in one tap.',
     ],
   },
   {

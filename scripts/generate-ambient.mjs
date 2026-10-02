@@ -127,8 +127,8 @@ const LOOP_FADE = 1.5;
 const LOOP_FPS = 24;
 /** Bump to re-encode every loop; part of each file's name. */
 const LOOP_ENCODE = 'v2';
-// Capped so a busy clip can't balloon: at most ~7 MB for 20 s wide. Forest's
-// moss and ferns come close (5.8 MB); denoising saved only 2%.
+// Capped so a busy clip can't balloon: about 0.35 MB a second wide. Forest's
+// moss and ferns come close (10 MB for 43 s); denoising saved only 2%.
 const LOOP_SHAPES = {
   wide: { kbps: 2800, fit: () => 'scale=1920:1080:force_original_aspect_ratio=increase:flags=lanczos,crop=1920:1080' },
   tall: { kbps: 1400, fit: (focalX) => `crop=ih*3/4:ih:(iw-ih*3/4)*${focalX / 100}:0,scale=768:1024:flags=lanczos` },

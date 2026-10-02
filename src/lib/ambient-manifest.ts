@@ -34,7 +34,7 @@ export const AMBIENT_MANIFEST: Record<'coast' | 'forest' | 'snow', AmbientSceneF
     "focalX": 40,
     "chrome": "#040404",
     "lqip": "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBQCdASogABIAPu1gqE2ppaOiMAgBMB2JZwC7ACFUBtMXgStGtf5cS2kt132F+VBvQAD+6+1bsDFQ2Oi/X+xW54+AN+zR7ebgiptbjoO7j/Y/pzmwOf3mRsvMZHGBThIrydgEmFgAAA==",
-    "loop": "ambient-forest-23d8f3db",
+    "loop": "ambient-forest-0610cc85",
     "soundSeconds": 280
   },
   "snow": {

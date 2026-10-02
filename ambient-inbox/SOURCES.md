@@ -6,7 +6,7 @@ Stills — supplied by Diego, 2026-09-23
 Footage — made by Diego, 2026-09-29
 - snow.mp4  from his Snow.mp4: fade-out trimmed, slowed to 0.67× with interpolated frames
 - coast.mp4 from his Ocean.mp4 (2026-10-02): slowed to 0.67× with interpolated frames; coast.png is its frame at 1.5 s, replacing the 2026-09-23 still (kept as coast-2026-09-23.webp)
-- forest.mp4 from his Forest.mp4 (2026-10-02): slowed to 0.67× with interpolated frames; forest.jpg is his Forrest.jpg, cropped in the scene config to match; the 2026-09-23 still is kept as forest-2026-09-23.webp
+- forest.mp4 from his Forest.mp4 (2026-10-02): slowed to 0.33× with interpolated frames; forest.jpg is his Forrest.jpg, cropped in the scene config to match; the 2026-09-23 still is kept as forest-2026-09-23.webp
 
 Audio — Pixabay Content License (free, no attribution required)
 - coast-sound.mp3       "Gentle Waves on Pebble Beach"   https://pixabay.com/sound-effects/nature-gentle-waves-on-pebble-beach-32-bit-float-field-recording-559229/

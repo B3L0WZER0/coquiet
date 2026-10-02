@@ -45,6 +45,11 @@ export const AUDIO_MANIFEST: Record<string, readonly ManifestTrack[]> = {
       durationSeconds: 3656.759,
       title: "Still 6",
     },
+    {
+      src: "/audio/Still%207.m4a",
+      durationSeconds: 3600.047,
+      title: "Still 7",
+    },
   ],
   flow: [
     {
@@ -77,6 +82,16 @@ export const AUDIO_MANIFEST: Record<string, readonly ManifestTrack[]> = {
       durationSeconds: 3738.479,
       title: "Flow 6",
     },
+    {
+      src: "/audio/Flow%207.m4a",
+      durationSeconds: 3701.879,
+      title: "Flow 7",
+    },
+    {
+      src: "/audio/Flow%208.m4a",
+      durationSeconds: 3709.943,
+      title: "Flow 8",
+    },
   ],
   momentum: [
     {
@@ -108,6 +123,11 @@ export const AUDIO_MANIFEST: Record<string, readonly ManifestTrack[]> = {
       src: "/audio/Momentum%206.m4a",
       durationSeconds: 3704.663,
       title: "Momentum 6",
+    },
+    {
+      src: "/audio/Momentum%207.m4a",
+      durationSeconds: 3628.271,
+      title: "Momentum 7",
     },
   ],
 };

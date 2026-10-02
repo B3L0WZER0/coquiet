@@ -55,7 +55,9 @@ export const SCENES = {
     sound: { start: 3, loop: 280, fade: 8 },
     // A whine sits at ~10.7 kHz under the birds; nothing wanted lives there.
     eq: `highpass=f=80,${BRICKWALL(8500)}`,
-    focalX: 55,
+    // The still is framed ~2% wider than the loop; this lines them up.
+    crop: '1764:992:14:8',
+    focalX: 40,
     gainDb: -1,
   },
   snow: {
@@ -125,7 +127,8 @@ const LOOP_FADE = 1.5;
 const LOOP_FPS = 24;
 /** Bump to re-encode every loop; part of each file's name. */
 const LOOP_ENCODE = 'v2';
-// Capped so a busy clip (spray, snowfall) can't balloon: about 3 MB a loop wide.
+// Capped so a busy clip can't balloon: at most ~7 MB for 20 s wide. Forest's
+// moss and ferns come close (5.8 MB); denoising saved only 2%.
 const LOOP_SHAPES = {
   wide: { kbps: 2800, fit: () => 'scale=1920:1080:force_original_aspect_ratio=increase:flags=lanczos,crop=1920:1080' },
   tall: { kbps: 1400, fit: (focalX) => `crop=ih*3/4:ih:(iw-ih*3/4)*${focalX / 100}:0,scale=768:1024:flags=lanczos` },

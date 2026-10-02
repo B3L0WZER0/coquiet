@@ -21,10 +21,10 @@ export const AMBIENT_MANIFEST: Record<'coast' | 'forest' | 'snow', AmbientSceneF
       1920
     ],
     "focalX": 55,
-    "chrome": "#544b42",
-    "lqip": "data:image/webp;base64,UklGRlQAAABXRUJQVlA4IEgAAADwAwCdASogABIAPu1kqk2ppaQiMAgBMB2JZQDE2CHYUkySBG2HUowAAN0f2wvOnEXQckKBxWMC7LpZ35q7R4ZJzNLJguuTgAA=",
-    "soundSeconds": 222,
-    "loop": null
+    "chrome": "#1f2839",
+    "lqip": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAABQBQCdASogABIAPu1oqk4ppiQiMAgBMB2JZACdMoRwACnHCZNqdRfG6+YVehROdygUQtgA/sMx5khEN3lEH9PX8PcbzyF3/85p+E30VTmlLtTTqeZpNaLxFqjN7OTBqZchya3Pr7kHKrVjK66Fb8KHRfJG9EJEAAA=",
+    "loop": "ambient-coast-2931d00b",
+    "soundSeconds": 222
   },
   "forest": {
     "posterWidths": [

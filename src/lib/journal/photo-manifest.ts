@@ -94,6 +94,15 @@ export const JOURNAL_PHOTOS: readonly JournalPhotoEntry[] = [
     "lqip": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADQAwCdASogAA0APu1mq04ppaQiMAgBMB2JQBOgAtX2gX4MQyVNwsAAx/DzcezKQ/6KU8shkEuIjGExb+npM9QObU/AzXLnzohS+rCHJvPoJ303cUaf8RQA"
   },
   {
+    "id": "the-five-minutes-between-things",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "lqip": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAQBQCdASogABUAPu1mqU4ppaOiMAgBMB2JYwCw7Bkv0DtVXobojikQHYR9vH1rxPgAAP6e6X/0iUZMS82xxSv5uWtSUwvCnkA0g8oH/EKITz+W04nYbMyJslamT13v+MSnDozVa0mdgESQLSAAAA=="
+  },
+  {
     "id": "when-focus-wont-come",
     "widths": [
       640,

@@ -10,8 +10,8 @@ import {
 } from '@/lib/presence/types';
 
 /** The standing room moves between these across the day. */
-export const BASELINE_MIN = 620;
-export const BASELINE_MAX = 880;
+export const BASELINE_MIN = 670;
+export const BASELINE_MAX = 930;
 
 /** Hour (UTC) the room is emptiest; it fills to its peak twelve hours later. */
 export const QUIET_HOUR_UTC = 3;

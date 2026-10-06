@@ -482,6 +482,9 @@ const ACCEPTED = [
   // chip's legibility shadow (which this audit ignores) covers the gap.
   // Diego shipped it anyway, 2026-09-14.
   { room: 'arched-tree-cafe', text: 'Version', floor: 4.3 },
+  // The pale wicker chair seat behind the desktop version chip. Same shadow,
+  // same call: Diego shipped it, 2026-10-06.
+  { room: 'pearwood-morning', text: 'Version', floor: 4.0 },
 ];
 
 const accepted = (r) =>

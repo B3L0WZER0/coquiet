@@ -563,12 +563,28 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRn4AAABXRUJQVlA4IHIAAADwBACdASogABIAPuVipU2pJiOiMAwBIByJYwCw7B40sO2f1rZOiuqW2X6Kc9OtVlAA/p7q+0B0dpQ2GdKXZul5xUCH2WkQgtk7UQSTEd66TNIRbJOTuxepk0TyS4nD43G565FEWc8XWB5uuA8kvCMIAAA=",
   },
   {
+    id: "orchard-window-library",
+    widths: [640, 1024, 1600],
+    focalX: 70,
+    focalY: 50,
+    chrome: "#766c63",
+    lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASogABIAPu1mqU4ppaOiMAgBMB2JZQAAWloKPBHZax0FA+c1lirYWLQA/uy5tpcHJ2tMnkr8dp3D6nq3/pI46xbKdvymq9/Rdx2aeE+07lYW3OTH5CsVVRJj3pIu4AAA",
+  },
+  {
     id: "paper-in-the-light",
     widths: [640, 1024, 1600],
     focalX: 50,
     focalY: 50,
     chrome: "#88807a",
     lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQBACdASogABIAPulgo02pJaMiMAwBIB0JZQAAMRTgoEQSnskpkgR1SeBNGRTpEAD+cSO/5/l3z86IT/IFJGeLe+vtqgmk266O41y322AQlKSwaTDW5CdJwbOmCJdJLhU8HIp7G2gAAA==",
+  },
+  {
+    id: "pearwood-morning",
+    widths: [640, 1024, 1600],
+    focalX: 80,
+    focalY: 50,
+    chrome: "#77685d",
+    lqip: "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBQCdASogABIAPu1oqk+ppaOiMBgIATAdiWUAtOgQsykIyIaAbGm/hntvLLZ/NxkdJAD9m17Tzgv/zQdnu+PxQGRGmKkFv0ziiMNC2y/KUVe7/9E0qNwb8E9IuNLkIfOtsDjOMh4jJXlwz2wdCANLU5mBlmz6lEK3jftYFhofXgAA",
   },
   {
     id: "rain-garden-pavilion",
@@ -635,6 +651,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAAAwBQCdASogABIAPu1krVAppSQisBgIATAdiWMAACkQOhSv1+kQF/FZrjzG21orgBfeAAD+z0o2gI7d4QyaT5PYZtLosay8v3J+l77LSMbLGa8G3sC83L2aIFQC9IezqOHjmpjG2mP63kFSQOwEkFsD1fFcAAAA",
   },
   {
+    id: "saltgrass-scriptorium",
+    widths: [640, 1024, 1600],
+    focalX: 85,
+    focalY: 50,
+    chrome: "#745a46",
+    lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwBQCdASogABIAPu1kqU4ppaOiMAgBMB2JZwC2+4CDQXvhF9oyiRsbxgtKsFOSSgg5gAD+3skBjCH7gBYbjH6DQLUPJD5e+7x2U3b7TTon2YF6hMEqiTthZqY7cUiLnHAAAA==",
+  },
+  {
     id: "sea-arch-reading-room",
     widths: [640, 1024, 1600],
     focalX: 30,
@@ -659,6 +683,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAAAQBQCdASogABIAPuVipE2pJaOiMAwBIByJZwDC+CPaZEwH0A4mZy4bwN+l44nyb14AAP4H2V0g5u7Qm4qZ6fW6SBled3MF/mLVePiRouCP1cpyesU/ahbcTnZAQiWSV0YFMAAA",
   },
   {
+    id: "the-apple-press-studio",
+    widths: [640, 1024, 1600],
+    focalX: 10,
+    focalY: 50,
+    chrome: "#806e5a",
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAwBQCdASogABIAPu1sqk6ppqOiMBgIATAdiWUAtsgPKiuUtVx8X4qnaQLbuVsYny6XOAD+LdcG+n8rc/rvuXKhHiUCCMMg/F90MJIYu7UhJ1/PNY2eUPu9VODncgOW+Vk5/gbmHVLiSM67U+gAAA==",
+  },
+  {
     id: "the-cider-loft",
     widths: [640, 1024, 1600],
     focalX: 78,
@@ -681,6 +713,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#635b55",
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASogABIAPtFUoU2oJKMiN+gBABoJZwC06C1kNBXeRwxkkVE5AmVpjsgA/qUVdPDa0cAlDZ0iq2M2X/ktNiVwzuwkWKJ9Erro/HuMPdw3Tr3v4GMk7JCzF1MsbAsUAAAA",
+  },
+  {
+    id: "the-reedbank-painter",
+    widths: [640, 1024, 1600],
+    focalX: 90,
+    focalY: 50,
+    chrome: "#79614d",
+    lqip: "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAACwBQCdASogABIAPu1opU2ppiMiMBgMATAdiWMAs4ARWU/JmQYXPtch2tLWET3TyKz2CRypC3AA4n58OtLXtsUUs7y5s3BRsrpYiLQaeFMAX0pJCeQeIAkwS/SWyIA4xIQvJpclPlZSzmOSQnl0LoNBmOOYYQAA",
   },
   {
     id: "the-woodland-easel",

@@ -145,8 +145,12 @@ export const FOCAL_X = {
   'open-ocean-reading-room': 16,
   // The binder at the lamp-lit bench under the vault.
   'orchard-hands': 55,
+  // The reader in the low chair, with the old apple tree through the glass.
+  'orchard-window-library': 70,
   // The papermaker at her table, with the arched window and the sea.
   'paper-in-the-light': 50,
+  // The woman writing at the round table under the arch.
+  'pearwood-morning': 80,
   'rain-garden-pavilion': 64,
   // The figure at the far end of the window desks, down the lit row.
   'rain-on-the-cottage': 15,
@@ -163,6 +167,8 @@ export const FOCAL_X = {
   // The terraces the room is named for barely survive a portrait slice; this
   // keeps the woman at her desk instead, and the valley to the landscape view.
   'rice-terrace-focus-pavilion': 20,
+  // The man at his desk against the glass, with the marsh channels beyond.
+  'saltgrass-scriptorium': 85,
   // The sea arch at sunset, over the curved shelves. Both readers sit hard
   // against the edges, so this takes what the room is built to look at.
   'sea-arch-reading-room': 30,
@@ -178,8 +184,13 @@ export const FOCAL_X = {
   'the-woodland-easel': 50,
   // The reader in the armchair by the orchard window.
   'the-cider-loft': 78,
+  // The potter at her bench beside the old press. She sits at the far left
+  // edge of the photograph, so the orchard window is left to the landscape view.
+  'the-apple-press-studio': 10,
   // The woman at her drafting table, in the curve of the estuary window.
   'the-estuary-sketchroom': 75,
+  // The painter at her easel, at the end of the long marsh window.
+  'the-reedbank-painter': 90,
   // The woman at the table by the glass, with the cliffs and the sea.
   'tidal-oculus-cafe': 85,
   // The woman at the table, with the dune grass and the sea through the doors.

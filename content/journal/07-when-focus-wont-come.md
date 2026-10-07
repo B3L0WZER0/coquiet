@@ -1,6 +1,6 @@
 ---
 title: When focus won’t come: a gentle way to begin
-description: Some days, settling into work takes a little longer. Here’s a gentle way to begin, without asking yourself to turn the whole day around.
+description: Some days, settling into work takes a little longer. Here’s a gentle way to begin with one small step, without asking yourself to turn the whole day around.
 date: 2026-09-14
 image: when-focus-wont-come
 category: Focus

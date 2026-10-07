@@ -1,6 +1,6 @@
 ---
 title: Blue, green or white: finding your kind of quiet
-description: Some days music is a little too much, but silence leaves room for every small distraction. A steady natural sound can be a softer place to work.
+description: Some days music is a little too much, but silence leaves room for every small distraction. A steady natural sound, like waves, can be a softer place to work.
 date: 2026-09-23
 image: ambient-sound-for-focus
 door: ambient

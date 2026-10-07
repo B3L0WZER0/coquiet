@@ -1,6 +1,6 @@
 ---
 title: Make it easy to come back
-description: The work does not always need to be finished today. Sometimes the kindest thing you can do is leave yourself a clear place to begin tomorrow.
+description: The work does not always need to be finished today. Sometimes the kindest thing you can do is leave yourself a note and a clear place to begin tomorrow.
 date: 2026-09-28
 image: make-it-easy-to-come-back
 category: Rituals

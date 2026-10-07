@@ -1,6 +1,6 @@
 ---
 title: A softer start to the week
-description: Monday can feel busy before anything has happened. A little time to settle in can help you find your way into the week.
+description: Monday can feel busy before anything has happened. A little time to settle in, and two short lines on paper, can help you find your way into the week.
 date: 2026-09-21
 image: a-softer-start-to-the-week
 category: Rituals

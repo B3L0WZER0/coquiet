@@ -13,7 +13,7 @@ import { SITE_URL } from '@/lib/site';
 // Says what the page holds: "Journal · Coquiet" was flagged as too short to mean anything in a result.
 const TITLE = 'Short reads on focus, rest and habits · Coquiet Journal';
 const DESCRIPTION =
-  'Short, gentle reads on focus, rest and the small habits that make work feel lighter. From Coquiet, the quiet room for focused work.';
+  'Short, gentle reads on focus, rest, breaks and the small habits that make work feel lighter. From Coquiet, the quiet online room for focused work and study.';
 // Named outright: an openGraph object here replaces the site's card rather than inheriting it.
 const CARD = { url: JOURNAL_CARD, width: 1200, height: 630, alt: 'Coquiet Journal' };
 

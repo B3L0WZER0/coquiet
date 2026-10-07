@@ -1,6 +1,6 @@
 ---
 title: The five minutes between things
-description: One task ends. Another is waiting. A small pause between them can help you arrive with a little more of your attention.
+description: One task ends. Another is waiting. A small pause between them, even five minutes, can help you arrive at the next one with a little more of your attention.
 date: 2026-10-05
 image: the-five-minutes-between-things
 category: Rituals

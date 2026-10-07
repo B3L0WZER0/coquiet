@@ -1,6 +1,6 @@
 ---
 title: The Pomodoro Technique, gently: why 25 minutes works
-description: The Pomodoro Technique isn't about squeezing more out of your day. It's about making hard work feel approachable. Here's how to use it kindly.
+description: The Pomodoro Technique isn't about squeezing more out of your day. It's about making hard work feel approachable. Here's how to use its 25-minute timer kindly.
 date: 2026-09-11
 image: pomodoro-technique-gently
 category: Focus

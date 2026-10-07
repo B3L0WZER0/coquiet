@@ -58,7 +58,8 @@ describe('journal posts', () => {
 
   it('gives search engines a description that fits a result snippet', () => {
     for (const p of posts) {
-      expect(p.description.length, p.slug).toBeGreaterThanOrEqual(70);
+      // Bing reports anything shorter as too short.
+      expect(p.description.length, p.slug).toBeGreaterThanOrEqual(150);
       expect(p.description.length, p.slug).toBeLessThanOrEqual(165);
     }
   });

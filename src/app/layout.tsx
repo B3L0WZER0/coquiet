@@ -18,7 +18,7 @@ const TITLE = 'Coquiet — Focus quietly, together';
 // deciding whether to click, in a search result or a pasted link, who has not
 // seen the photograph yet and does not know what "a shared room" means.
 const DESCRIPTION =
-  'A quiet online room for deep work and study. Continuous focus music, a focus timer, and quiet company while you work.';
+  'A quiet online room for deep work and study. Continuous focus music, a focus timer, and quiet company while you work. No account and nothing to install.';
 
 export const metadata: Metadata = {
   // Absolute by the time a crawler reads it: og:image and the canonical link

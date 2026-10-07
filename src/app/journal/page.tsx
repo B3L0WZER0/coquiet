@@ -10,7 +10,8 @@ import { JOURNAL_CARD } from '@/lib/journal/config';
 import { getPosts, type Post } from '@/lib/journal/posts';
 import { SITE_URL } from '@/lib/site';
 
-const TITLE = 'Journal · Coquiet';
+// Says what the page holds: "Journal · Coquiet" was flagged as too short to mean anything in a result.
+const TITLE = 'Short reads on focus, rest and habits · Coquiet Journal';
 const DESCRIPTION =
   'Short, gentle reads on focus, rest and the small habits that make work feel lighter. From Coquiet, the quiet room for focused work.';
 // Named outright: an openGraph object here replaces the site's card rather than inheriting it.

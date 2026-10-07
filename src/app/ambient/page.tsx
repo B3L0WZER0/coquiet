@@ -5,7 +5,7 @@ import { Room } from "@/components/Room";
 import { RoomChooser } from "@/components/RoomChooser";
 import { roomForHour } from "@/lib/background";
 
-const TITLE = "Ambient sounds for focus · Coquiet";
+const TITLE = "Ambient sounds for focus: waves, forest and snow · Coquiet";
 const DESCRIPTION =
   "Ocean waves, a forest in the wind and falling snow: calm ambient sound for deep work and study, with a focus timer and quiet company. No account needed.";
 

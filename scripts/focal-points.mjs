@@ -99,6 +99,9 @@ export const FOCAL_X = {
   // The man at the desk by the shelves, with the pool and the autumn trees.
   'granite-garden-study': 74,
   'granite-pool-reading-room': 45,
+  // The woman at the desk by the glass, with the misted hills behind her.
+  // Short of 90, where she sat squarely under the headline's second line.
+  'harvest-lantern': 84,
   // The man at the lamp-lit desk in the window, with the sea beyond it.
   'heather-cottage-study': 80,
   // The man at the desk by the shelves, with the mist off the lake behind.
@@ -151,6 +154,9 @@ export const FOCAL_X = {
   'paper-in-the-light': 50,
   // The woman writing at the round table under the arch.
   'pearwood-morning': 80,
+  // The reader at the long table under the lamp. The quince tree the room is
+  // named for is half a photograph away, so it is left to the landscape view.
+  'quince-court': 25,
   'rain-garden-pavilion': 64,
   // The figure at the far end of the window desks, down the lit row.
   'rain-on-the-cottage': 15,
@@ -162,6 +168,8 @@ export const FOCAL_X = {
   'rainy-bamboo-cafe': 45,
   // The woman at the lit desk, with the redwood trunks through the glass.
   'redwood-lantern-library': 75,
+  // The potter at her lit bench, with the edge of the marsh window.
+  'reed-and-clay': 60,
   // The man at the long window desk, with the reedbeds and the water.
   'reedwater-observatory': 85,
   // The terraces the room is named for barely survive a portrait slice; this
@@ -189,6 +197,12 @@ export const FOCAL_X = {
   'the-apple-press-studio': 10,
   // The woman at her drafting table, in the curve of the estuary window.
   'the-estuary-sketchroom': 75,
+  // The illustrator at his board by the orchard window.
+  'the-grafting-room': 10,
+  // The reader in the chair by the shelves, clear of the headline's second
+  // line. He sits at the far left edge of the photograph, so the tide channels
+  // are left to the landscape view.
+  'the-quiet-tide': 2,
   // The painter at her easel, at the end of the long marsh window.
   'the-reedbank-painter': 90,
   // The woman at the table by the glass, with the cliffs and the sea.

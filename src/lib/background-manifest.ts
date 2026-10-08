@@ -387,6 +387,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAABwBQCdASogABIAPu1kqk2ppaQiMBgMATAdiWcAtsgN0fj9B76yQ0nWkTbvAKZ0bx3x6SIAAP655f02lVSRih4x340xDHArpht6av2a72F/hBqR1iPfYRLGQ9O+IBUaGw0LV7mAAAA=",
   },
   {
+    id: "harvest-lantern",
+    widths: [640, 1024, 1600],
+    focalX: 84,
+    focalY: 50,
+    chrome: "#8c7665",
+    lqip: "data:image/webp;base64,UklGRoAAAABXRUJQVlA4IHQAAABQBQCdASogABIAPu1qrlCppaQiqAqpMB2JZQC7AA/gsHgEC9CR1jx9prCd8Z+X/+2iXXAA/awwPzxHabh/kRQrHPR46KmYeuT9Lx2Pb1JJlwxJfRpZe0AmEF0LqdmK0tM2OKBS5a7FYJncvCUFSFAEJxAAAA==",
+  },
+  {
     id: "heather-cottage-study",
     widths: [640, 1024, 1600],
     focalX: 80,
@@ -587,6 +595,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRo4AAABXRUJQVlA4IIIAAAAwBQCdASogABIAPu1oqk+ppaOiMBgIATAdiWUAtOgQsykIyIaAbGm/hntvLLZ/NxkdJAD9m17Tzgv/zQdnu+PxQGRGmKkFv0ziiMNC2y/KUVe7/9E0qNwb8E9IuNLkIfOtsDjOMh4jJXlwz2wdCANLU5mBlmz6lEK3jftYFhofXgAA",
   },
   {
+    id: "quince-court",
+    widths: [640, 1024, 1600],
+    focalX: 25,
+    focalY: 50,
+    chrome: "#4e3a29",
+    lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAQBQCdASogABIAPu1kqk4ppaQiMAgBMB2JZQAAUroCa6I5W+7GeuI8NzUHXHxg1UoAAP65/Z4eCdKj3WQH5/uT9L32yNR5gYkb7+gb67QRiyyZGkNG4PaHiLeaRo5Br5u83RL8wAA=",
+  },
+  {
     id: "rain-garden-pavilion",
     widths: [640, 1024, 1600],
     focalX: 64,
@@ -633,6 +649,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#9a8a80",
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAADQBACdASogABIAPu1kqk4ppaQiMAgBMB2JZQC7ABK5m3ITUy4jiY10fd0tZK9xAAD56QnSLoqXaj6DUy7JMG1tB5S6e2eHbPhrqRq3a3Bi5kDnIgoOUdeGAoidgasEwf17c1IL/55OWucSyGFoAAAA",
+  },
+  {
+    id: "reed-and-clay",
+    widths: [640, 1024, 1600],
+    focalX: 60,
+    focalY: 50,
+    chrome: "#7b6555",
+    lqip: "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAADQBACdASogABIAPu1kqk2ppaQiMAgBMB2JYwCo9BuibpMjtKK4YtTuxe99U9UoAAD2juPepQ2wTWw0i0i25BEtI4j5gRzzT4Lr3+h4SwkLPC6IuTQyFfhk3j6bMOj9BzHFM8WGs1pD8XN9xCRLERi3UfTubvcAAAA=",
   },
   {
     id: "reedwater-observatory",
@@ -713,6 +737,22 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#635b55",
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASogABIAPtFUoU2oJKMiN+gBABoJZwC06C1kNBXeRwxkkVE5AmVpjsgA/qUVdPDa0cAlDZ0iq2M2X/ktNiVwzuwkWKJ9Erro/HuMPdw3Tr3v4GMk7JCzF1MsbAsUAAAA",
+  },
+  {
+    id: "the-grafting-room",
+    widths: [640, 1024, 1600],
+    focalX: 10,
+    focalY: 50,
+    chrome: "#533c29",
+    lqip: "data:image/webp;base64,UklGRogAAABXRUJQVlA4IHwAAADQBACdASogABIAPu1iqE2ppaOiMBgMATAdiWUAsOwMISoCb2wpR0pxMCGtkBJHGAD9ZKZZXEyXQ+YMeOIvfp9iCeDYxetFkLse4FFOnlwWjUgdGIAfZYi2W3zTqGgYN++cZ2mUM3x3+gBIYXaGQsv2o6AyvGnGS+2QIAAA",
+  },
+  {
+    id: "the-quiet-tide",
+    widths: [640, 1024, 1600],
+    focalX: 2,
+    focalY: 50,
+    chrome: "#9c856d",
+    lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAABQBQCdASogABIAPuVgpE2pJaOiMAwBIByJZQC3uCHfHDE3T/M48LRislDHtPD/cQUphxAA/ntBsSjJwdFVTBx4yRR9pWI4TwllTFPrUXWwD1ezDDJIjaXvadxc5vibUIXB9TNYoWN4XHAA",
   },
   {
     id: "the-reedbank-painter",

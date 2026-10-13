@@ -79,6 +79,8 @@ export const FOCAL_X = {
   // No person in frame; centred on the lit desk.
   // The woman at her laptop against the rain window, with the fern court.
   'fern-court-cafe': 15,
+  // The man at the drawing table, at the end of the glass wall, with the firs.
+  'fernlight-workshop': 80,
   // The waterfall down the fjord wall, with the man at his table below it.
   'fjord-vault-cafe': 65,
   'forest-console-invitation': 50,
@@ -157,6 +159,8 @@ export const FOCAL_X = {
   // The reader at the long table under the lamp. The quince tree the room is
   // named for is half a photograph away, so it is left to the landscape view.
   'quince-court': 25,
+  // The reader in the armchair by the lamp, with the misted pines above.
+  'rain-between-pines': 70,
   'rain-garden-pavilion': 64,
   // The figure at the far end of the window desks, down the lit row.
   'rain-on-the-cottage': 15,
@@ -180,6 +184,10 @@ export const FOCAL_X = {
   // The sea arch at sunset, over the curved shelves. Both readers sit hard
   // against the edges, so this takes what the room is built to look at.
   'sea-arch-reading-room': 30,
+  // The painter at his easel, his head just clear of the headline's second
+  // line. He stands at the far left of the photograph, so the lake and the
+  // peaks are left to the landscape view.
+  'silverwater-atelier': 8,
   // The desk and its lamp. The arched window is the better photograph, but it
   // is the only frame here with anyone in it.
   'snow-valley-monastery-study': 40,
@@ -195,6 +203,8 @@ export const FOCAL_X = {
   // The potter at her bench beside the old press. She sits at the far left
   // edge of the photograph, so the orchard window is left to the landscape view.
   'the-apple-press-studio': 10,
+  // The woman at her desk, with the edge of the birch court's glass.
+  'the-concrete-grove': 25,
   // The woman at her drafting table, in the curve of the estuary window.
   'the-estuary-sketchroom': 75,
   // The illustrator at his board by the orchard window.
@@ -211,6 +221,8 @@ export const FOCAL_X = {
   'tideline-cafe': 32,
   // The woman at the window table, with the rocks and the surf behind her.
   'tidepool-stone-cafe': 80,
+  // The woman at her laptop by the glass, with the cloud forest beyond.
+  'under-the-canopy': 80,
   'valley-vault': 34,
   // Off the desk a little, so the slice carries some of the lake it looks at.
   'work-lake-view': 26,

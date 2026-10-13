@@ -315,6 +315,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAADwBACdASogABIAPuVipk2pJaOiMAwBIByJZQCzgA7ItL11wdMHbGnTI6RK1+ukqwAAyyersMYnpT73uA7KMgrofTyNMjgkaXDBeUTuCX6FexUltWDiyeHP6dZ9SFY+VlAAAA==",
   },
   {
+    id: "fernlight-workshop",
+    widths: [640, 1024, 1600],
+    focalX: 80,
+    focalY: 50,
+    chrome: "#777676",
+    lqip: "data:image/webp;base64,UklGRmwAAABXRUJQVlA4IGAAAADwBACdASogABIAPuFgqE2opiQiMAwBEBwJZQAAQrXZY4N2zhoe1lp1EbUxxOtE+QAAzfZXkr6iK4c+VjkCu2FGYWehWx3N/V3YgDn8NkoBhK8CkJxdHA6nKO2qIagAAAA=",
+  },
+  {
     id: "fjord-vault-cafe",
     widths: [640, 1024, 1600],
     focalX: 65,
@@ -603,6 +611,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAAAQBQCdASogABIAPu1kqk4ppaQiMAgBMB2JZQAAUroCa6I5W+7GeuI8NzUHXHxg1UoAAP65/Z4eCdKj3WQH5/uT9L32yNR5gYkb7+gb67QRiyyZGkNG4PaHiLeaRo5Br5u83RL8wAA=",
   },
   {
+    id: "rain-between-pines",
+    widths: [640, 1024, 1600],
+    focalX: 70,
+    focalY: 50,
+    chrome: "#353230",
+    lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAABwBACdASogABIAPuFUpk2opCOiN/qoARAcCWcAAEVPEI/m3Dwqle/iQAemMAD+0Dr6doPUXmxhQzMGzdKKiMNOUmQC0JQjr7HiXp83yglB/eB+cj0WORCwdhdiTb6o5Q7/wAAA",
+  },
+  {
     id: "rain-garden-pavilion",
     widths: [640, 1024, 1600],
     focalX: 64,
@@ -691,6 +707,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADwBACdASogABIAPu1ssFCppiSiqAqpMB2JZwAAKf1aJtQ1MsRt/vvYJR5kwkU5nCAAzjdGVSyGkkLKM7xlnP7Lu0Sz9ydb3tkTVa4euQg//T/AyEZovpbeTG06n59U8gyncVqvaZIMgAAA",
   },
   {
+    id: "silverwater-atelier",
+    widths: [640, 1024, 1600],
+    focalX: 8,
+    focalY: 50,
+    chrome: "#75787d",
+    lqip: "data:image/webp;base64,UklGRmoAAABXRUJQVlA4IF4AAABwBACdASogABIAPu1orE+ppaQiMBgIATAdiWcAwvg0YTLM6DAJUHA22lzGAAD+oc8eACqYbP//dYBbP7RhRr0dnQPh8zPRnhXKtdLNLDyIO19bVVY5ZZ1dUIqxwAAA",
+  },
+  {
     id: "snow-valley-monastery-study",
     widths: [640, 1024, 1600],
     focalX: 40,
@@ -721,6 +745,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#674937",
     lqip: "data:image/webp;base64,UklGRnwAAABXRUJQVlA4IHAAAADQBACdASogABIAPu1irVAppSQisBgIATAdiWUAv+wNaOMRJHGWjhJoZlHy++xAaADh8N/fCVQ//BMZCyLAtawvfARuO9yxBALUE+bEoCWjFroy+IOIHJIoCPdo0fuTOeTlrBT4f13onQRFhzBAAAAA",
+  },
+  {
+    id: "the-concrete-grove",
+    widths: [640, 1024, 1600],
+    focalX: 25,
+    focalY: 50,
+    chrome: "#6c6c6f",
+    lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAACwBACdASogABIAPuVepE2pJSMpMAwBIByJZwDIXCP6sZCAEOXBE8Spp2vPANGAAP7NRSs1IiKImSVkLMwaszlFJS44ZomRIj5DUJPItfmX0NtvB1t2rECtl1UPjiVFagAAAA==",
   },
   {
     id: "the-estuary-sketchroom",
@@ -793,6 +825,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#4e3723",
     lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAACQBACdASogABIAPu1iqE2ppaOiMAgBMB2JZQAAWp9Aq7n2Oa4XIhnEg68oXZAA/hdYu3SUwFuLY03R/yebZWn9ygMT+dj0Q7eyLPLuYhNQph+awdwK+17rv4Esm2++XlhhFGAAAAA=",
+  },
+  {
+    id: "under-the-canopy",
+    widths: [640, 1024, 1600],
+    focalX: 80,
+    focalY: 50,
+    chrome: "#969ca7",
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAABwBQCdASogABIAPt1Yo02opSMiN/qoARAbiWUAwNwh4FY/JJQd6N8qu6svGasoKpW08IgAAP7w0GZVcwCzEc8xjFb9nBE/bvrlWAL008VpDbVf6zNFMqzDZkZBlADPQIrD4q2/k7AFiImHpOoAAA==",
   },
   {
     id: "valley-vault",

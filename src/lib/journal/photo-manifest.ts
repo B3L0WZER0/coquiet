@@ -46,6 +46,15 @@ export const JOURNAL_PHOTOS: readonly JournalPhotoEntry[] = [
     "lqip": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADQAwCdASogAA0APu1iqk2ppaQiMAgBMB2JZACdAB2Oqn6h1lhKuZAA/i3DfI3zahDYgvHI0Fhygna6GuHRyLaZzhRCBht8Ecng1fqTPEolQzKKH1X70nAA"
   },
   {
+    "id": "let-the-first-version-be-ordinary",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "lqip": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAQBQCdASogABUAPu1mqk8ppaOiKA1RMB2JZQC2yAtMdfqsGwE98QbUEv07mmJ/W8IAAP7ppINjHRBK5KNzDhfbTN0NBFVPO5YtNSjN0kpDm/7xCcC8Ib7v2SD+SXoxUySA81xNJ+GhhHhffGm1PxBT6hmwdkDDh0AAAA=="
+  },
+  {
     "id": "make-it-easy-to-come-back",
     "widths": [
       640,

@@ -226,6 +226,16 @@ export const FOCAL_X = {
   'valley-vault': 34,
   // Off the desk a little, so the slice carries some of the lake it looks at.
   'work-lake-view': 26,
+
+  // The Jazz room's scenes, from /jazz-reference.
+  // The maples and the two armchairs; the barista sits too near the edge to keep.
+  'jazz-autumn-window': 60,
+  // The barista at the pour-over under the lantern, the cup below her.
+  'jazz-early-evening': 88,
+  // The lantern, the records and the reading chairs.
+  'jazz-garden-pond': 25,
+  // The barista at the counter, with the lanterns over her.
+  'jazz-rainy-street-counter': 40,
 };
 
 /**

@@ -7,10 +7,10 @@ import { CHANNELS, type Channel } from '@/lib/channels';
 
 /** The ⓘ beside the switch, explaining what the three channels are. */
 export function ChannelInfo({ channels = CHANNELS }: { channels?: readonly Channel[] }) {
-  const ambient = channels[0]?.kind === 'ambient';
+  const kind = channels[0]?.kind;
   return (
     <Popover
-      label={ambient ? 'What the scenes are' : 'What the channels are'}
+      label={kind === 'ambient' ? 'What the scenes are' : kind === 'jazz' ? 'What is playing' : 'What the channels are'}
       align="center"
       // Line the panel up with the whole selector rather than with this small
       // mark, which sits off to the right of centre. Anchoring to the selector

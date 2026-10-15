@@ -5,7 +5,7 @@
  * so trimming it to two is how it stays a chip and not a changelog page.
  */
 
-export const VERSION = '0.7.0';
+export const VERSION = '0.8.0';
 
 /** Where a request goes. A dedicated inbox, not a personal one — the address
  *  is in the page source of a public site, so it will be scraped. */
@@ -45,6 +45,16 @@ export interface Release {
 
 export const RELEASES: Release[] = [
   {
+    version: '0.8.0',
+    date: 'October 2026',
+    notes: [
+      {
+        text: 'A new room: Jazz, a Japanese coffee house on a rainy evening, with slow jazz for everyone in it.',
+        link: { phrase: 'Jazz', path: '/jazz/' },
+      },
+    ],
+  },
+  {
     version: '0.7.0',
     date: 'October 2026',
     notes: [
@@ -52,16 +62,4 @@ export const RELEASES: Release[] = [
       'Share today’s quote with a friend in one tap.',
     ],
   },
-  {
-    version: '0.6.0',
-    date: 'September 2026',
-    notes: [
-      {
-        text: 'Snow now drifts in Ambient.',
-        link: { phrase: 'Ambient', path: '/ambient/' },
-      },
-      'Fresh focus notes, and smoother switching between channels.',
-    ],
-  },
 ];
-

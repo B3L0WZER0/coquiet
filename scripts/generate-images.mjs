@@ -23,166 +23,182 @@ import sharp from 'sharp';
 import { FOCAL_X, FOCAL_Y } from './focal-points.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
-const SOURCE_DIR = path.join(ROOT, 'design-reference');
 const OUT_DIR = path.join(ROOT, 'public/images');
-const MANIFEST = path.join(ROOT, 'src/lib/background-manifest.ts');
+/** The Music rooms, and the Jazz room's scenes: same encoding, separate rotations. */
+const SETS = [
+  { dir: 'design-reference', manifest: 'src/lib/background-manifest.ts', name: 'BACKGROUND_MANIFEST' },
+  { dir: 'jazz-reference', manifest: 'src/lib/jazz-manifest.ts', name: 'JAZZ_MANIFEST' },
+];
 
 const FORCE = process.argv.includes('--force');
 
 const WIDTHS = [640, 1024, 1600];
 const LQIP_HEIGHT = 18;
 
-const entries = await readdir(SOURCE_DIR);
-const sources = entries.filter((f) => /\.(png|jpe?g|webp|avif|tiff?)$/i.test(f)).sort();
-if (sources.length === 0) throw new Error(`No images found in ${SOURCE_DIR}`);
-
 await mkdir(OUT_DIR, { recursive: true });
 
-const rooms = [];
-const missingFocal = [];
+async function encodeSet(SOURCE_DIR) {
+  const entries = await readdir(SOURCE_DIR);
+  const sources = entries.filter((f) => /\.(png|jpe?g|webp|avif|tiff?)$/i.test(f)).sort();
+  if (sources.length === 0) throw new Error(`No images found in ${SOURCE_DIR}`);
 
-for (const file of sources) {
-  const id = file.replace(/\.[^.]+$/, '');
-  const source = path.join(SOURCE_DIR, file);
+  const rooms = [];
+  const missingFocal = [];
 
-  // A photograph nobody has chosen a crop for is not a room yet. It used to
-  // ship at 50%, which is rarely right, so dropping files in the folder and
-  // running this shipped rooms cropped down the middle. Now the folder is
-  // safe to drop into: an undecided image costs nothing and shows nobody
-  // anything until it has a focal point.
-  if (!(id in FOCAL_X)) {
-    missingFocal.push(id);
-    continue;
-  }
+  for (const file of sources) {
+    const id = file.replace(/\.[^.]+$/, '');
+    const source = path.join(SOURCE_DIR, file);
 
-  const meta = await sharp(source).metadata();
-
-  const widths = WIDTHS.filter((w) => !meta.width || w <= meta.width * 1.05);
-
-  // Re-encoding is the slow part by far — avif at effort 6, six files a room.
-  // The output only depends on the source file, so a room whose files are all
-  // newer than it is already correct. Adding one room to a folder of thirty
-  // should cost one room. `--force` re-encodes everything, for when the
-  // encoder settings above change rather than the photographs.
-  const outputs = widths.flatMap((w) => [`${id}-${w}.avif`, `${id}-${w}.webp`]);
-  const sourceTime = (await stat(source)).mtimeMs;
-  const times = await Promise.all(
-    outputs.map((f) =>
-      stat(path.join(OUT_DIR, f)).then(
-        (s) => s.mtimeMs,
-        () => 0,
-      ),
-    ),
-  );
-  const encoded = !FORCE && times.every((t) => t > sourceTime);
-
-  if (!encoded) {
-    for (const width of widths) {
-      const base = sharp(source).resize({ width, withoutEnlargement: true });
-      await base.clone().avif({ quality: 58, effort: 6 }).toFile(path.join(OUT_DIR, `${id}-${width}.avif`));
-      await base.clone().webp({ quality: 76 }).toFile(path.join(OUT_DIR, `${id}-${width}.webp`));
+    // A photograph nobody has chosen a crop for is not a room yet. It used to
+    // ship at 50%, which is rarely right, so dropping files in the folder and
+    // running this shipped rooms cropped down the middle. Now the folder is
+    // safe to drop into: an undecided image costs nothing and shows nobody
+    // anything until it has a focal point.
+    if (!(id in FOCAL_X)) {
+      missingFocal.push(id);
+      continue;
     }
-  }
 
-  // The placeholder must carry the same aspect ratio as the generated images.
-  // Both are drawn with `cover` into the same box, so an aspect even slightly
-  // different crops to a different part of the frame — which the eye sees as
-  // the room shifting the moment the photograph arrives.
-  const largest = widths[widths.length - 1];
-  const reference = await sharp(path.join(OUT_DIR, `${id}-${largest}.webp`)).metadata();
-  const aspect = reference.width / reference.height;
-  const lqipWidth = Math.round(LQIP_HEIGHT * aspect);
-  if (Math.abs(lqipWidth / LQIP_HEIGHT - aspect) > 0.005) {
-    throw new Error(
-      `Placeholder aspect for ${id} does not match the images'. Pick an LQIP height that divides cleanly.`,
+    const meta = await sharp(source).metadata();
+
+    const widths = WIDTHS.filter((w) => !meta.width || w <= meta.width * 1.05);
+
+    // Re-encoding is the slow part by far — avif at effort 6, six files a room.
+    // The output only depends on the source file, so a room whose files are all
+    // newer than it is already correct. Adding one room to a folder of thirty
+    // should cost one room. `--force` re-encodes everything, for when the
+    // encoder settings above change rather than the photographs.
+    const outputs = widths.flatMap((w) => [`${id}-${w}.avif`, `${id}-${w}.webp`]);
+    const sourceTime = (await stat(source)).mtimeMs;
+    const times = await Promise.all(
+      outputs.map((f) =>
+        stat(path.join(OUT_DIR, f)).then(
+          (s) => s.mtimeMs,
+          () => 0,
+        ),
+      ),
+    );
+    const encoded = !FORCE && times.every((t) => t > sourceTime);
+
+    if (!encoded) {
+      for (const width of widths) {
+        const base = sharp(source).resize({ width, withoutEnlargement: true });
+        await base.clone().avif({ quality: 58, effort: 6 }).toFile(path.join(OUT_DIR, `${id}-${width}.avif`));
+        await base.clone().webp({ quality: 76 }).toFile(path.join(OUT_DIR, `${id}-${width}.webp`));
+      }
+    }
+
+    // The placeholder must carry the same aspect ratio as the generated images.
+    // Both are drawn with `cover` into the same box, so an aspect even slightly
+    // different crops to a different part of the frame — which the eye sees as
+    // the room shifting the moment the photograph arrives.
+    const largest = widths[widths.length - 1];
+    const reference = await sharp(path.join(OUT_DIR, `${id}-${largest}.webp`)).metadata();
+    const aspect = reference.width / reference.height;
+    const lqipWidth = Math.round(LQIP_HEIGHT * aspect);
+    if (Math.abs(lqipWidth / LQIP_HEIGHT - aspect) > 0.005) {
+      throw new Error(
+        `Placeholder aspect for ${id} does not match the images'. Pick an LQIP height that divides cleanly.`,
+      );
+    }
+    const lqip = await sharp(source)
+      // `fill`, not `cover`: the placeholder is the whole frame at the output's
+      // proportions, not a crop of it.
+      .resize(lqipWidth, LQIP_HEIGHT, { fit: 'fill' })
+      .blur(1.2)
+      .webp({ quality: 40 })
+      .toBuffer();
+
+    // The colour iOS Safari should tint its own toolbar with. The browser will
+    // only take a flat colour there — no image reaches behind browser chrome —
+    // so the next best thing is the colour the room already is along its bottom
+    // edge, which turns a black bar into something the room appears to continue
+    // into. Sampled from the focal window, since that is the strip a phone
+    // actually shows, and only the bottom eighth, where the bar meets the room.
+    const focal = FOCAL_X[id] / 100;
+    const sw = Math.max(1, Math.round(meta.width * 0.3));
+    // Height from what's left below `top`: rounding both halves separately
+    // overran an odd-height frame (940 → 823 + 118) by a pixel.
+    const top = Math.min(Math.round(meta.height * 0.875), meta.height - 1);
+    const chromeRaw = await sharp(source)
+      .extract({
+        left: Math.round(Math.min(Math.max(meta.width * focal - sw / 2, 0), meta.width - sw)),
+        top,
+        width: sw,
+        height: meta.height - top,
+      })
+      .resize(1, 1, { fit: 'fill' })
+      .raw()
+      .toBuffer();
+    const chrome =
+      '#' + [...chromeRaw.subarray(0, 3)].map((c) => c.toString(16).padStart(2, '0')).join('');
+
+    rooms.push({
+      id,
+      widths,
+      focalX: FOCAL_X[id],
+      focalY: FOCAL_Y[id] ?? 50,
+      chrome,
+      lqip: `data:image/webp;base64,${lqip.toString('base64')}`,
+    });
+
+    console.log(
+      `  ${encoded ? '·' : '+'} ${id.padEnd(26)} focal ${String(FOCAL_X[id]).padStart(3)}%  chrome ${chrome}`,
     );
   }
-  const lqip = await sharp(source)
-    // `fill`, not `cover`: the placeholder is the whole frame at the output's
-    // proportions, not a crop of it.
-    .resize(lqipWidth, LQIP_HEIGHT, { fit: 'fill' })
-    .blur(1.2)
-    .webp({ quality: 40 })
-    .toBuffer();
-
-  // The colour iOS Safari should tint its own toolbar with. The browser will
-  // only take a flat colour there — no image reaches behind browser chrome —
-  // so the next best thing is the colour the room already is along its bottom
-  // edge, which turns a black bar into something the room appears to continue
-  // into. Sampled from the focal window, since that is the strip a phone
-  // actually shows, and only the bottom eighth, where the bar meets the room.
-  const focal = FOCAL_X[id] / 100;
-  const sw = Math.max(1, Math.round(meta.width * 0.3));
-  // Height from what's left below `top`: rounding both halves separately
-  // overran an odd-height frame (940 → 823 + 118) by a pixel.
-  const top = Math.min(Math.round(meta.height * 0.875), meta.height - 1);
-  const chromeRaw = await sharp(source)
-    .extract({
-      left: Math.round(Math.min(Math.max(meta.width * focal - sw / 2, 0), meta.width - sw)),
-      top,
-      width: sw,
-      height: meta.height - top,
-    })
-    .resize(1, 1, { fit: 'fill' })
-    .raw()
-    .toBuffer();
-  const chrome =
-    '#' + [...chromeRaw.subarray(0, 3)].map((c) => c.toString(16).padStart(2, '0')).join('');
-
-  rooms.push({
-    id,
-    widths,
-    focalX: FOCAL_X[id],
-    focalY: FOCAL_Y[id] ?? 50,
-    chrome,
-    lqip: `data:image/webp;base64,${lqip.toString('base64')}`,
-  });
-
-  console.log(
-    `  ${encoded ? '·' : '+'} ${id.padEnd(26)} focal ${String(FOCAL_X[id]).padStart(3)}%  chrome ${chrome}`,
-  );
+  return { rooms, missingFocal };
 }
 
-const lines = [
-  '/**',
-  ' * Generated by `npm run assets:images` — do not edit by hand.',
-  ' *',
-  ' * One entry per image in /design-reference. `focalX` is where the crop',
-  ' * centres when the viewport is portrait, `focalY` where it centres when the',
-  ' * viewport is wider than the photograph; `lqip` is the blurred placeholder,',
-  ' * inlined so the first paint is already warm. `chrome` is the colour along',
-  ' * the room\'s bottom edge, handed to the browser to tint its own toolbar.',
-  ' */',
-  '',
-  'export interface ManifestRoom {',
-  '  id: string;',
-  '  widths: readonly number[];',
-  '  focalX: number;',
-  '  focalY: number;',
-  '  chrome: string;',
-  '  lqip: string;',
-  '}',
-  '',
-  'export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [',
-];
+for (const set of SETS) {
+  const SOURCE_DIR = path.join(ROOT, set.dir);
+  const MANIFEST = path.join(ROOT, set.manifest);
+  const { rooms, missingFocal } = await encodeSet(SOURCE_DIR);
 
-for (const room of rooms) {
-  lines.push('  {');
-  lines.push(`    id: ${JSON.stringify(room.id)},`);
-  lines.push(`    widths: [${room.widths.join(', ')}],`);
-  lines.push(`    focalX: ${room.focalX},`);
-  lines.push(`    focalY: ${room.focalY},`);
-  lines.push(`    chrome: ${JSON.stringify(room.chrome)},`);
-  lines.push(`    lqip: ${JSON.stringify(room.lqip)},`);
-  lines.push('  },');
-}
-lines.push('];', '');
+  const lines = [
+    '/**',
+    ' * Generated by `npm run assets:images` — do not edit by hand.',
+    ' *',
+    ` * One entry per image in /${set.dir}. \`focalX\` is where the crop`,
+    ' * centres when the viewport is portrait, `focalY` where it centres when the',
+    ' * viewport is wider than the photograph; `lqip` is the blurred placeholder,',
+    ' * inlined so the first paint is already warm. `chrome` is the colour along',
+    ' * the room\'s bottom edge, handed to the browser to tint its own toolbar.',
+    ' */',
+    '',
+    ...(set.name === 'BACKGROUND_MANIFEST'
+      ? [
+          'export interface ManifestRoom {',
+          '  id: string;',
+          '  widths: readonly number[];',
+          '  focalX: number;',
+          '  focalY: number;',
+          '  chrome: string;',
+          '  lqip: string;',
+          '}',
+        ]
+      : ["import type { ManifestRoom } from './background-manifest';"]),
+    '',
+    `export const ${set.name}: readonly ManifestRoom[] = [`,
+  ];
 
-await writeFile(MANIFEST, lines.join('\n'), 'utf8');
+  for (const room of rooms) {
+    lines.push('  {');
+    lines.push(`    id: ${JSON.stringify(room.id)},`);
+    lines.push(`    widths: [${room.widths.join(', ')}],`);
+    lines.push(`    focalX: ${room.focalX},`);
+    lines.push(`    focalY: ${room.focalY},`);
+    lines.push(`    chrome: ${JSON.stringify(room.chrome)},`);
+    lines.push(`    lqip: ${JSON.stringify(room.lqip)},`);
+    lines.push('  },');
+  }
+  lines.push('];', '');
 
-console.log(`\nWrote ${path.relative(ROOT, MANIFEST)} — ${rooms.length} rooms`);
-if (missingFocal.length > 0) {
-  console.log(`\n  Waiting on a focal point, so not encoded and not in the manifest:`);
-  for (const id of missingFocal) console.log(`    - ${id}`);
-  console.log('  Run `npm run assets:crops` to choose one, then set it in scripts/focal-points.mjs.');
+  await writeFile(MANIFEST, lines.join('\n'), 'utf8');
+
+  console.log(`\nWrote ${path.relative(ROOT, MANIFEST)} — ${rooms.length} rooms`);
+  if (missingFocal.length > 0) {
+    console.log(`\n  Waiting on a focal point, so not encoded and not in the manifest:`);
+    for (const id of missingFocal) console.log(`    - ${id}`);
+    console.log('  Run `npm run assets:crops` to choose one, then set it in scripts/focal-points.mjs.');
+  }
 }

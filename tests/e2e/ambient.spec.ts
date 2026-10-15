@@ -11,13 +11,14 @@ test.beforeEach(async ({ page }) => {
   });
 });
 
-test('the door offers Music and Ambient, and Ambient previews its landscape silently', async ({ page }) => {
+test('the door offers Ambient, and Ambient previews its landscape silently', async ({ page }) => {
   await page.goto('/');
   const room = page.getByRole('radiogroup', { name: 'Room' });
   await expect(room.getByRole('radio', { name: 'Music' })).toHaveAttribute('aria-checked', 'true');
 
   const ambient = room.getByRole('radio', { name: /Ambient/ });
-  await expect(ambient).toContainText('New');
+  // "New" moved on to Jazz.
+  await expect(ambient).not.toContainText('New');
   await ambient.click();
   await expect(ambient).toHaveAttribute('aria-checked', 'true');
 

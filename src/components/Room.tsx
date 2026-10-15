@@ -22,7 +22,7 @@ import { useFocusNote } from '@/hooks/useFocusNote';
 import { useIdleDim } from '@/hooks/useIdleDim';
 import { useTimer } from '@/hooks/useTimer';
 import { CHIME_DURATION_MS, primeChime } from '@/lib/chime';
-import { AMBIENT_CHANNELS, CHANNELS, modeOf, type RoomMode } from '@/lib/channels';
+import { channelsFor, modeOf, type RoomMode } from '@/lib/channels';
 import { breakSuggestion } from '@/lib/notes';
 import { entryPresenceLine } from '@/lib/presence/copy';
 
@@ -202,7 +202,7 @@ export function Room({ initialMode }: { initialMode?: RoomMode } = {}) {
   }, [timer, note]);
 
   const mode = modeOf(audio.state.channel);
-  const channels = mode === 'ambient' ? AMBIENT_CHANNELS : CHANNELS;
+  const channels = channelsFor(mode);
 
   const playing = audio.state.status === 'playing';
   const soundFailed = audio.state.status === 'error';

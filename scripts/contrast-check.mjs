@@ -68,6 +68,14 @@ const entries = new Map(
 );
 if (entries.size === 0) throw new Error('No rooms in the manifest. Run: npm run assets:images');
 
+// The Jazz room's scenes are rooms in all but rotation, visited on /jazz/.
+const jazzText = await readFile(path.join(ROOT, 'src/lib/jazz-manifest.ts'), 'utf8');
+for (const m of jazzText.matchAll(/^ {2}\{\n([\s\S]*?)^ {2}\},$/gm)) {
+  const id = /id: "([^"]+)"/.exec(m[1])?.[1];
+  if (id) entries.set(id, m[1]);
+}
+const roomUrl = (id) => `${URL}${id.startsWith('jazz-') ? '/jazz/' : '/'}?room=${id}`;
+
 // The Ambient room's three landscapes are audited as rooms of their own,
 // `ambient-<scene>`, over their still frame (the loop's first frame).
 const AMBIENT_MANIFEST = path.join(ROOT, 'src/lib/ambient-manifest.ts');
@@ -353,7 +361,8 @@ async function auditRoom(roomId) {
   // there is, and a moving frame would give different numbers every run.
   const context = await browser.newContext({
     viewport: DESKTOP,
-    ...(scene ? { reducedMotion: 'reduce' } : {}),
+    // Jazz scenes fade in over the room too; reduced motion makes it quick.
+    ...(scene || roomId.startsWith('jazz-') ? { reducedMotion: 'reduce' } : {}),
   });
   if (scene) {
     await context.addInitScript((id) => {
@@ -390,7 +399,7 @@ async function auditRoom(roomId) {
   };
 
   try {
-    await goto(page, scene ? URL : `${URL}/?room=${roomId}`);
+    await goto(page, scene ? URL : roomUrl(roomId));
 
     // Whether the presence line is up when the audit looks is down to who else
     // is in the room, and a line audited only when someone happened to be there
@@ -440,7 +449,7 @@ async function auditRoom(roomId) {
 
     // Open every panel so their contents are audited too.
     for (const [name, label] of [
-      [/What the (channels|scenes) are/, 'channel info'],
+      [/What the (channels|scenes) are|What is playing/, 'channel info'],
       [/Focus timer/, 'timer panel'],
       [/presence/i, 'presence panel'],
       [/Quote of the day/, 'quote panel'],
@@ -459,7 +468,7 @@ async function auditRoom(roomId) {
     // the frame, where the veil is thinnest. It needs the request to actually
     // fail, so it cannot ride along with the passes above.
     await page.route(BLOCKED_AUDIO, blockWithPage);
-    await goto(page, scene ? URL : `${URL}/?room=${roomId}`);
+    await goto(page, scene ? URL : roomUrl(roomId));
     await enter(page);
     await at(`${roomId} · music blocked`);
     await phone(`${roomId} · music blocked phone`);

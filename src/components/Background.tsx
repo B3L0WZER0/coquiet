@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 
 import { AmbientBackdrop } from '@/components/AmbientBackdrop';
+import { JazzBackdrop } from '@/components/JazzBackdrop';
 import { storedChannel, useAudioState } from '@/hooks/useAudio';
 import { isAmbientId } from '@/lib/ambient';
 import {
@@ -23,6 +24,9 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
   const [room, setRoom] = useState<Room | null>(null);
   const { channel } = useAudioState();
   const scene = isAmbientId(channel) ? channel : null;
+  const jazz = channel === 'jazz';
+  // A room's photograph is only wanted where nothing covers it.
+  const covered = scene !== null || jazz;
 
   // Read once, and never again: the room that is showing must not change
   // under someone who is working. Not at all while a landscape covers it —
@@ -30,9 +34,10 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
   // stored channel is checked too, because on the hydrating render the engine
   // still reports the server's default.
   useEffect(() => {
-    if (scene || isAmbientId(storedChannel())) return;
+    const stored = storedChannel();
+    if (covered || isAmbientId(stored) || stored === 'jazz') return;
     setRoom((r) => r ?? chosenRoom());
-  }, [scene]);
+  }, [covered]);
 
   // iOS Safari paints its own toolbar with the page's theme colour, and on a
   // page that never scrolls it keeps that toolbar expanded permanently — so a
@@ -41,10 +46,10 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
   // own, which lets the bar pass for the floor continuing past the edge. The
   // chooser has already set this; this keeps it true if the room ever changes.
   useEffect(() => {
-    if (!room || scene) return;
+    if (!room || covered) return;
     const meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
     if (meta) meta.content = room.chrome;
-  }, [room, scene]);
+  }, [room, covered]);
 
   return (
     <div aria-hidden="true" className="room-backdrop pointer-events-none fixed -z-10 overflow-hidden">
@@ -72,6 +77,7 @@ export function Background({ buildRoom }: { buildRoom: Room }) {
         )}
       </div>
 
+      <JazzBackdrop showing={jazz} />
       <AmbientBackdrop scene={scene} />
 
       {/* Warm contrast veil. */}

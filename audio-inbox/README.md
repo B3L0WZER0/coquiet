@@ -6,6 +6,7 @@ opus). Say which channel in the filename:
     still - some piano thing.wav
     flow - whatever it was called.mp3
     momentum - track 4.flac
+    jazz - late set.mp3
 
 Then:
 

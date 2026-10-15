@@ -3,6 +3,7 @@
 import { AMBIENT_SCENES, DEFAULT_AMBIENT, TALL_MEDIA, scenePoster, scenePosterSet } from '@/lib/ambient';
 import { assetPath } from '@/lib/asset-path';
 import { BACKGROUND_MANIFEST, type ManifestRoom } from '@/lib/background-manifest';
+import { JAZZ_MANIFEST } from '@/lib/jazz-manifest';
 
 export type Room = ManifestRoom;
 
@@ -75,6 +76,8 @@ export function chosenRoom(): Room {
  */
 export function roomChooserScript(): string {
   const rooms = ROOMS.map((r) => [r.id, r.focalX, r.chrome, r.lqip, r.focalY]);
+  // On /jazz/ the kissa is the first paint, chosen by the hour the same way.
+  const jazz = JAZZ_MANIFEST.map((r) => [r.id, r.focalX, r.chrome, r.lqip, r.focalY]);
   const widths = ROOMS[0].widths;
   // Built here rather than in the script: the base path is a build-time
   // setting and does not need to ship as a second copy.
@@ -87,9 +90,10 @@ export function roomChooserScript(): string {
 
   return `(function(){try{
 var R=${JSON.stringify(rooms)},W=${JSON.stringify(widths)},P=${JSON.stringify(prefix)};
+var J=/\\/jazz(\\/|$)/.test(location.pathname);if(J)R=${JSON.stringify(jazz)};
 var i=Math.floor(Date.now()/3600000)%R.length;if(i<0)i+=R.length;var r=R[i];
 ${dev ? `var q=/[?&]room=([^&]*)/.exec(location.search);if(q){var f=R.find(function(x){return x[0]===decodeURIComponent(q[1])});if(f)r=f}` : ''}
-window.__coquietRoom=r[0];
+if(J)window.__coquietJazz=r[0];else window.__coquietRoom=r[0];
 var y=document.createElement('style');
 y.textContent=':root{--room-lqip:url("'+r[3]+'");--room-focal-x:'+r[1]+'%;--room-focal-y:'+r[4]+'%}';
 document.head.appendChild(y);

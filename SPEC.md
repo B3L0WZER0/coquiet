@@ -107,6 +107,13 @@ Small info icon beside `MUSIC`, working via hover, keyboard focus, and mobile ta
 - **Flow** — Balanced chamber music for steady, sustained concentration.
 - **Momentum** — Brighter strings and restrained rhythmic energy.
 
+### Other doors
+
+The entry screen's room switch (`Music · Ambient · Jazz ジャズ`) picks which room the door opens on; each also has its own address (`/ambient/`, `/jazz/`). The "New" tag sits on the newest door only.
+
+- **Ambient** — three landscapes (Blue · Green · White), each with its own looping sound.
+- **Jazz** — one channel on purpose: a Japanese jazz kissa plays one record for the whole room. Slow, instrumental, 60–95 bpm, horns only now and then. Four painted kissa scenes (`/jazz-reference`) rotate by the hour like the rooms do, and never join the Music rotation. ジャズ is `lang="ja"` and hidden from screen readers, since it only repeats "Jazz".
+
 ## Audio behavior
 
 Instrumental, neoclassical, cinematic. `https://www.youtube.com/watch?v=dMYQh4ELrd0` is a mood reference only — never download, isolate, or restream its audio.
@@ -186,7 +193,7 @@ Responsive AVIF/WebP background; preload only the initial visual; no full audio 
 
 ## Explicit non-goals
 
-No chat, comments, DMs, video/voice, profiles, accounts, avatars, followers, public user lists, flags/maps, likes/reactions, productivity scores, streaks/badges/leaderboards, task management, user-created rooms or playlists, track voting/requests, cooking/gaming modes, large analytics dashboards, lyrics/spoken-word music, or in-room advertising. One global room, one shared presence count, three music channels.
+No chat, comments, DMs, video/voice, profiles, accounts, avatars, followers, public user lists, flags/maps, likes/reactions, productivity scores, streaks/badges/leaderboards, task management, user-created rooms or playlists, track voting/requests, cooking/gaming modes, large analytics dashboards, lyrics/spoken-word music, or in-room advertising. One global room, one shared presence count, three music channels — plus the Ambient scenes and the one Jazz channel behind their own doors.
 
 ## Acceptance criteria
 

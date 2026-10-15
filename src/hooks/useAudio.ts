@@ -18,10 +18,12 @@ import { STORAGE_KEYS, readStored, writeStored } from '@/lib/storage';
 
 export const DEFAULT_VOLUME = 0.5;
 
-/** The room an address opens on: Ambient has its own, everything else is Music. */
+/** The room an address opens on: Ambient and Jazz have their own, everything else is Music. */
 export function addressMode(): RoomMode {
   if (typeof window === 'undefined') return 'music';
-  return /\/ambient(\/|$)/.test(window.location.pathname) ? 'ambient' : 'music';
+  const path = window.location.pathname;
+  if (/\/ambient(\/|$)/.test(path)) return 'ambient';
+  return /\/jazz(\/|$)/.test(path) ? 'jazz' : 'music';
 }
 
 /** The channel the page opens on: the last one picked in the address's room.
@@ -32,6 +34,7 @@ export function storedChannel(): ChannelId {
 
 /** The channel a room opens on: the last one picked in it. */
 export function storedChannelFor(mode: RoomMode): ChannelId {
+  if (mode === 'jazz') return 'jazz';
   return mode === 'music'
     ? readStored(STORAGE_KEYS.musicChannel, (raw) => (isMusicChannelId(raw) ? raw : null), DEFAULT_CHANNEL)
     : readStored(STORAGE_KEYS.ambientScene, (raw) => (isAmbientId(raw) ? raw : null), DEFAULT_AMBIENT);
@@ -144,11 +147,13 @@ export function useAudio() {
   const retry = useCallback(() => getEngine()?.retry(), []);
 
   const setChannel = useCallback((id: ChannelId) => {
-    writeStored(modeOf(id) === 'music' ? STORAGE_KEYS.musicChannel : STORAGE_KEYS.ambientScene, id);
+    const mode = modeOf(id);
+    // Jazz has one channel, so there is no pick to remember.
+    if (mode !== 'jazz') writeStored(mode === 'music' ? STORAGE_KEYS.musicChannel : STORAGE_KEYS.ambientScene, id);
     return getEngine()?.setChannel(id);
   }, []);
 
-  /** Music or Ambient, chosen at the door. */
+  /** Music, Ambient or Jazz, chosen at the door. */
   const setMode = useCallback(
     (mode: RoomMode) => {
       const current = getEngine()?.snapshot().channel;

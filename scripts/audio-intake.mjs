@@ -27,7 +27,7 @@ const INBOX = path.join(ROOT, 'audio-inbox');
 const AUDIO_DIR = path.join(ROOT, 'public/audio');
 const CACHE = path.join(ROOT, 'scripts/.cache/audio-fingerprints.json');
 
-const CHANNELS = ['still', 'flow', 'momentum'];
+const CHANNELS = ['still', 'flow', 'momentum', 'jazz'];
 
 /** rclone remote and bucket the room actually streams from. */
 const REMOTE = 'r2';
@@ -36,7 +36,7 @@ const BUCKET = 'coquiet-audio';
 const CACHE_CONTROL = 'public, max-age=31536000, immutable';
 const AUDIO_RE = /\.(m4a|mp3|wav|flac|aiff?|ogg|opus|wma)$/i;
 /** Matches the tracks already in the programme — see generate-audio-manifest.mjs. */
-const FILED = /^(still|flow|momentum)\s*(\d+)$/i;
+const FILED = /^(still|flow|momentum|jazz)\s*(\d+)$/i;
 
 const args = process.argv.slice(2);
 const apply = args.includes('--apply');
@@ -224,8 +224,9 @@ console.log(`  ${refs.length} tracks, mean ${target.toFixed(1)} LUFS\n`);
 function span(field, digits) {
   return CHANNELS.map((id) => {
     const xs = refs.filter((r) => r.channel === id).map((r) => r[field]);
-    return `${id} ${Math.min(...xs).toFixed(digits)}–${Math.max(...xs).toFixed(digits)}`;
-  }).join('   ');
+    // A channel with nothing filed yet has no span to show.
+    return xs.length ? `${id} ${Math.min(...xs).toFixed(digits)}–${Math.max(...xs).toFixed(digits)}` : null;
+  }).filter(Boolean).join('   ');
 }
 
 const plans = [];
@@ -235,7 +236,7 @@ for (const file of inbox.sort()) {
   const full = path.join(INBOX, file);
   // A channel word at the front of the filename picks the channel, the way
   // "Flow 1.m4a" does for a filed track. --channel beats it, for a whole batch.
-  const prefix = /^(still|flow|momentum)\b/i.exec(file)?.[1]?.toLowerCase();
+  const prefix = /^(still|flow|momentum|jazz)\b/i.exec(file)?.[1]?.toLowerCase();
   const chosen = forced ?? prefix ?? null;
 
   console.log(`${file}`);
@@ -256,7 +257,7 @@ await saveCache([...refs.map((r) => r.file), ...inbox]);
 
 if (undecided.length > 0) {
   console.log('These measurements do not decide the channel — they overlap too much between the three. Pick one:');
-  console.log(`  rename to "still - <name>", "flow - <name>" or "momentum - <name>", or pass --channel=<id>\n`);
+  console.log(`  rename to "still - <name>", "flow - <name>", "momentum - <name>" or "jazz - <name>", or pass --channel=<id>\n`);
   if (apply) throw new Error(`No channel for: ${undecided.join(', ')}`);
 }
 
@@ -324,6 +325,8 @@ async function upload() {
     'copy', AUDIO_DIR, `${REMOTE}:${BUCKET}`,
     '--include', '*.m4a',
     '--header-upload', `Cache-Control: ${CACHE_CONTROL}`,
+    // Pinned: left to guess, rclone on macOS sent the jazz tracks as audio/mp4a-latm.
+    '--header-upload', 'Content-Type: audio/x-m4a',
     '--progress', '--stats-one-line',
   ];
   // Filed names are stable and their content does not change, so skipping what

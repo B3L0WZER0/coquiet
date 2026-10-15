@@ -1085,7 +1085,7 @@ test.describe('the version chip', () => {
       expect(await panel.locator('.version-release-list li').nth(i).innerText()).not.toBe('');
     }
 
-    await expect(panel.getByRole('link', { name: 'Ambient' })).toHaveAttribute('href', '/ambient/');
+    await expect(panel.getByRole('link', { name: 'Jazz' })).toHaveAttribute('href', '/jazz/');
     await expect(panel.locator('.version-soon')).toHaveCount(0);
 
     await expect(panel.locator('.version-request')).toHaveText(/Request a feature/);

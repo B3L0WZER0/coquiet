@@ -1,14 +1,14 @@
-/** The three music channels. */
+/** The three music channels, the Jazz room's one, and the Ambient scenes. */
 
 import { AMBIENT_SCENES, sceneSound, type AmbientId } from '@/lib/ambient';
 import { audioPath } from '@/lib/asset-path';
 import { AUDIO_MANIFEST, type ManifestTrack } from '@/lib/audio-manifest';
 
 export type MusicChannelId = 'still' | 'flow' | 'momentum';
-export type ChannelId = MusicChannelId | AmbientId;
+export type ChannelId = MusicChannelId | 'jazz' | AmbientId;
 
 /** Which room a channel belongs to. Chosen at the door. */
-export type RoomMode = 'music' | 'ambient';
+export type RoomMode = 'music' | 'ambient' | 'jazz';
 
 export type Track = ManifestTrack;
 
@@ -34,6 +34,7 @@ function build(
   id: ChannelId,
   label: string,
   description: string,
+  kind: RoomMode = 'music',
   epochMs: number = BASE_EPOCH,
 ): Channel {
   const manifest = AUDIO_MANIFEST[id] ?? [];
@@ -45,7 +46,7 @@ function build(
   const tracks = manifest.map((t) => ({ ...t, src: audioPath(t.src) }));
   return {
     id,
-    kind: 'music',
+    kind,
     label,
     description,
     tracks,
@@ -60,6 +61,11 @@ export const CHANNELS: readonly Channel[] = [
   build('momentum', 'Momentum', 'Brighter strings and restrained rhythmic energy.'),
 ];
 
+/** One channel on purpose: a kissa plays one record for the whole room. */
+export const JAZZ_CHANNELS: readonly Channel[] = [
+  build('jazz', 'Jazz', 'Slow piano, soft guitar and brushed drums, with a horn now and then.', 'jazz'),
+];
+
 /** One loop each. The station clock still applies, so a loop is picked up
  *  mid-way rather than always from its first wave. */
 export const AMBIENT_CHANNELS: readonly Channel[] = AMBIENT_SCENES.map((scene) => ({
@@ -72,7 +78,7 @@ export const AMBIENT_CHANNELS: readonly Channel[] = AMBIENT_SCENES.map((scene) =
   epochMs: BASE_EPOCH,
 }));
 
-const ALL_CHANNELS: readonly Channel[] = [...CHANNELS, ...AMBIENT_CHANNELS];
+const ALL_CHANNELS: readonly Channel[] = [...CHANNELS, ...JAZZ_CHANNELS, ...AMBIENT_CHANNELS];
 
 export const DEFAULT_CHANNEL: ChannelId = 'flow';
 
@@ -91,7 +97,13 @@ export function isMusicChannelId(value: unknown): value is MusicChannelId {
 }
 
 export function modeOf(id: ChannelId): RoomMode {
+  if (id === 'jazz') return 'jazz';
   return isMusicChannelId(id) ? 'music' : 'ambient';
+}
+
+/** What the switch inside a room offers. */
+export function channelsFor(mode: RoomMode): readonly Channel[] {
+  return mode === 'ambient' ? AMBIENT_CHANNELS : mode === 'jazz' ? JAZZ_CHANNELS : CHANNELS;
 }
 
 /** Where in the programme a channel is: which piece, and how far into it. */

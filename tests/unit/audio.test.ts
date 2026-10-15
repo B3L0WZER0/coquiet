@@ -41,7 +41,7 @@ describe('channel configuration', () => {
 
   it('recognises only real channel ids', () => {
     expect(isChannelId('flow')).toBe(true);
-    expect(isChannelId('jazz')).toBe(false);
+    expect(isChannelId('disco')).toBe(false);
     expect(isChannelId(null)).toBe(false);
   });
 });

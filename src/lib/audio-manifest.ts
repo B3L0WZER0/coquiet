@@ -130,4 +130,31 @@ export const AUDIO_MANIFEST: Record<string, readonly ManifestTrack[]> = {
       title: "Momentum 8",
     },
   ],
+  jazz: [
+    {
+      src: "/audio/Jazz%201.m4a",
+      durationSeconds: 4270.572,
+      title: "Jazz 1",
+    },
+    {
+      src: "/audio/Jazz%202.m4a",
+      durationSeconds: 3661.164,
+      title: "Jazz 2",
+    },
+    {
+      src: "/audio/Jazz%203.m4a",
+      durationSeconds: 4021.98,
+      title: "Jazz 3",
+    },
+    {
+      src: "/audio/Jazz%204.m4a",
+      durationSeconds: 3900.132,
+      title: "Jazz 4",
+    },
+    {
+      src: "/audio/Jazz%205.m4a",
+      durationSeconds: 4515.396,
+      title: "Jazz 5",
+    },
+  ],
 };

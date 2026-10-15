@@ -618,3 +618,29 @@
     transition-delay: 400ms;
   }
 }
+
+/* ジャズ beside "Jazz": smaller and quieter than the word it signs, and drawn
+   from the system's Japanese face rather than the site's Latin one. */
+.jazz-kana {
+  margin-left: -0.125rem;
+  font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', 'Noto Sans CJK JP', sans-serif;
+  font-size: 0.85em;
+  letter-spacing: 0.06em;
+  color: var(--color-sand);
+}
+
+/* Jazz scenes: dark rooms, bright rainy windows along the top. Tuned per
+   scene by `npm run contrast`. */
+.jazz-shade {
+  --shade-top: 0%;
+  --shade-foot: 0%;
+}
+
+[data-jazz='jazz-early-evening'] .jazz-shade {
+  --shade-top: 60%;
+}
+
+[data-jazz='jazz-garden-pond'] .jazz-shade,
+[data-jazz='jazz-rainy-street-counter'] .jazz-shade {
+  --shade-top: 30%;
+}

@@ -23,7 +23,8 @@ import sharp from 'sharp';
 import { FOCAL_X, FOCAL_Y } from './focal-points.mjs';
 
 const ROOT = path.resolve(import.meta.dirname, '..');
-const SOURCE_DIR = path.join(ROOT, 'design-reference');
+// The Jazz room's scenes share the procedure and FOCAL_X, not the rotation.
+const SOURCE_DIRS = ['design-reference', 'jazz-reference'].map((d) => path.join(ROOT, d));
 const OUT_DIR = path.join(ROOT, 'crops');
 
 /**
@@ -54,13 +55,13 @@ const all = await sources();
 const targets = ids.length > 0 ? ids : Object.keys(all).filter((id) => !(id in FOCAL_X));
 
 async function sources() {
-  const files = await readdir(SOURCE_DIR);
-  return Object.fromEntries(
-    files
-      .filter((f) => /\.(png|jpe?g|webp|avif|tiff?)$/i.test(f))
-      .sort()
-      .map((f) => [f.replace(/\.[^.]+$/, ''), path.join(SOURCE_DIR, f)]),
-  );
+  const found = [];
+  for (const dir of SOURCE_DIRS) {
+    for (const f of await readdir(dir)) {
+      if (/\.(png|jpe?g|webp|avif|tiff?)$/i.test(f)) found.push([f.replace(/\.[^.]+$/, ''), path.join(dir, f)]);
+    }
+  }
+  return Object.fromEntries(found.sort(([a], [b]) => a.localeCompare(b)));
 }
 
 if (targets.length === 0) {

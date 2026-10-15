@@ -2,12 +2,13 @@
 
 import { NoteMark } from '@/components/icons/DockMarks';
 import { SceneMark } from '@/components/icons/SceneMarks';
+import { JazzKana } from '@/components/JazzKana';
 import { Popover } from '@/components/ui/Popover';
 import { isAmbientId } from '@/lib/ambient';
 import { CHANNELS, type Channel, type ChannelId } from '@/lib/channels';
 
 /** Still · Flow · Momentum — or, in the Ambient room, Blue · Green · White
- *  with their marks — and an info mark alongside. */
+ *  with their marks, or Jazz on its own — and an info mark alongside. */
 export function MusicSelector({
   value,
   onChange,
@@ -23,8 +24,8 @@ export function MusicSelector({
   compact?: boolean;
   channels?: readonly Channel[];
 }) {
-  const ambient = channels[0]?.kind === 'ambient';
-  const groupLabel = ambient ? 'Ambient scene' : 'Music channel';
+  const kind = channels[0]?.kind;
+  const groupLabel = kind === 'ambient' ? 'Ambient scene' : kind === 'jazz' ? 'Jazz' : 'Music channel';
   if (compact) {
     return <CompactMusic value={value} onChange={onChange} channels={channels} groupLabel={groupLabel} />;
   }
@@ -58,6 +59,7 @@ export function MusicSelector({
             >
               {isAmbientId(channel.id) && <SceneMark id={channel.id} />}
               {channel.label}
+              {channel.id === 'jazz' && <JazzKana />}
               <span
                 aria-hidden="true"
                 className="absolute bottom-1 left-1/2 h-px -translate-x-1/2 transition-all duration-[var(--duration-control)] ease-[var(--ease-quiet)]"

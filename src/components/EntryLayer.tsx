@@ -1,5 +1,6 @@
 'use client';
 
+import { JazzKana } from '@/components/JazzKana';
 import { Wordmark } from '@/components/Wordmark';
 import { BookMark } from '@/components/icons/BookMark';
 import { CoffeeMarkInline, CoffeeMarkSteaming } from '@/components/icons/DrinkMarks';
@@ -10,7 +11,9 @@ import type { RoomMode } from '@/lib/channels';
 import { JOURNAL_PUBLIC } from '@/lib/journal/config';
 import { SUPPORT_LABEL, SUPPORT_URL } from '@/lib/support';
 
-const MODES: readonly RoomMode[] = ['music', 'ambient'];
+const MODES: readonly RoomMode[] = ['music', 'ambient', 'jazz'];
+
+const MODE_LABEL: Record<RoomMode, string> = { music: 'Music', ambient: 'Ambient', jazz: 'Jazz' };
 
 /** The composition shown before the room is entered. */
 export function EntryLayer({
@@ -92,7 +95,7 @@ export function EntryLayer({
           </div>
 
           {/* Which room: a line of type above the door, not a second button.
-              One tab stop; the arrows move between the two, as radios do. */}
+              One tab stop; the arrows move between them, as radios do. */}
           <div role="radiogroup" aria-label="Room" className="entry-mode" onKeyDown={onModeKey}>
             {MODES.map((m) => (
               <button
@@ -105,8 +108,9 @@ export function EntryLayer({
                 onClick={() => onMode(m)}
                 className="entry-mode-option"
               >
-                {m === 'music' ? 'Music' : 'Ambient'}
-                {m === 'ambient' && <span className="entry-mode-new">New</span>}
+                {MODE_LABEL[m]}
+                {m === 'jazz' && <JazzKana />}
+                {m === 'jazz' && <span className="entry-mode-new">New</span>}
               </button>
             ))}
           </div>

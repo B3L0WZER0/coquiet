@@ -28,9 +28,9 @@ const AUDIO_DIR = path.join(ROOT, 'public/audio');
 const OUT_FILE = path.join(ROOT, 'src/lib/audio-manifest.ts');
 
 /** Must match the channel ids in src/lib/channels.ts. */
-const CHANNELS = ['still', 'flow', 'momentum'];
+const CHANNELS = ['still', 'flow', 'momentum', 'jazz'];
 
-const NAME = /^(still|flow|momentum)\s*(\d+)$/i;
+const NAME = /^(still|flow|momentum|jazz)\s*(\d+)$/i;
 
 // Sorted: the tracks are ordered by their number below, but what this prints —
 // and what it ignores — should not depend on the order the filesystem answers in.

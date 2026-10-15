@@ -65,6 +65,10 @@ Then:
 
 The Ambient scenes (coast, forest, snow) are not rooms and don't go through this: they are built from `/ambient-inbox/src` by `npm run assets:ambient`, with their own focal point in `src/lib/ambient-manifest.ts`. A scene moves when `<id>.mp4` sits beside its still: the script folds the clip into a seamless loop and uploads it to R2, where it plays over the still (never under reduced motion or Save-Data). All three scenes move, slowed before they go in (snow and coast 0.67×, forest 0.33× — its ferns and mist read as rushed any faster). If the footage is framed differently from the still, set `crop` on the scene so the poster doesn't jump when the video fades in (snow, forest) — or replace the still with the footage's frame at 1.5 s, where the folded loop starts (coast).
 
+## The Jazz room
+
+`/jazz/`, the third door: a rainy Japanese kissa, one channel (`jazz`, no speed switch), "Jazz ジャズ" on the switch (`JazzKana`). Its scenes live in `/jazz-reference/` and go through the same steps as a room — `assets:crops` and `assets:images` read both folders and `FOCAL_X` holds both — but land in `src/lib/jazz-manifest.ts`, rotate by the hour on their own, and never join the Music rooms. Music goes in through `audio-inbox` named `jazz - <name>`, like the other channels. Raw drops wait in `/jazz-inbox/` (gitignored but for its README, which records where they came from).
+
 ## Today's line
 
 The quote button in the room (`src/lib/daily-quote.ts`): one real quote a day, the same for everyone, starting 1 October 2026 and wrapping round when the list runs out (94 lines, so early January 2027). Every entry needs an author and a source with its year — if you can't source it, leave it out; quote sites are full of fakes. Alternate calm lines with energising ones, never hustle, and never the same author two days running (a test checks). Sharing sends `“line” — Author` and a `Shared from coquiet.app` credit (`quoteShareText`) as text only — never a `url`, which apps turn into a link card; the clipboard fallback also carries HTML so coquiet.app is a link.

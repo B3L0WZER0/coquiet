@@ -32,3 +32,7 @@ scripts/.cache/
 # Raw footage and field recordings for `npm run assets:ambient`.
 /ambient-inbox/*
 !/ambient-inbox/SOURCES.md
+
+# The jazz room's photograph, rain footage and music, until it is built.
+/jazz-inbox/*
+!/jazz-inbox/README.md

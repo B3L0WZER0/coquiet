@@ -183,6 +183,8 @@
 }
 
 .entry-mode-new {
+  /* Set apart from the name, so the tag doesn't read as part of it. */
+  margin-left: 0.25rem;
   padding: 0.0625rem 0.4375rem;
   border: 1px solid var(--hairline-strong);
   border-radius: 999px;

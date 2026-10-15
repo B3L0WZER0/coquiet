@@ -619,14 +619,13 @@
   }
 }
 
-/* ジャズ beside "Jazz": smaller and quieter than the word it signs, and drawn
-   from the system's Japanese face rather than the site's Latin one. */
+/* ジャズ beside "Jazz": part of the same name, so the same colour and close
+   to it, in the system's Japanese face rather than the site's Latin one. */
 .jazz-kana {
-  margin-left: -0.125rem;
+  margin-left: -0.25rem;
   font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Yu Gothic', 'Noto Sans JP', 'Noto Sans CJK JP', sans-serif;
   font-size: 0.85em;
   letter-spacing: 0.06em;
-  color: var(--color-sand);
 }
 
 /* Jazz scenes: dark rooms, bright rainy windows along the top. Tuned per

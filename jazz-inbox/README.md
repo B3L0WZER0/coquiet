@@ -27,3 +27,9 @@ below as it arrives.
 
 ## Sources
 
+Music — AI-generated, supplied by Diego, 2026-10-15
+- music/Jazz 1–5.mp3   five mixes, 61–75 min each, 320k; retagged "Jazz N" / Coquiet
+
+Pictures — painted, supplied by Diego, 2026-10-15
+- jazz-04 … jazz-09.png   1672×941
+

@@ -103,6 +103,15 @@ export const JOURNAL_PHOTOS: readonly JournalPhotoEntry[] = [
     "lqip": "data:image/webp;base64,UklGRmQAAABXRUJQVlA4IFgAAADQAwCdASogAA0APu1mq04ppaQiMAgBMB2JQBOgAtX2gX4MQyVNwsAAx/DzcezKQ/6KU8shkEuIjGExb+npM9QObU/AzXLnzohS+rCHJvPoJ303cUaf8RQA"
   },
   {
+    "id": "stay-with-the-middle",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "lqip": "data:image/webp;base64,UklGRoYAAABXRUJQVlA4IHoAAAAQBQCdASogABUAPu1gq1AppSOisBgIATAdiWUArhwLqnQN1fxXg3yMIh2UzK3rDzpAAP6bTcoCYYVxDBWpQSAyCKHh2gjy2Ahm/aM/48VdMInLoyZy7XXytTSJ7vH5NHAnRyTWzg6ZIfAl6IwFhto1n6MUGIo4TAAAAA=="
+  },
+  {
     "id": "the-five-minutes-between-things",
     "widths": [
       640,

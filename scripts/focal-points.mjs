@@ -36,6 +36,9 @@ export const FOCAL_X = {
   // The waterfall over the rocks. The one figure sits against the far-left
   // edge, a speck in the copy's band, so the view carries it instead.
   'autumn-ravine-studio': 52,
+  // The man in the armchair by the long window, with the cliffs and the sea.
+  // Compromise: he sits at headline height in every tile.
+  'basalt-and-tide': 50,
   'cafe-concrete-hall': 50,
   'cafe-garden-door': 68,
   'cafe-windows': 32,
@@ -69,6 +72,9 @@ export const FOCAL_X = {
   'copper-beech-library': 85,
   // The two readers under the run of arches.
   'courtyard-arch-cafe': 58,
+  // The woman writing at the far desk down the arcade. Compromise: she sits
+  // in the copy's band, as everyone in this frame does.
+  'cypress-cloister': 85,
   'desert-arches': 42,
   // The reader at the shelves between the rock face and the desert view.
   'desert-cleft-library': 30,
@@ -164,6 +170,8 @@ export const FOCAL_X = {
   'rain-garden-pavilion': 64,
   // The figure at the far end of the window desks, down the lit row.
   'rain-on-the-cottage': 15,
+  // The man at the window table, with the dome through the rain.
+  'rain-over-the-city': 55,
   // The man at the desk, with the rain coming down the wooded ridge.
   'rainfall-ridge-studio': 55,
   // The window wall and its maples, with the two at the tables below them.
@@ -193,9 +201,18 @@ export const FOCAL_X = {
   'snow-valley-monastery-study': 40,
   // The woman at the table, with the quarry wall and the autumn tree.
   'stone-courtyard-cafe': 35,
+  // The woman at the far workbench under the glass roof.
+  'the-fern-conservatory': 75,
   // The painter at the lit drawing board, with the autumn trees behind her.
   // Her head meets the headline at every framing; the lit board carries it.
   'the-first-wash': 80,
+  // The printer at his press by the river window. Compromise: he stands
+  // behind the headline in every tile; the river carries the frame.
+  'the-river-printroom': 72,
+  // The potter at the shelves, hard against the left edge, so the slice
+  // starts further left than the tiles to keep him whole. He sits between
+  // the subtitle's lines on a phone.
+  'the-snowline-workshop': 5,
   // The painter at her easel, with the misty forest through the glass.
   'the-woodland-easel': 50,
   // The reader in the armchair by the orchard window.

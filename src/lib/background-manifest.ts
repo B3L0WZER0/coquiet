@@ -99,6 +99,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAADQBACdASogABIAPu1kqU2ppaOiMAgBMB2JZQCo9Bf6q5OFx/HRikWd0s3dU/+OQAD+q4S7Xr6jnK/BlBE4jWjYtMaHiCecNClb50g25MzjQVdqLBrvH8IMtvxQlKN9K/rA7uZYgWmAAA==",
   },
   {
+    id: "basalt-and-tide",
+    widths: [640, 1024, 1600],
+    focalX: 50,
+    focalY: 50,
+    chrome: "#565354",
+    lqip: "data:image/webp;base64,UklGRnIAAABXRUJQVlA4IGYAAADQBACdASogABIAPu1ep06ppKMiMBgMATAdiWcAvVg0aONKRyeaOWdsbXyF2bGMAAD+9DZ6mgD3b6pC/Vj9f0MQy8jQOas4MqmjpuPSLdyi2wVfrMquewofWkB5Ui8E2OmGDEYAAAA=",
+  },
+  {
     id: "cafe-concrete-hall",
     widths: [640, 1024, 1600],
     focalX: 50,
@@ -273,6 +281,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#97897c",
     lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAACwBACdASogABIAPu1mpU2ppaMiMBgMATAdiWcArhwJK6GIG1/9ReY33FoLPw1oAM1T94kGbWdugwcSTeJ9bK5z1lDzvlXWgQ3JajEpmWrTJO9ok/tpeowbYIdny6AL8qSTPDnHmZ329qiGygAAAA==",
+  },
+  {
+    id: "cypress-cloister",
+    widths: [640, 1024, 1600],
+    focalX: 85,
+    focalY: 50,
+    chrome: "#50453d",
+    lqip: "data:image/webp;base64,UklGRngAAABXRUJQVlA4IGwAAAAwBQCdASogABIAPu1qrU+ppiQiMBgIATAdiWcAxkAK/8lRqXa96dLkHyXk4zxLVrqBsAD7gKsDo/FonVIXxY/bv4oMB/TuZsQZtz0s4xsKyJNH8sNl2XWv7UD/9Y5uUPgAIPVvGVXvA0agAAA=",
   },
   {
     id: "desert-arches",
@@ -635,6 +651,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAADQBACdASogABIAPu1gp02ppSOiMAgBMB2JZQC2yB5TOUsQMjrZf8dU413kE5GuAAD+2Uz81iCTiiku2WaUMhVKIJLyqn2zKppnuIBK+RmXHKqKF0De9lMEe4756GrKRQqeYAAA",
   },
   {
+    id: "rain-over-the-city",
+    widths: [640, 1024, 1600],
+    focalX: 55,
+    focalY: 50,
+    chrome: "#767775",
+    lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAAAwBQCdASogABIAPu1mqk2ppaQiMAgBMB2JZwDM0B5uzuzI3v9bWLQmdWEeCf4BS6JDgAD+ozS6yUBWMoHJl2ts5ay65cJY2b1y/xChz0kdF0XsW5RdCqlXkAe1757ZJIPLgxs04HjgAA==",
+  },
+  {
     id: "rainfall-ridge-studio",
     widths: [640, 1024, 1600],
     focalX: 55,
@@ -763,6 +787,14 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     lqip: "data:image/webp;base64,UklGRnQAAABXRUJQVlA4IGgAAACQBACdASogABIAPulep02pJSOiN/VYASAdCWcAwNwRAUNU3A/uslm0rij/RUAA/ZjAgWFJclZNXrjUpGjvvbRHlYmwLqrfCEWCv7L1WLDWW84a1N4b8hn+kW4VQGBB2qo4GJWcOiAAAA==",
   },
   {
+    id: "the-fern-conservatory",
+    widths: [640, 1024, 1600],
+    focalX: 75,
+    focalY: 50,
+    chrome: "#c0bbba",
+    lqip: "data:image/webp;base64,UklGRm4AAABXRUJQVlA4IGIAAAAwBQCdASogABIAPu1sqU8ppqOiMBgIATAdiWUAw6wxtVJ54WTLiqf/ljIOIePm5P/OAAD62ZR+QE89ftjNniOSdw+iqeNE7cxcBJO0l1RxxyVkUNzdxBKxB6TZUePAi8AAAA==",
+  },
+  {
     id: "the-first-wash",
     widths: [640, 1024, 1600],
     focalX: 80,
@@ -793,6 +825,22 @@ export const BACKGROUND_MANIFEST: readonly ManifestRoom[] = [
     focalY: 50,
     chrome: "#79614d",
     lqip: "data:image/webp;base64,UklGRoIAAABXRUJQVlA4IHYAAACwBQCdASogABIAPu1opU2ppiMiMBgMATAdiWMAs4ARWU/JmQYXPtch2tLWET3TyKz2CRypC3AA4n58OtLXtsUUs7y5s3BRsrpYiLQaeFMAX0pJCeQeIAkwS/SWyIA4xIQvJpclPlZSzmOSQnl0LoNBmOOYYQAA",
+  },
+  {
+    id: "the-river-printroom",
+    widths: [640, 1024, 1600],
+    focalX: 72,
+    focalY: 50,
+    chrome: "#36332c",
+    lqip: "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAADQBACdASogABIAPuFeqU2opSQiMAwBEBwJZwDKtA03XHACTvK7G2xxZ+L2DJhzwAD4vYZ2/CtAgpJhVizobiIjM2Z+GUGmzBeHtwtOivzHY8syE0CWLYbrXWeZuUquNk2ygBdOf2NDxXSaEMtqAA==",
+  },
+  {
+    id: "the-snowline-workshop",
+    widths: [640, 1024, 1600],
+    focalX: 5,
+    focalY: 50,
+    chrome: "#7d838e",
+    lqip: "data:image/webp;base64,UklGRnAAAABXRUJQVlA4IGQAAACQBACdASogABIAPt1apE2opSOiN/qoARAbiWcAv+wLvxJ6og1+NMJFeMfDJgAA/ldxgy+ctH69FMsVKeEunkbH1d87wN669/5uu9oJJqzTsRugOvo+CbdcPdxnImCi0MhCloAA",
   },
   {
     id: "the-woodland-easel",

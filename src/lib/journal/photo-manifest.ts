@@ -121,6 +121,15 @@ export const JOURNAL_PHOTOS: readonly JournalPhotoEntry[] = [
     "lqip": "data:image/webp;base64,UklGRnoAAABXRUJQVlA4IG4AAAAQBQCdASogABUAPu1mqU4ppaOiMAgBMB2JYwCw7Bkv0DtVXobojikQHYR9vH1rxPgAAP6e6X/0iUZMS82xxSv5uWtSUwvCnkA0g8oH/EKITz+W04nYbMyJslamT13v+MSnDozVa0mdgESQLSAAAA=="
   },
   {
+    "id": "the-light-has-changed",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "lqip": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQBACdASogABUAPu1gqk2ppaQiMBgMATAdiUATpmyAo2glnBrx1aNXTiQX65rzwAD+8qnTjSRmB93YEEb/TQjf41WNdeljBOmlfFfvYTGemP/zVByLtVRikav8Fibv3rnR87NhmucbfjgA"
+  },
+  {
     "id": "when-focus-wont-come",
     "widths": [
       640,

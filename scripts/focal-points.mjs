@@ -243,6 +243,35 @@ export const FOCAL_X = {
   'valley-vault': 34,
   // Off the desk a little, so the slice carries some of the lake it looks at.
   'work-lake-view': 26,
+  // The weaver at her loom under the brick gable. Compromise: she sits in the
+  // copy's band in every tile that has her.
+  'birch-and-loom': 75,
+  // The dunes and the sea through the long window. Framed on the reader (10),
+  // she sat behind the headline and the slice read as roof.
+  'dune-paper-house': 50,
+  // No one to frame: the reader is cut at the far-right edge. The armchair,
+  // the shelves and the willows over the lotus pond instead.
+  'lotus-court-library': 50,
+  // The mangroves over the water, by the shutters. Framed on the writer (75),
+  // he sat behind the headline and the slice read as dark ceiling.
+  'mangrove-writers-house': 25,
+  // The woman at the far table, with the snow peaks through the gable glass.
+  // Compromise: her head sits just under the headline in every tile.
+  'the-alpine-herbarium': 85,
+  // The woman at her drafting table, with the sea through the window.
+  // Compromise: her head sits just under the headline in every tile.
+  'the-cliff-maproom': 75,
+  // The glassmaker at her bench under the arched window. Compromise: small,
+  // and in the copy's band.
+  'the-glassmakers-loft': 25,
+  // The barista at the counter, the one figure standing clear of the copy;
+  // the readers by the rain window sit under it.
+  'the-rain-garden-cafe': 97,
+  // The reader at the far desk, beside the tall pine window.
+  'the-reservoir-archive': 40,
+  // The woman reading by the glass, with the river and the bridge. Compromise:
+  // in the copy's band, as everyone in this frame is.
+  'under-the-aqueduct': 75,
 
   // The Jazz room's scenes, from /jazz-reference.
   // The maples and the two armchairs; the barista sits too near the edge to keep.

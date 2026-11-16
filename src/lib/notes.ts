@@ -33,6 +33,10 @@ export const FOCUS_NOTES: readonly string[] = [
   'Read what you wrote last time, then continue.',
   'Open the file. The rest can wait a minute.',
   'Start with the part you already understand.',
+  'Start with the easiest true sentence.',
+  'Begin with the first five minutes only.',
+  'Let the warm-up count as work.',
+  'Write the title. That is a start.',
 
   // Staying with it
   'Stay with the work.',
@@ -63,6 +67,10 @@ export const FOCUS_NOTES: readonly string[] = [
   'Nothing to do but the next thing.',
   'Let the next sentence lead the way.',
   'Keep the pen on the page a while longer.',
+  'Go one layer deeper before moving on.',
+  'Let the work be the only thing in front of you.',
+  'Keep your attention where your hands are.',
+  'Slow and continuous beats fast and broken.',
 
   // When it is hard
   'The difficult part is usually the next part.',
@@ -92,6 +100,10 @@ export const FOCUS_NOTES: readonly string[] = [
   'Nobody understands it all at once.',
   'Look for the smallest seam and open that.',
   'Write down what you know so far.',
+  'Break it in half. Then in half again.',
+  'The hard part is smaller than it looks.',
+  'Write the question you are avoiding.',
+  'Everyone who knows this once found it hard.',
 
   // Pace
   'Slow is fine. Stopping is fine too.',
@@ -119,6 +131,10 @@ export const FOCUS_NOTES: readonly string[] = [
   'Take the next minute as it comes.',
   'Go slowly enough to notice things.',
   'Walking pace still crosses the country.',
+  'Work like a tide, not a wave.',
+  'An even pace leaves energy for later.',
+  'Patience is also a way of moving.',
+  'Let the hour unfold. Do not force it.',
 
   // Letting it be unfinished
   'Let it be unfinished for now.',
@@ -141,6 +157,9 @@ export const FOCUS_NOTES: readonly string[] = [
   'Write the placeholder and keep moving.',
   'It does not have to be good yet.',
   'Leave it rough. Rough can be shaped.',
+  'A sketch is allowed to look like a sketch.',
+  'Leave a question mark and carry on.',
+  'Messy now, clear later.',
 
   // Coming back
   'Return to it without comment.',
@@ -160,6 +179,9 @@ export const FOCUS_NOTES: readonly string[] = [
   'Try again from the last thing that worked.',
   'Return to the breath, then the page.',
   'Every return is a small beginning.',
+  'Back again. That is the practice.',
+  'The distraction passed. You are here again.',
+  'Pick up the nearest loose end.',
 
   // Attention
   'Attention is the whole of it.',
@@ -188,6 +210,10 @@ export const FOCUS_NOTES: readonly string[] = [
   'The quiet is doing some of the work.',
   'Give the next ten minutes to one thing.',
   'Let everything else become background.',
+  'Notice one detail you missed before.',
+  'Let the music hold the edges of the room.',
+  'One thing done fully beats three half-done.',
+  'Turn toward the work, away from the noise.',
 
   // The body
   'Soften your shoulders.',
@@ -209,6 +235,9 @@ export const FOCUS_NOTES: readonly string[] = [
   'A slower breath is always available.',
   'Let the chair do the holding.',
   'Let your tongue rest away from your teeth.',
+  'Let your eyes go soft for a breath.',
+  'Check your posture, then forget about it.',
+  'Warm hands, steady breath, open page.',
 
   // Mood
   'Trust the work more than the mood.',
@@ -231,6 +260,10 @@ export const FOCUS_NOTES: readonly string[] = [
   'A flat mood can still do good work.',
   'Worry can wait outside for an hour.',
   'Calm is something you do, not wait for.',
+  'Curiosity is a fine reason to continue.',
+  'Today does not have to be a great day.',
+  'Let it be ordinary work, done well.',
+  'Take it a little less seriously. It helps.',
 
   // Progress
   'Small progress is still progress.',
@@ -251,6 +284,9 @@ export const FOCUS_NOTES: readonly string[] = [
   'You will not notice the day it gets easier.',
   'Foundations are mostly out of sight.',
   'Every line written is one fewer to write.',
+  'Each session lays one more brick.',
+  'Look how far you came since you sat down.',
+  'Today’s small part is tomorrow’s head start.',
 
   // Company
   //
@@ -268,6 +304,8 @@ export const FOCUS_NOTES: readonly string[] = [
   'A full room can still be a quiet one.',
   'Each of us is doing a small thing in silence.',
   'Somewhere a lamp is on for the same reason.',
+  'Many desks, one quiet.',
+  'Somewhere, someone just turned a page too.',
 
   // Stopping
   'You are allowed to stop.',
@@ -290,6 +328,8 @@ export const FOCUS_NOTES: readonly string[] = [
   'Close the tabs. Close the day.',
   'Nothing you leave undone now is lost.',
   'Note where you are before you stand up.',
+  'Stopping on time is part of the plan.',
+  'Leave the last step obvious for tomorrow.',
 ];
 
 export const BREAK_SUGGESTIONS: readonly string[] = [

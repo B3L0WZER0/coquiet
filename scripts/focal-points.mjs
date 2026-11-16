@@ -272,6 +272,36 @@ export const FOCAL_X = {
   // The woman reading by the glass, with the river and the bridge. Compromise:
   // in the copy's band, as everyone in this frame is.
   'under-the-aqueduct': 75,
+  // The barista at the bar, the one figure standing clear of the copy; the
+  // readers by the tea terraces sit under it.
+  'cloud-terrace-cafe': 97,
+  // The man reading on the window bench, with the salt flat and the hills.
+  // Compromise: he sits in the copy's band.
+  'saltwind-reading-room': 75,
+  // The volcanoes over the lava-stone court. Framed on the reader (15), she
+  // sat behind the headline and the slice read as dark ceiling.
+  'the-lava-courtyard-library': 75,
+  // The maple in the moss court. The potter works in the far corner, under
+  // the headline and in the dark, so the tree carries the room.
+  'the-moss-courtyard': 45,
+  // The quarry wall and the birches through the long window, over the
+  // benches. Framed on the binder (85), he sat behind the headline.
+  'the-quarry-bookbindery': 30,
+  // The man at the desk under the lamp, by the records. Compromise: his head
+  // sits at the headline's top edge.
+  'the-rain-listening-atelier': 85,
+  // The woman writing at the window table, with the rain on the glass.
+  // Compromise: she sits in the copy's band.
+  'the-station-garden': 20,
+  // The models on the shelves and the cart by the estuary window. Framed on
+  // the woman (92), she sat behind the headline under a band of ceiling.
+  'the-tidal-boathouse': 40,
+  // The fjord through the gable, under the pendant lamps. Framed on the
+  // luthier (85), she sat behind the headline.
+  'the-violin-maker': 50,
+  // The table with the oranges under the arched window onto the rainy grove.
+  // The painter sits against the far-left edge, behind a white pillar.
+  'winter-citrus-studio': 50,
 
   // The Jazz room's scenes, from /jazz-reference.
   // The maples and the two armchairs; the barista sits too near the edge to keep.

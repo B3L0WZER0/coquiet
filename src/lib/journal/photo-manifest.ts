@@ -130,6 +130,15 @@ export const JOURNAL_PHOTOS: readonly JournalPhotoEntry[] = [
     "lqip": "data:image/webp;base64,UklGRnYAAABXRUJQVlA4IGoAAADQBACdASogABUAPu1gqk2ppaQiMBgMATAdiUATpmyAo2glnBrx1aNXTiQX65rzwAD+8qnTjSRmB93YEEb/TQjf41WNdeljBOmlfFfvYTGemP/zVByLtVRikav8Fibv3rnR87NhmucbfjgA"
   },
   {
+    "id": "the-work-before-the-work",
+    "widths": [
+      640,
+      1024,
+      1600
+    ],
+    "lqip": "data:image/webp;base64,UklGRoQAAABXRUJQVlA4IHgAAAAQBQCdASogABUAPu1kq1AppSOisBgIATAdiWcAxzAPKCS3yN+2sUPWzlU9URwOY7OAAM4deKcWadxeVTCVh877Y+XMYMgWpoQ+imEdXjm9SR3Gh0c9PPFsZXY25cslifO/lRllf+UZD0GeiEoWrwp59x934ldAAAA="
+  },
+  {
     "id": "when-focus-wont-come",
     "widths": [
       640,
